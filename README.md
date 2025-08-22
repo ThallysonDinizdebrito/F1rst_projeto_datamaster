@@ -108,6 +108,6 @@ $ctx=New-AzStorageContext -StorageAccountName $sa -StorageAccountKey $key;
 New-AzStorageContainer -Name $cont -Context $ctx
 
 
-echo "Testando deploy dev teste05"
+echo "Testando deploy dev teste06"
 
 
