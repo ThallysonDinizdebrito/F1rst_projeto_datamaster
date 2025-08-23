@@ -27,12 +27,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        run: terraform init \
-          -backend-config="storage_account_name=SEU_STORAGE_ACCOUNT" \
-          -backend-config="container_name=tfstate" \
-          -backend-config="key=terraform.tfstate" \
-          -backend-config="resource_group_name=rg-backend-dev" \
-          -reconfigure
+        run: terraform init -backend-config="storage_account_name=SEU_STORAGE_ACCOUNT" -backend-config="container_name=tfstate" -backend-config="key=terraform.tfstate" -backend-config="resource_group_name=rg-backend-dev" -reconfigure
 
       - name: Executar Terraform Plan
         working-directory: infra
