@@ -1,4 +1,4 @@
-name: Teste Secrets
+name: Teste Secrets parse
 
 on:
   workflow_dispatch:

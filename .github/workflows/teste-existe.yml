@@ -1,4 +1,4 @@
-name: Teste Secrets
+name: Teste Secrets existe
 
 on:
   workflow_dispatch:
