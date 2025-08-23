@@ -1,4 +1,4 @@
-name: Teste Secrets existe
+name: Teste Secrets existe #
 
 on:
   push:
