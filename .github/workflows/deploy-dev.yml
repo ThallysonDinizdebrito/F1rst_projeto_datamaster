@@ -26,11 +26,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
 
       - name: Inicializar Terraform
-        run: terraform init -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_DEV }}" \
-                                -backend-config="container_name=tfstate" \
-                                -backend-config="key=terraform.tfstate" \
-                                -backend-config="resource_group_name=rg-backend-dev" \
-                                -reconfigure
+        run: terraform init -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_DEV }}" -backend-config="container_name=tfstate" -backend-config="key=terraform.tfstate" -backend-config="resource_group_name=rg-backend-dev" -reconfigure
         working-directory: infra
 
       - name: Executar Terraform Plan
