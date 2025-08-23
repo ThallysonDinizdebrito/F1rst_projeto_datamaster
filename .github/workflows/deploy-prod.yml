@@ -9,6 +9,7 @@ jobs:
   terraform:
     name: Terraform Prod
     runs-on: ubuntu-latest
+    environment: prod
 
     steps:
       - name: Checar repositório
