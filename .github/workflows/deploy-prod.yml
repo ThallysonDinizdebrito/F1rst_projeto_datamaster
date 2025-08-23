@@ -1,14 +1,15 @@
-name: Deploy Prod
+name: Deploy Dev
 
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   terraform:
-    name: Terraform Prod
+    name: Terraform Dev
     runs-on: ubuntu-latest
+    environment: desenvolvedor   # 👈 Importante: necessário para acessar segredos de ambiente
 
     steps:
       - name: Checar repositório
@@ -20,22 +21,22 @@ jobs:
           terraform_version: 1.7.0
 
       - name: Autenticar no Azure
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
+          creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
 
       - name: Inicializar Terraform
-        run: terraform init -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_PROD }}" \
+        run: terraform init -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_DEV }}" \
                                 -backend-config="container_name=tfstate" \
                                 -backend-config="key=terraform.tfstate" \
-                                -backend-config="resource_group_name=rg-backend-prod" \
+                                -backend-config="resource_group_name=rg-backend-dev" \
                                 -reconfigure
         working-directory: infra
 
       - name: Executar Terraform Plan
-        run: terraform plan -var-file=prod.tfvars
+        run: terraform plan -var-file=dev.tfvars
         working-directory: infra
 
       - name: Executar Terraform Apply
-        run: terraform apply -auto-approve -var-file=prod.tfvars
+        run: terraform apply -auto-approve -var-file=dev.tfvars
         working-directory: infra
