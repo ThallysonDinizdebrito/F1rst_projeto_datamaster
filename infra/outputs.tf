@@ -17,20 +17,17 @@ output "nome_resource_group" {
 
 # Output do nome da Storage Account
 output "nome_storage_account" {
-  description = "Nome da Storage Account criada"
-  value       = azurerm_storage_account.conta_armazenamento.name
+  value = azurerm_storage_account.sa.name
 }
 
 # Output do nome do container raw
 output "nome_container_raw" {
-  description = "Nome do container raw"
-  value       = azurerm_storage_container.container_raw.name
+  value = azurerm_storage_container.raw.name
 }
 
 # Output do ID do Databricks Workspace
 output "id_workspace_databricks" {
-  description = "ID do Databricks Workspace criado"
-  value       = azurerm_databricks_workspace.workspace.id
+  value = azurerm_databricks_workspace.workspace.id
 }
 
 # Output da URL do Databricks Workspace
