@@ -41,20 +41,5 @@ resource "azurerm_databricks_workspace" "workspace" {
   sku                 = "premium"
 }
 
-# ===========================
-# Outputs
-# ===========================
-output "id_workspace_databricks" {
-  value       = azurerm_databricks_workspace.workspace.id
-  description = "ID do workspace Databricks criado"
-}
 
-output "nome_storage_account" {
-  value       = azurerm_storage_account.conta_armazenamento.name
-  description = "Nome da Storage Account criada"
-}
 
-output "nome_container_raw" {
-  value       = azurerm_storage_container.container_raw.name
-  description = "Nome do container raw criado"
-}
