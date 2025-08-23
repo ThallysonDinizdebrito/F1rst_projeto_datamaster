@@ -26,24 +26,17 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
 
       - name: Terraform Init
-        working-directory: ./terraform
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        working-directory: infra
         run: terraform init -backend-config="storage_account_name=***" \
                             -backend-config="container_name=tfstate" \
                             -backend-config="key=terraform.tfstate" \
                             -backend-config="resource_group_name=rg-backend-dev" \
                             -reconfigure
-                            
-        working-directory: infra
 
       - name: Executar Terraform Plan
-        run: terraform plan -var-file=dev.tfvars
         working-directory: infra
+        run: terraform plan -var-file=dev.tfvars
 
       - name: Executar Terraform Apply
-        run: terraform apply -auto-approve -var-file=dev.tfvars
         working-directory: infra
+        run: terraform apply -auto-approve -var-file=dev.tfvars
