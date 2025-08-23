@@ -8,6 +8,7 @@ on:
 jobs:
   debug-secrets:
     runs-on: ubuntu-latest
+    environment: dev   # <-- adiciona aqui o environment "dev"
     steps:
       - name: Checar se secrets existem
         run: |
