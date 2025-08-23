@@ -27,12 +27,7 @@ jobs:
 
       - name: Terraform Init
         working-directory: infra
-        run: terraform init -backend-config="storage_account_name=***" \
-                            -backend-config="container_name=tfstate" \
-                            -backend-config="key=terraform.tfstate" \
-                            -backend-config="resource_group_name=rg-backend-dev" \
-                            -reconfigure
-
+        run: terraform init -backend-config="storage_account_name=***" -backend-config="container_name=tfstate" -backend-config="key=terraform.tfstate" -backend-config="resource_group_name=rg-backend-dev" -reconfigure
       - name: Executar Terraform Plan
         working-directory: infra
         run: terraform plan -var-file=dev.tfvars
