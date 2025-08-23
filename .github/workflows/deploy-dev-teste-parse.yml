@@ -1,7 +1,9 @@
 name: Teste Secrets parse
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - dev
 
 jobs:
   debug-secrets:

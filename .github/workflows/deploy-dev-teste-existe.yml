@@ -1,7 +1,9 @@
 name: Teste Secrets existe
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - dev
 
 jobs:
   debug-secrets:
