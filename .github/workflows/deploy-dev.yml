@@ -54,3 +54,4 @@ jobs:
         run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
         # '-auto-approve' → aplica sem perguntar, ideal para CI/CD
         # '-lock-timeout=300s' → garante que o job espere pelo lock antes de falhar
+        #teste
