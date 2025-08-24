@@ -7,22 +7,16 @@ on:
 
 jobs:
   terraform:
-    name: Terraform Dev
     runs-on: ubuntu-latest
     environment: dev
 
     steps:
-      # 1. Puxar repositório
-      - name: Checar repositório
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      # 2. Configurar Terraform
-      - name: Configurar Terraform
-        uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.0
 
-      # 3. Terraform Init
       - name: Terraform Init
         working-directory: infra
         env:
@@ -30,15 +24,9 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        run: terraform init \
-              -backend-config="storage_account_name=estadotfdev" \
-              -backend-config="container_name=tfstate" \
-              -backend-config="key=terraform.tfstate" \
-              -backend-config="resource_group_name=rg-backend-dev" \
-              -reconfigure
+        run: terraform init -reconfigure
 
-      # 4. Terraform Plan
-      - name: Executar Terraform Plan
+      - name: Terraform Plan
         working-directory: infra
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -47,8 +35,7 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         run: terraform plan -var-file=dev.tfvars
 
-      # 5. Terraform Apply
-      - name: Executar Terraform Apply
+      - name: Terraform Apply
         working-directory: infra
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
