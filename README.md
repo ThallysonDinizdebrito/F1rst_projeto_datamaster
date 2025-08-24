@@ -47,7 +47,7 @@ Criar Service Principal no Azure:
 az ad sp create-for-rbac --name "terraform-prod" --role="Contributor" --scopes="/subscriptions/<SUBSCRIPTION_ID>"
 
 
-
+az ad sp create-for-rbac --name "terraform-dev" --role="Contributor" --scopes="/subscriptions/<SUBSCRIPTION_ID>"
 
 
 Copie o JSON resultante para usar como secret:
@@ -108,6 +108,6 @@ $ctx=New-AzStorageContext -StorageAccountName $sa -StorageAccountKey $key;
 New-AzStorageContainer -Name $cont -Context $ctx
 
 
-echo "Testando deploy dev teste08"
+
 
 
