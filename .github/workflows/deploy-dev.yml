@@ -3,36 +3,38 @@ name: Deploy Dev  # Nome do workflow no GitHub Actions
 on:
   push:
     branches:
-      - dev  # O workflow só será disparado quando houver push no branch 'dev'
+      - dev  # Dispara apenas no branch 'dev'
 
 jobs:
   terraform:
-    runs-on: ubuntu-latest  # O job roda em uma VM Ubuntu fornecida pelo GitHub
-    environment: dev  # Define o ambiente no GitHub, útil para Secrets e proteções
+    runs-on: ubuntu-latest
+    environment: dev
 
-    # Configuração de concorrência para evitar múltiplos runs simultâneos
     concurrency:
-      group: terraform-dev          # Todos os jobs que usam este grupo compartilham lock
-      cancel-in-progress: true      # Cancela qualquer job anterior em andamento no mesmo grupo
+      group: terraform-dev
+      cancel-in-progress: true
 
     steps:
-      - uses: actions/checkout@v3  # Faz checkout do código do repositório
+      - uses: actions/checkout@v3
 
       - uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.7.0  # Configura a versão do Terraform que será usada
+          terraform_version: 1.7.0
 
       # Inicialização do Terraform
       - name: Terraform Init
-        working-directory: infra  # Diretório onde estão os arquivos .tf
+        working-directory: infra
         env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}           # Client ID do Service Principal dev
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}   # Secret do Service Principal dev
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}           # Tenant ID do Azure
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }} # Subscription ID
-        run: terraform init -reconfigure  # Inicializa o backend e providers. '-reconfigure' força leitura da configuração do backend
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_var_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET_DEV }}
+          TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID_DEV }}
+          TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID_DEV }}
+        run: terraform init -reconfigure
 
-      # Cria o plano de execução do Terraform
+      # Criação do plano do Terraform
       - name: Terraform Plan
         working-directory: infra
         env:
@@ -40,10 +42,12 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        run: terraform plan -var-file=dev.tfvars -lock-timeout=300s  
-        # '-lock-timeout=300s' → se outro processo estiver com o lock, espera até 5 minutos antes de falhar
+          TF_VAR_var_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET_DEV }}
+          TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID_DEV }}
+          TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID_DEV }}
+        run: terraform plan -var-file=dev.tfvars -lock-timeout=300s
 
-      # Aplica as alterações no Terraform
+      # Aplica as alterações do Terraform
       - name: Terraform Apply
         working-directory: infra
         env:
@@ -51,7 +55,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_var_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET_DEV }}
+          TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID_DEV }}
+          TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID_DEV }}
         run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
-        # '-auto-approve' → aplica sem perguntar, ideal para CI/CD
-        # '-lock-timeout=300s' → garante que o job espere pelo lock antes de falhar
-        #teste
