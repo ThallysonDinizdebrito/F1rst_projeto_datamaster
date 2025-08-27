@@ -1,9 +1,9 @@
-name: Deploy Dev  # Nome do workflow no GitHub Actions
+name: Deploy Dev
 
 on:
   push:
     branches:
-      - dev  # Dispara apenas no branch 'dev'
+      - dev
 
 jobs:
   terraform:
@@ -11,10 +11,12 @@ jobs:
     environment: dev
 
     env: 
-          TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
-          TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET_DEV }}
-          TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID_DEV }}
+      TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID_DEV }}
+      TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID_DEV }}
+      TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET_DEV }}
+      TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID_DEV }}
+
+      
 
     concurrency:
       group: terraform-dev
@@ -29,6 +31,7 @@ jobs:
 
       # Inicialização do Terraform
       - name: Terraform Init
+        working-directory: infra
         run: terraform init -reconfigure
 
       # Criação do plano do Terraform
