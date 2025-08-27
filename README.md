@@ -107,7 +107,7 @@ $key=(Get-AzStorageAccountKey -ResourceGroupName $rg -Name $sa)[0].Value;
 $ctx=New-AzStorageContext -StorageAccountName $sa -StorageAccountKey $key;
 New-AzStorageContainer -Name $cont -Context $ctx
 
-#testeS
+#remover os recursos caso precise
 
-
+Remove-AzResourceGroup -Name "rg-backend-dev" -Force
 
