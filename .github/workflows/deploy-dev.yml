@@ -1,22 +1,14 @@
-name: Deploy Dev
+name: Deploy Dev  # Nome do workflow no GitHub Actions
 
 on:
   push:
     branches:
-      - dev
+      - dev  # Dispara apenas no branch 'dev'
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
     environment: dev
-
-    env: 
-      ARM_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID_DEV }}
-      ARM_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID_DEV }}
-      ARM_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET_DEV }}
-      ARM_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID_DEV }}
-
-      
 
     concurrency:
       group: terraform-dev
@@ -32,14 +24,40 @@ jobs:
       # Inicialização do Terraform
       - name: Terraform Init
         working-directory: infra
+        env:
+
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_var_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET_DEV }}
+          TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID_DEV }}
+          TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID_DEV }}
         run: terraform init -reconfigure
 
       # Criação do plano do Terraform
       - name: Terraform Plan
         working-directory: infra
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_var_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+          TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+          TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         run: terraform plan -var-file=dev.tfvars -lock-timeout=300s
 
       # Aplica as alterações do Terraform
       - name: Terraform Apply
         working-directory: infra
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_var_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+          TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+          TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
         run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
