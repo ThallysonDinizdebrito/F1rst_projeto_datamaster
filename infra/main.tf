@@ -51,7 +51,6 @@ resource "azurerm_service_plan" "function_plan" {
 
   os_type  = "Linux"
   sku_name = "Y1"          # plano gratuito
-  number_of_workers = 1
 }
 
 # ===========================
