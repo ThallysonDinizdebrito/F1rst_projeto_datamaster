@@ -49,7 +49,6 @@ resource "azurerm_service_plan" "function_plan" {
   location            = azurerm_resource_group.grupo_principal.location
   resource_group_name = azurerm_resource_group.grupo_principal.name
   os_type             = "Linux"
-  kind                = "FunctionApp"
 
   sku_name = "Y1"  # Dynamic Consumption Plan
 }
