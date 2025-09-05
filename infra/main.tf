@@ -75,3 +75,4 @@ resource "azurerm_linux_function_app" "function_app" {
     "AZURE_STORAGE_ACCOUNT_KEY"  = azurerm_storage_account.conta_armazenamento.primary_access_key
   }
 }
+#apagar essa linha
