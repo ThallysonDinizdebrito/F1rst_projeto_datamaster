@@ -54,17 +54,16 @@ resource "azurerm_service_plan" "function_plan" {
 }
 
 # ===========================
-# Azure Function App
+# Azure Linux Function App
 # ===========================
-resource "azurerm_function_app" "function_app" {
+resource "azurerm_linux_function_app" "function_app" {
   name                       = "${var.nome_do_grupo_de_recursos}-func"
   location                   = azurerm_resource_group.grupo_principal.location
   resource_group_name        = azurerm_resource_group.grupo_principal.name
-  app_service_plan_id        = azurerm_service_plan.function_plan.id
+  service_plan_id            = azurerm_service_plan.function_plan.id
   storage_account_name       = azurerm_storage_account.conta_armazenamento.name
   storage_account_access_key = azurerm_storage_account.conta_armazenamento.primary_access_key
   version                    = "~4"
-  os_type                    = "Linux"
 
   site_config {
     linux_fx_version = "Python|3.13"
