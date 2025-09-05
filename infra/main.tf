@@ -39,13 +39,11 @@ resource "azurerm_service_plan" "function_plan" {
   location            = azurerm_resource_group.grupo_principal.location
   resource_group_name = azurerm_resource_group.grupo_principal.name
   kind                = "FunctionApp"
+  reserved            = true     # necessário para Linux
 
-  sku {
-    tier = "Dynamic"
-    size = "Y1"
-  }
-
-  reserved = true # necessário para Linux
+  os_type   = "Linux"           # obrigatório
+  sku_name  = "Y1"              # obrigatório
+  sku_tier  = "Dynamic"         # obrigatório
 }
 
 # Azure Function App
