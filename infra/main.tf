@@ -3,13 +3,17 @@
 # Objetivo: Provisionar recursos Azure + Databricks + Azure Function
 ###############################
 
+# ===========================
 # Resource Group
+# ===========================
 resource "azurerm_resource_group" "grupo_principal" {
   name     = var.nome_do_grupo_de_recursos
   location = var.localizacao
 }
 
+# ===========================
 # Storage Account
+# ===========================
 resource "azurerm_storage_account" "conta_armazenamento" {
   name                     = var.nome_da_conta_de_armazenamento
   resource_group_name      = azurerm_resource_group.grupo_principal.name
@@ -18,14 +22,18 @@ resource "azurerm_storage_account" "conta_armazenamento" {
   account_replication_type = "LRS"
 }
 
+# ===========================
 # Container 'raw'
+# ===========================
 resource "azurerm_storage_container" "container_raw" {
   name                  = var.nome_do_container_raw
   storage_account_name  = azurerm_storage_account.conta_armazenamento.name
   container_access_type = "private"
 }
 
+# ===========================
 # Workspace Databricks
+# ===========================
 resource "azurerm_databricks_workspace" "workspace" {
   name                = "${var.nome_do_grupo_de_recursos}-databricks"
   resource_group_name = azurerm_resource_group.grupo_principal.name
@@ -33,20 +41,23 @@ resource "azurerm_databricks_workspace" "workspace" {
   sku                 = "premium"
 }
 
+# ===========================
 # Azure Function App Plan (Linux, Dynamic)
+# ===========================
 resource "azurerm_service_plan" "function_plan" {
   name                = "${var.nome_do_grupo_de_recursos}-func-plan"
   location            = azurerm_resource_group.grupo_principal.location
   resource_group_name = azurerm_resource_group.grupo_principal.name
   kind                = "FunctionApp"
-  reserved            = true     # necessário para Linux
+  reserved            = true      # necessário para Linux
 
-  os_type   = "Linux"           # obrigatório
-  sku_name  = "Y1"              # obrigatório
-  sku_tier  = "Dynamic"         # obrigatório
+  os_type   = "Linux"
+  sku_name  = "Y1"               # plano dinâmico
 }
 
+# ===========================
 # Azure Function App
+# ===========================
 resource "azurerm_function_app" "function_app" {
   name                       = "${var.nome_do_grupo_de_recursos}-func"
   location                   = azurerm_resource_group.grupo_principal.location
@@ -57,13 +68,42 @@ resource "azurerm_function_app" "function_app" {
   version                    = "~4"
   os_type                    = "Linux"
 
-  site_config {
-    linux_fx_version = "Python|3.13"
-  }
-
   app_settings = {
-    "RAW_CONTAINER_NAME"        = azurerm_storage_container.container_raw.name
+    "RAW_CONTAINER_NAME"         = azurerm_storage_container.container_raw.name
     "AZURE_STORAGE_ACCOUNT_NAME" = azurerm_storage_account.conta_armazenamento.name
     "AZURE_STORAGE_ACCOUNT_KEY"  = azurerm_storage_account.conta_armazenamento.primary_access_key
   }
+}
+
+# ===========================
+# Outputs
+# ===========================
+output "id_resource_group" {
+  description = "ID do Resource Group criado"
+  value       = azurerm_resource_group.grupo_principal.id
+}
+
+output "nome_resource_group" {
+  description = "Nome do Resource Group"
+  value       = azurerm_resource_group.grupo_principal.name
+}
+
+output "nome_storage_account" {
+  description = "Nome da Storage Account criada"
+  value       = azurerm_storage_account.conta_armazenamento.name
+}
+
+output "nome_container_raw" {
+  description = "Nome do container RAW criado"
+  value       = azurerm_storage_container.container_raw.name
+}
+
+output "id_workspace_databricks" {
+  description = "ID do Databricks Workspace"
+  value       = azurerm_databricks_workspace.workspace.id
+}
+
+output "url_workspace_databricks" {
+  description = "URL do Databricks Workspace"
+  value       = azurerm_databricks_workspace.workspace.workspace_url
 }
