@@ -66,6 +66,7 @@ resource "azurerm_linux_function_app" "function_app" {
 
   site_config {
     # apenas site_config vazio ou com parâmetros permitidos pelo provider
+    linux_fx_version = "Python|3.11"   # <-- define a versão do Python
   }
 
   app_settings = {
