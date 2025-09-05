@@ -21,4 +21,4 @@ id_workspace_databricks      = ""
 
 
 # App Function 
-id_workspace_databricks      = "rg-dev-projeto-func"
+nome_function_app      = "rg-dev-projeto-func"
