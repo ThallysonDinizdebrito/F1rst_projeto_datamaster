@@ -110,4 +110,5 @@ New-AzStorageContainer -Name $cont -Context $ctx
 #remover os recursos caso precise
 
 Remove-AzResourceGroup -Name "rg-backend-dev" -Force
+Remove-AzResourceGroup -Name "rg-dev-projeto" -Force
 
