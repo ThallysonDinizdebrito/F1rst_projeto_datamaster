@@ -1,5 +1,9 @@
+###############################
+# outputs.tf
+###############################
+
 output "id_resource_group" {
-  description = "ID do Resource Group"
+  description = "ID do Resource Group criado"
   value       = azurerm_resource_group.grupo_principal.id
 }
 
@@ -9,12 +13,12 @@ output "nome_resource_group" {
 }
 
 output "nome_storage_account" {
-  description = "Nome da Storage Account"
+  description = "Nome da Storage Account criada"
   value       = azurerm_storage_account.conta_armazenamento.name
 }
 
 output "nome_container_raw" {
-  description = "Nome do container RAW"
+  description = "Nome do container RAW criado"
   value       = azurerm_storage_container.container_raw.name
 }
 
@@ -29,6 +33,6 @@ output "url_workspace_databricks" {
 }
 
 output "nome_function_app" {
-  description = "Nome da Function App Linux"
+  description = "Nome da Function App"
   value       = azurerm_linux_function_app.function_app.name
 }
