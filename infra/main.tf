@@ -51,7 +51,6 @@ resource "azurerm_service_plan" "function_plan" {
 
   os_type  = "Linux"
   sku_name = "Y1"
-  reserved = true
 }
 
 # ===========================
