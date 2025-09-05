@@ -51,3 +51,9 @@ variable "id_workspace_databricks" {
   description = "ID do Databricks Workspace (opcional)"
   default     = ""
 }
+
+variable "nome_function_app" {
+  description = "Nome da Azure Function App"
+  type        = string
+  default     = "rg-dev-projeto-func"
+}
