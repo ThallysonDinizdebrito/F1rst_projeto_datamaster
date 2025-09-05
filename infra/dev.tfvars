@@ -7,7 +7,7 @@
 nome_do_grupo_de_recursos   = "rg-dev-projeto"
 
 # Localização
-localizacao                  = "brazilsouth"
+localizacao                  = "westeurope"
 
 # Storage Account
 nome_da_conta_de_armazenamento = "devprojetoarmazen"

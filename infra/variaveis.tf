@@ -1,9 +1,8 @@
 ###############################
-# Arquivo: variaveis.tf
-# Objetivo: Declarar todas as variáveis do Terraform
+# variables.tf
 ###############################
 
-# Azure
+# Azure SP / Tenant
 variable "id_da_subscricao" {
   type        = string
   description = "ID da subscription do Azure"
@@ -25,7 +24,7 @@ variable "id_do_tenant" {
   description = "ID do tenant do Azure"
 }
 
-# Resource Group / Storage Account
+# Resource Group / Storage
 variable "nome_do_grupo_de_recursos" {
   type        = string
   description = "Nome do Resource Group"
@@ -43,12 +42,12 @@ variable "nome_da_conta_de_armazenamento" {
 
 variable "nome_do_container_raw" {
   type        = string
-  description = "Nome do container raw para dados"
+  description = "Nome do container RAW"
 }
 
-# Databricks
+# Databricks Workspace
 variable "id_workspace_databricks" {
   type        = string
-  description = "ID do Databricks Workspace (será criado se vazio)"
+  description = "ID do Databricks Workspace (opcional)"
   default     = ""
 }

@@ -1,0 +1,10 @@
+{
+  "bindings": [
+    {
+      "name": "mytimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "*/5 * * * * *"  // A cada 5 segundos, ajuste conforme precisar
+    }
+  ]
+}

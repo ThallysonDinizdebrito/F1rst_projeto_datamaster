@@ -1,6 +1,6 @@
 ###############################
-# Arquivo: main.tf
-# Objetivo: Provisionar recursos Azure e Databricks
+# main.tf
+# Objetivo: Provisionar recursos Azure + Databricks + Azure Function
 ###############################
 
 # ===========================
@@ -41,5 +41,81 @@ resource "azurerm_databricks_workspace" "workspace" {
   sku                 = "premium"
 }
 
+# ===========================
+# Azure Function App Plan
+# ===========================
+resource "azurerm_app_service_plan" "function_plan" {
+  name                = "${var.nome_do_grupo_de_recursos}-func-plan"
+  location            = azurerm_resource_group.grupo_principal.location
+  resource_group_name = azurerm_resource_group.grupo_principal.name
+  kind                = "FunctionApp"
 
+  sku {
+    tier = "Dynamic"
+    size = "Y1"
+  }
+}
 
+# ===========================
+# Azure Function App
+# ===========================
+resource "azurerm_function_app" "function_app" {
+  name                       = "${var.nome_do_grupo_de_recursos}-func"
+  location                   = azurerm_resource_group.grupo_principal.location
+  resource_group_name        = azurerm_resource_group.grupo_principal.name
+  app_service_plan_id        = azurerm_app_service_plan.function_plan.id
+  storage_account_name       = azurerm_storage_account.conta_armazenamento.name
+  storage_account_access_key = azurerm_storage_account.conta_armazenamento.primary_access_key
+  version                    = "~4"
+  os_type                    = "Linux"
+
+  site_config {
+    application_stack {
+      python_version = "3.13"
+    }
+  }
+
+  app_settings = {
+    "RAW_CONTAINER_NAME"         = azurerm_storage_container.container_raw.name
+    "AZURE_STORAGE_ACCOUNT_NAME" = azurerm_storage_account.conta_armazenamento.name
+    "AZURE_STORAGE_ACCOUNT_KEY"  = azurerm_storage_account.conta_armazenamento.primary_access_key
+  }
+}
+
+# ===========================
+# Outputs
+# ===========================
+output "id_resource_group" {
+  description = "ID do Resource Group criado"
+  value       = azurerm_resource_group.grupo_principal.id
+}
+
+output "nome_resource_group" {
+  description = "Nome do Resource Group"
+  value       = azurerm_resource_group.grupo_principal.name
+}
+
+output "nome_storage_account" {
+  description = "Nome da Storage Account criada"
+  value       = azurerm_storage_account.conta_armazenamento.name
+}
+
+output "nome_container_raw" {
+  description = "Nome do container RAW criado"
+  value       = azurerm_storage_container.container_raw.name
+}
+
+output "id_workspace_databricks" {
+  description = "ID do Databricks Workspace"
+  value       = azurerm_databricks_workspace.workspace.id
+}
+
+output "url_workspace_databricks" {
+  description = "URL do Databricks Workspace"
+  value       = azurerm_databricks_workspace.workspace.workspace_url
+}
+
+output "nome_function_app" {
+  description = "Nome da Azure Function App criada"
+  value       = azurerm_function_app.function_app.name
+}
