@@ -22,4 +22,3 @@ id_workspace_databricks      = ""
 
 # App Function 
 nome_function_app      = "rg-dev-projeto-func"
-#TESTE

@@ -26,6 +26,10 @@ jobs:
       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       AZURE_FUNCTIONAPP_NAME: ${{ secrets.AZURE_FUNCTIONAPP_NAME }}
+      
+      AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
+      AZURE_RESOURCE_GROUP: rg-dev-projeto
+
 
     steps:
       - uses: actions/checkout@v3
@@ -65,6 +69,7 @@ jobs:
       - name: Deploy Azure Function
         run: |
           az functionapp deployment source config-zip \
-            --name $(terraform output -raw nome_function_app) \
-            --resource-group $(terraform output -raw nome_resource_group) \
+            --name $AZURE_FUNCTIONAPP_NAME \
+            --resource-group $AZURE_RESOURCE_GROUP \
             --src azure_function.zip
+
