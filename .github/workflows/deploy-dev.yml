@@ -28,7 +28,6 @@ jobs:
       AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
       AZURE_RESOURCE_GROUP: rg-dev-projeto
 
-
     steps:
       - uses: actions/checkout@v3
 
@@ -59,15 +58,20 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-      - name: Package Azure Function
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Azure Functions Core Tools
         run: |
-          cd azure_function
-          zip -r ../azure_function.zip ./*
+          curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+          sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/azure-cli.list'
+          sudo apt-get update
+          sudo apt-get install azure-functions-core-tools-4 -y
 
       - name: Deploy Azure Function
         run: |
-          az functionapp deployment source config-zip \
-            --name $AZURE_FUNCTIONAPP_NAME \
-            --resource-group $AZURE_RESOURCE_GROUP \
-            --src azure_function.zip
-
+          cd azure_function
+          func azure functionapp publish $AZURE_FUNCTIONAPP_NAME --python
