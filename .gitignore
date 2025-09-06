@@ -9,5 +9,3 @@ azure_function/local.settings.json
 azure_function/GenerateFakeData/json/
 azure_function/GenerateFakeData/__pycache__/
 azure_function/__azurite_db_*
-azure_function/__blobstorage__/
-__blobstorage__
