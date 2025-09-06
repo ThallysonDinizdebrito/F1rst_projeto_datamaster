@@ -51,7 +51,14 @@ az ad sp create-for-rbac --name "terraform-dev" --role="Contributor" --scopes="/
 
 
 Copie o JSON resultante para usar como secret:
-
+Dev
+{
+  "clientId": "<ID_DO_CLIENTE>",
+  "clientSecret": "<SEGREDO_DO_CLIENTE>",
+  "subscriptionId": "<ID_DA_SUBSCRIPTION>",
+  "tenantId": "<ID_DO_TENANT>"
+}
+Prod
 {
   "clientId": "<ID_DO_CLIENTE>",
   "clientSecret": "<SEGREDO_DO_CLIENTE>",
@@ -59,9 +66,21 @@ Copie o JSON resultante para usar como secret:
   "tenantId": "<ID_DO_TENANT>"
 }
 
-
 ---
+crie dois ambientes 
+https://github.com/<seu repositoriogit>/settings/environments
+ - dev
+ -prod
+ 
 
+ cadastre as secrets 
+AZURE_CLIENT_ID = "clientId": "<ID_DO_CLIENTE>",
+AZURE_CLIENT_SECRET = "clientSecret": "<SEGREDO_DO_CLIENTE>"
+AZURE_CREDENTIALS_DEV
+AZURE_STORAGE_ACCOUNT_DEV = "Nome do estore de account azure"
+AZURE_SUBSCRIPTION_ID = "subscriptionId": "<ID_DA_SUBSCRIPTION>"
+AZURE_TENANT_ID = "tenantId": "<ID_DO_TENANT>"
+AZURE_STORAGE_CONNECTION_STRING
 
 
 ## Backend Remoto do Terraform
