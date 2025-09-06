@@ -5,10 +5,7 @@ from faker import Faker
 import json
 import random
 import os
-import sys
 
-# Corrige problema de Unicode no Windows
-sys.stdout.reconfigure(encoding='utf-8')
 
 
 def main(mytimer: func.TimerRequest) -> None:
