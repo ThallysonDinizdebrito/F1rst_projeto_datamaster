@@ -59,20 +59,14 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+# 🚀 Deploy do código para Azure Function
+      - name: 'Azure Functions Action'
+        uses: Azure/functions-action@v1
         with:
-          python-version: '3.11'
-
-      - name: Install Azure Functions Core Tools
-        run: |
-          curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-          sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
-          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/azure-cli.list'
-          sudo apt-get update
-          sudo apt-get install azure-functions-core-tools-4 -y
-
-      - name: Deploy Azure Function
-        run: |
-          cd azure_function
-          func azure functionapp publish $AZURE_FUNCTIONAPP_NAME --python
+          app-name: rg-dev-projeto-func   # mesmo nome que você criou no main.tf
+          package: './azure_function'                   # envia o código da pasta atual
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
