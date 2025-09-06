@@ -28,6 +28,8 @@ jobs:
 
       AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
       AZURE_RESOURCE_GROUP: rg-dev-projeto
+      RAW_CONTAINER_NAME: raw
+      BLOB_DIRECTORY: json
 
     steps:
       - uses: actions/checkout@v3
@@ -65,6 +67,8 @@ jobs:
         with:
           app-name: rg-dev-projeto-func   # mesmo nome que você criou no main.tf
           package: './azure_function'                   # envia o código da pasta atual
+          enable-oryx-build: true
+          scm-do-build-during-deployment: true
         env:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
