@@ -78,11 +78,11 @@ identity {
 
 
 app_settings = {
-  "BLOB_DIRECTORY" = var.nome_pasta_json
+  "BLOB_CONTAINER_NAME"              = azurerm_storage_container.container_raw.name
   "AZURE_STORAGE_ACCOUNT_NAME"       = azurerm_storage_account.conta_armazenamento.name
   "AZURE_STORAGE_CONNECTION_STRING"  = var.storage_connection_string
   "AzureWebJobsStorage"              = var.storage_connection_string
-  "BLOB_DIRECTORY"                   = azurerm_storage_container.nome_pasta_json.name
+  "BLOB_DIRECTORY"                   = var.nome_pasta_json
 
   "FUNCTIONS_WORKER_RUNTIME"         = "python"
   "SCM_DO_BUILD_DURING_DEPLOYMENT"   = "true"
