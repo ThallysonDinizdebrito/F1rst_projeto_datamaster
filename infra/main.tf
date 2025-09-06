@@ -61,13 +61,12 @@ resource "azurerm_linux_function_app" "function_app" {
   location            = azurerm_resource_group.grupo_principal.location
   resource_group_name = azurerm_resource_group.grupo_principal.name
   service_plan_id     = azurerm_service_plan.function_plan.id
-  storage_account_name = azurerm_storage_account.conta_armazenamento.name
+  storage_account_name       = azurerm_storage_account.conta_armazenamento.name
   storage_account_access_key = azurerm_storage_account.conta_armazenamento.primary_access_key
 
-  # Runtime do Python definido aqui, provider cuida do site_config.linux_fx_version
-  version = "~4"                # Functions runtime 4
-  runtime = "python"
-  python_version = "3.11"
+  site_config {
+    linux_fx_version = "Python|3.11"   # define runtime e versão
+  }
 
   app_settings = {
     "RAW_CONTAINER_NAME"          = azurerm_storage_container.container_raw.name
