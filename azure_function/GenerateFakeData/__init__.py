@@ -1,40 +1,51 @@
-import datetime
-import json
-import os
-import random
-import logging
-from faker import Faker
-from azure.storage.blob import BlobServiceClient
 import azure.functions as func
-
-
-fake = Faker()
+from azure.storage.blob import BlobServiceClient
+from datetime import datetime
+from faker import Faker
+import json
+import random
+import os
 
 def main(mytimer: func.TimerRequest) -> None:
-    utc_timestamp = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    try:
+        fake = Faker()
+        dados = []
+        for _ in range(5):
+            dados.append({
+                "id": fake.uuid4(),
+                "nome": fake.name(),
+                "email": fake.email(),
+                "telefone": fake.phone_number(),
+                "endereco": fake.address(),
+                "idade": random.randint(18, 80),
+                "criado_em": datetime.utcnow().isoformat()
+            })
 
-    # Gera dados fake
-    data = {
-        "id": random.randint(1, 10000),
-        "name": fake.name(),
-        "email": fake.email(),
-        "created_at": utc_timestamp
-    }
+        # Pega a connection string da variável de ambiente
+        connect_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+        if not connect_str:
+            raise ValueError("A variável de ambiente AZURE_STORAGE_CONNECTION_STRING não está definida!")
 
-    # Conexão com Blob Storage via Service Principal (usando env var)
-    connection_string = os.environ["AZURE_STORAGE_CONNECTION_STRING"]
-    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+        container_name = os.getenv("RAW_CONTAINER_NAME", "raw")
+        directory = os.getenv("BLOB_DIRECTORY", "json")
+        file_name = f"{directory}/{datetime.utcnow().strftime('%Y-%m-%d-%H%M%S')}.json"
 
-    # Container "raw"
-    container_name = os.environ.get("RAW_CONTAINER_NAME", "raw")
-    blob_name = f"fake_data_{utc_timestamp}.json"
+        # Conecta ao Blob Storage
+        blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+        container_client = blob_service_client.get_container_client(container_name)
 
-    # Serializa JSON
-    file_content = json.dumps(data, indent=4, ensure_ascii=False)
+        # Cria container se não existir
+        try:
+            container_client.create_container()
+        except Exception:
+            pass
 
-    # Upload para o Blob
-    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-    blob_client.upload_blob(file_content, overwrite=True)
+        # Faz upload do JSON
+        json_data = json.dumps(dados, ensure_ascii=False, indent=2)
+        blob_client = container_client.get_blob_client(file_name)
+        blob_client.upload_blob(json_data, overwrite=True)
 
-    logging.info(f"Arquivo enviado para container '{container_name}' com nome '{blob_name}'")
-    logging.info(f"Conteúdo: {data}")
+        print(f"[OK] Arquivo salvo em {container_name}/{file_name}")
+
+    except Exception as e:
+        print(f"[ERRO] {str(e)}")
