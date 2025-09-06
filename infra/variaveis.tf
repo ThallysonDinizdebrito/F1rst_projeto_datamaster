@@ -59,11 +59,7 @@ variable "nome_function_app" {
   default     = "rg-dev-projeto-func"
 }
 
-variable "storage_connection_string" {
-  description = "Connection string do Storage Account"
-  type        = string
-  sensitive   = true
-}
+
 
 
 variable "nome_pasta_json" {
