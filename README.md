@@ -146,3 +146,7 @@ az storage account keys list --resource-group rg-dev-projeto --account-name devp
 
 #delete function
 az functionapp delete --name rg-dev-projeto-func --resource-group rg-dev-projeto
+
+
+# ver suas variaveis de ambiente dentro da azure
+az functionapp config appsettings list --name rg-dev-projeto-func --resource-group rg-dev-projeto

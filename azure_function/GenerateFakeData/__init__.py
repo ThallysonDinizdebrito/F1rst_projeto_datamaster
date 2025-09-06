@@ -22,9 +22,9 @@ def main(mytimer: func.TimerRequest) -> None:
             })
 
         # Pega a connection string da variável de ambiente
-        connect_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+        connect_str = os.getenv("AzureWebJobsStorage")
         if not connect_str:
-            raise ValueError("A variável de ambiente AZURE_STORAGE_CONNECTION_STRING não está definida!")
+            raise ValueError("A variável de ambiente AzureWebJobsStorage não está definida!")
 
         container_name = os.getenv("RAW_CONTAINER_NAME", "raw")
         directory = os.getenv("BLOB_DIRECTORY", "json")
