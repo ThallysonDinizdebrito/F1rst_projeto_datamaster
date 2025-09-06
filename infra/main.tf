@@ -84,8 +84,4 @@ app_settings = {
   }
 }
 
-resource "azurerm_role_assignment" "function_storage_blob_contributor" {
-  scope                = azurerm_storage_account.conta_armazenamento.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_linux_function_app.function_app.identity[0].principal_id
-}
+
