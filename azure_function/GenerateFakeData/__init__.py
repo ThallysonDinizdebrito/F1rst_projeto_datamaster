@@ -31,7 +31,7 @@ def main(mytimer: func.TimerRequest) -> None:
         if not connect_str:
             raise ValueError("A variável de ambiente AZURE_STORAGE_CONNECTION_STRING não está definida!")
 
-        container_name = os.getenv("BLOB_CONTAINER_NAME", "raw")
+        container_name = os.getenv("RAW_CONTAINER_NAME", "raw")
         directory = os.getenv("BLOB_DIRECTORY", "json")
         file_name = f"{directory}/{datetime.utcnow().strftime('%Y-%m-%d-%H%M%S')}.json"
 

@@ -81,6 +81,7 @@ app_settings = {
   "FUNCTIONS_WORKER_RUNTIME"         = "python"
   "SCM_DO_BUILD_DURING_DEPLOYMENT"   = "true"
   "ENABLE_ORYX_BUILD"                = "true"
+  "BLOB_DIRECTORY"                   =   var.nome_pasta_json   
   }
 }
 
