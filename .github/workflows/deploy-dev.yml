@@ -29,7 +29,6 @@ jobs:
       AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
       AZURE_RESOURCE_GROUP: rg-dev-projeto
       RAW_CONTAINER_NAME: raw
-      BLOB_DIRECTORY: json
 
     steps:
       - uses: actions/checkout@v3
