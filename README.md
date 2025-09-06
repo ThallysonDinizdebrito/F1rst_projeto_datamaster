@@ -150,3 +150,14 @@ az functionapp delete --name rg-dev-projeto-func --resource-group rg-dev-projeto
 
 # ver suas variaveis de ambiente dentro da azure
 az functionapp config appsettings list --name rg-dev-projeto-func --resource-group rg-dev-projeto
+
+
+# Define a variável temporariamente só para a sessão atual
+$env:AZURE_STORAGE_CONNECTION_STRING="sua_connection_string_aqui"
+
+$env:FUNCTIONS_WORKER_RUNTIME="python"
+$env:RAW_CONTAINER_NAME="raw"
+$env:BLOB_DIRECTORY="json"
+
+# Depois, rode sua função local
+func start
