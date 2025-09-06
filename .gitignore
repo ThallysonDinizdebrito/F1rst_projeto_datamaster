@@ -4,3 +4,4 @@
 *.tfstate.backup
 *.tfplan
 .terraform.lock.hcl   # opcional, pode versionar se quiser travar providers
+.azure_function/__blobstorage__
