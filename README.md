@@ -119,3 +119,8 @@ Remove-AzResourceGroup -Name "rg-dev-projeto" -Force
  # criar a function 
 
  az functionapp create --name rg-dev-projeto-func --resource-group rg-dev-projeto --storage-account devprojetoarmazen --plan rg-dev-projeto-func-plan --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
+
+
+# desscobrir o Azure Key Vault da conta de armazenamento 
+
+az storage account keys list --resource-group rg-dev-projeto --account-name devprojetoarmazen  --query "[0].value" --output tsv

@@ -7,6 +7,7 @@ from faker import Faker
 from azure.storage.blob import BlobServiceClient
 import azure.functions as func
 
+
 fake = Faker()
 
 def main(mytimer: func.TimerRequest) -> None:

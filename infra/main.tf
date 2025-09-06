@@ -70,9 +70,12 @@ resource "azurerm_linux_function_app" "function_app" {
     }
   }
 
-  app_settings = {
-    "RAW_CONTAINER_NAME"         = azurerm_storage_container.container_raw.name
-    "AZURE_STORAGE_ACCOUNT_NAME" = azurerm_storage_account.conta_armazenamento.name
-    "AZURE_STORAGE_ACCOUNT_KEY"  = azurerm_storage_account.conta_armazenamento.primary_access_key
+app_settings = {
+  "RAW_CONTAINER_NAME"               = azurerm_storage_container.container_raw.name
+  "AZURE_STORAGE_ACCOUNT_NAME"       = azurerm_storage_account.conta_armazenamento.name
+  "AZURE_STORAGE_CONNECTION_STRING"  = var.storage_connection_string
+  "FUNCTIONS_WORKER_RUNTIME"         = "python"
+  "SCM_DO_BUILD_DURING_DEPLOYMENT"   = "true"
+  "ENABLE_ORYX_BUILD"                = "true"
   }
 }
