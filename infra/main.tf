@@ -50,7 +50,7 @@ resource "azurerm_service_plan" "function_plan" {
   resource_group_name = azurerm_resource_group.grupo_principal.name
 
   os_type  = "Linux"
-  sku_name = "Y1"          # plano gratuito
+  sku_name = "Y1"        # plano de consumo
 }
 
 # ===========================
@@ -65,12 +65,12 @@ resource "azurerm_linux_function_app" "function_app" {
   storage_account_access_key = azurerm_storage_account.conta_armazenamento.primary_access_key
 
   site_config {
-    linux_fx_version = "Python|3.11"   # define runtime e versão
+    linux_fx_version = "Python|3.11"  # define runtime e versão
   }
 
   app_settings = {
-    "RAW_CONTAINER_NAME"          = azurerm_storage_container.container_raw.name
-    "AZURE_STORAGE_ACCOUNT_NAME"  = azurerm_storage_account.conta_armazenamento.name
-    "AZURE_STORAGE_ACCOUNT_KEY"   = azurerm_storage_account.conta_armazenamento.primary_access_key
+    "RAW_CONTAINER_NAME"         = azurerm_storage_container.container_raw.name
+    "AZURE_STORAGE_ACCOUNT_NAME" = azurerm_storage_account.conta_armazenamento.name
+    "AZURE_STORAGE_ACCOUNT_KEY"  = azurerm_storage_account.conta_armazenamento.primary_access_key
   }
 }
