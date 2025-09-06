@@ -27,7 +27,7 @@ resource "azurerm_storage_account" "conta_armazenamento" {
 # ===========================
 resource "azurerm_storage_container" "container_raw" {
   name                  = var.nome_do_container_raw
-  storage_account_name  = azurerm_storage_account.conta_armazenamento.name
+  storage_account_id    = azurerm_storage_account.conta_armazenamento.id
   container_access_type = "private"
 }
 
@@ -64,10 +64,9 @@ resource "azurerm_linux_function_app" "function_app" {
   storage_account_name       = azurerm_storage_account.conta_armazenamento.name
   storage_account_access_key = azurerm_storage_account.conta_armazenamento.primary_access_key
 
-identity {
-  type = "SystemAssigned"
-}
-
+  identity {
+    type = "SystemAssigned"
+  }
 
   site_config {
     application_stack {
@@ -75,24 +74,23 @@ identity {
     }
   }
 
-
-
-app_settings = {
-  "BLOB_CONTAINER_NAME"              = azurerm_storage_container.container_raw.name
-  "AZURE_STORAGE_ACCOUNT_NAME"       = azurerm_storage_account.conta_armazenamento.name
-  "AZURE_STORAGE_CONNECTION_STRING"  = var.storage_connection_string
-  "AzureWebJobsStorage"              = var.storage_connection_string
-  "BLOB_DIRECTORY"                   = var.nome_pasta_json
-
-  "FUNCTIONS_WORKER_RUNTIME"         = "python"
-  "SCM_DO_BUILD_DURING_DEPLOYMENT"   = "true"
-  "ENABLE_ORYX_BUILD"                = "true"
+  app_settings = {
+    "BLOB_CONTAINER_NAME"              = azurerm_storage_container.container_raw.name
+    "AZURE_STORAGE_ACCOUNT_NAME"       = azurerm_storage_account.conta_armazenamento.name
+    "AZURE_STORAGE_CONNECTION_STRING"  = var.storage_connection_string
+    "AzureWebJobsStorage"              = var.storage_connection_string
+    "BLOB_DIRECTORY"                   = var.nome_pasta_json
+    "FUNCTIONS_WORKER_RUNTIME"         = "python"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"   = "true"
+    "ENABLE_ORYX_BUILD"                = "true"
   }
 }
 
-
+# ===========================
+# Role Assignment (para acesso do Function App ao Blob Storage)
+# ===========================
 resource "azurerm_role_assignment" "function_storage_blob_contributor" {
   scope                = azurerm_storage_account.conta_armazenamento.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_linux_function_app.function_app.identity[0].principal_id
+  principal_id         = azurerm_linux_function_app.function_app.identity.principal_id
 }
