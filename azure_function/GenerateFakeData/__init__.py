@@ -1,49 +1,56 @@
-import random
-from faker import Faker
-import datetime
-import json
-import logging
-import os
 import azure.functions as func
-from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
+from datetime import datetime
+from faker import Faker
+import json
+import random
+import os
+import sys
 
-fake = Faker()
+# Corrige problema de Unicode no Windows
+sys.stdout.reconfigure(encoding='utf-8')
 
-# Timer trigger function
+
 def main(mytimer: func.TimerRequest) -> None:
-    utc_timestamp = datetime.datetime.utcnow().replace(
-        tzinfo=datetime.timezone.utc).isoformat()
-
-    logging.info('Python timer trigger function ran at %s', utc_timestamp)
-
     try:
-        # Recupera o nome da conta de storage (definido no Terraform como APP SETTING)
-        account_name = os.environ["AZURE_STORAGE_ACCOUNT_NAME"]
-        container_name = "raw"
+        fake = Faker()
+        dados = []
+        for _ in range(5):
+            dados.append({
+                "id": fake.uuid4(),
+                "nome": fake.name(),
+                "email": fake.email(),
+                "telefone": fake.phone_number(),
+                "endereco": fake.address(),
+                "idade": random.randint(18, 80),
+                "criado_em": datetime.utcnow().isoformat()
+            })
 
-        # Conecta no Storage via Managed Identity
-        account_url = f"https://{account_name}.blob.core.windows.net"
-        credential = DefaultAzureCredential()
-        blob_service_client = BlobServiceClient(account_url=account_url, credential=credential)
+        # Pega a connection string da variável de ambiente
+        connect_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+        if not connect_str:
+            raise ValueError("A variável de ambiente AZURE_STORAGE_CONNECTION_STRING não está definida!")
 
-        # Gera dados fake
-        data = {
-        "id": random.randint(1, 10000),
-        "name": fake.name(),
-        "email": fake.email(),
-        "created_at": utc_timestamp
-        }
-        
+        container_name = os.getenv("BLOB_CONTAINER_NAME", "raw")
+        directory = os.getenv("BLOB_DIRECTORY", "json")
+        file_name = f"{directory}/{datetime.utcnow().strftime('%Y-%m-%d-%H%M%S')}.json"
 
-        blob_name = f"dados_{datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')}.json"
-        blob_data = json.dumps(data)
-
-        # Envia para o container raw
+        # Conecta ao Blob Storage
+        blob_service_client = BlobServiceClient.from_connection_string(connect_str)
         container_client = blob_service_client.get_container_client(container_name)
-        container_client.upload_blob(name=blob_name, data=blob_data, overwrite=True)
 
-        logging.info(f"Arquivo {blob_name} enviado com sucesso para o container {container_name}!")
+        # Cria container se não existir
+        try:
+            container_client.create_container()
+        except Exception:
+            pass
+
+        # Faz upload do JSON
+        json_data = json.dumps(dados, ensure_ascii=False, indent=2)
+        blob_client = container_client.get_blob_client(file_name)
+        blob_client.upload_blob(json_data, overwrite=True)
+
+        print(f"[OK] Arquivo salvo em {container_name}/{file_name}")
 
     except Exception as e:
-        logging.error(f"Erro ao processar a função: {e}")
+        print(f"[ERRO] {str(e)}")

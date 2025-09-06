@@ -1,0 +1,47 @@
+[
+  {
+    "id": "2a3a2302-07b0-42f6-8a3c-ea6bd6b841a9",
+    "nome": "Diamond Cannon",
+    "email": "dmyers@example.net",
+    "telefone": "001-611-190-5011",
+    "endereco": "94928 Dana Fort Suite 228\nMichelleport, GU 10096",
+    "idade": 69,
+    "criado_em": "2025-09-06T14:27:07.119742"
+  },
+  {
+    "id": "78971832-dc05-400b-8a7a-fa851bd77dde",
+    "nome": "Richard Reynolds",
+    "email": "jbridges@example.com",
+    "telefone": "107.564.3483",
+    "endereco": "5250 Wilson Dam Suite 670\nLake Shawn, MS 65069",
+    "idade": 60,
+    "criado_em": "2025-09-06T14:27:07.120323"
+  },
+  {
+    "id": "4b69cc9d-f0fc-405a-a3e5-fa349cadf937",
+    "nome": "Crystal Munoz",
+    "email": "sarahhancock@example.net",
+    "telefone": "+1-578-672-8789",
+    "endereco": "22051 Ruiz Village\nKhanberg, SD 92900",
+    "idade": 31,
+    "criado_em": "2025-09-06T14:27:07.120918"
+  },
+  {
+    "id": "232d6874-8c7a-4944-87f7-26395b748749",
+    "nome": "Gary Newman",
+    "email": "phillip10@example.com",
+    "telefone": "929-224-7266x977",
+    "endereco": "98777 Bryan Shores\nNew Desiree, SC 12231",
+    "idade": 37,
+    "criado_em": "2025-09-06T14:27:07.121363"
+  },
+  {
+    "id": "b8fc1b71-f85e-42b4-885d-6b31c3055fcc",
+    "nome": "Andrew Jackson",
+    "email": "monicahansen@example.org",
+    "telefone": "0322417229",
+    "endereco": "USNV Morton\nFPO AA 27252",
+    "idade": 35,
+    "criado_em": "2025-09-06T14:27:07.121803"
+  }
+]

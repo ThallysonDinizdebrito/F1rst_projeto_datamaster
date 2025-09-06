@@ -1,0 +1,47 @@
+[
+  {
+    "id": "f9fe4b00-788b-462d-a9e2-375976453269",
+    "nome": "Deborah Jacobs",
+    "email": "ccook@example.net",
+    "telefone": "4424539858",
+    "endereco": "1333 Boyer Burg Suite 868\nThomasfurt, NE 72035",
+    "idade": 37,
+    "criado_em": "2025-09-06T14:34:46.692981"
+  },
+  {
+    "id": "c73c1045-328e-46a7-bb4a-69269a4b941a",
+    "nome": "Jennifer Cox",
+    "email": "pagetroy@example.com",
+    "telefone": "(404)478-4383x1017",
+    "endereco": "8780 Susan Manor\nKellyport, PR 49976",
+    "idade": 62,
+    "criado_em": "2025-09-06T14:34:46.693677"
+  },
+  {
+    "id": "b5e6d175-0fad-4afd-a963-c6b940cc077a",
+    "nome": "Rachel Simon",
+    "email": "gardnercrystal@example.net",
+    "telefone": "+1-054-552-5615x1425",
+    "endereco": "283 Joseph Loop\nTommouth, CT 53026",
+    "idade": 79,
+    "criado_em": "2025-09-06T14:34:46.694335"
+  },
+  {
+    "id": "5cb78ef6-84b9-4d1f-8dee-5bdf588e1803",
+    "nome": "Kevin Kelly",
+    "email": "lorirush@example.com",
+    "telefone": "(828)158-2903x53393",
+    "endereco": "73706 Leonard Circles Apt. 952\nChristopherbury, DE 22909",
+    "idade": 44,
+    "criado_em": "2025-09-06T14:34:46.695064"
+  },
+  {
+    "id": "c819825a-5548-4b23-a70c-861d86f02c36",
+    "nome": "Eric Robertson",
+    "email": "hannah76@example.com",
+    "telefone": "+1-492-506-4760x63669",
+    "endereco": "7824 Adams Parkways Apt. 101\nNew Jerryshire, CO 26689",
+    "idade": 53,
+    "criado_em": "2025-09-06T14:34:46.695660"
+  }
+]

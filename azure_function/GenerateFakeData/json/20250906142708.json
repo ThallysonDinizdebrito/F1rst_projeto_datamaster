@@ -1,0 +1,47 @@
+[
+  {
+    "id": "923f67fc-9000-49b9-839b-18ef1d31f9a4",
+    "nome": "Jennifer Johnson",
+    "email": "michelle98@example.net",
+    "telefone": "511-491-7285x0253",
+    "endereco": "35542 Clifford Groves\nWest Lisaburgh, FL 89089",
+    "idade": 76,
+    "criado_em": "2025-09-06T14:27:08.143713"
+  },
+  {
+    "id": "4173bde3-087f-4f29-a24b-6c8a7844aa2f",
+    "nome": "Heidi Adams",
+    "email": "vbrowning@example.org",
+    "telefone": "001-570-590-9798x67082",
+    "endereco": "093 Nelson Oval Suite 692\nWest Jessicabury, AK 28163",
+    "idade": 52,
+    "criado_em": "2025-09-06T14:27:08.144364"
+  },
+  {
+    "id": "f512cbbc-e4e6-4a2e-af40-a0106b64bae2",
+    "nome": "Kevin Rivera",
+    "email": "rosschristina@example.com",
+    "telefone": "288-040-9172",
+    "endereco": "5286 Gilbert Orchard\nPort Davidton, SD 42033",
+    "idade": 39,
+    "criado_em": "2025-09-06T14:27:08.145056"
+  },
+  {
+    "id": "2bca3a44-8d9c-4ef3-a2a5-4f70d397b544",
+    "nome": "David Turner",
+    "email": "fosterchristopher@example.net",
+    "telefone": "(997)478-3304x18915",
+    "endereco": "USCGC Ford\nFPO AA 79338",
+    "idade": 18,
+    "criado_em": "2025-09-06T14:27:08.145612"
+  },
+  {
+    "id": "1f14a5a9-c273-45e7-9c46-60b41191389e",
+    "nome": "Caitlin Cooper",
+    "email": "karendaniel@example.com",
+    "telefone": "815-022-4870x18987",
+    "endereco": "04759 Roy Island Apt. 060\nLake Mary, KS 14186",
+    "idade": 39,
+    "criado_em": "2025-09-06T14:27:08.146283"
+  }
+]

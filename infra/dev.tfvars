@@ -15,6 +15,9 @@ nome_da_conta_de_armazenamento = "devprojetoarmazen"
 # Container raw (padrão)
 nome_do_container_raw        = "raw"
 
+# Container raw (padrão)
+nome_pasta_json        = "json"
+
 
 # Workspace Databricks (opcional, se for diferente do padrão)
 id_workspace_databricks      = ""
