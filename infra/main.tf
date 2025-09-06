@@ -65,7 +65,9 @@ resource "azurerm_linux_function_app" "function_app" {
   storage_account_access_key = azurerm_storage_account.conta_armazenamento.primary_access_key
 
   site_config {
-    linux_fx_version = "Python|3.11"  # define runtime e versão
+    application_stack {
+      python_version = "3.11"
+    }
   }
 
   app_settings = {
