@@ -78,7 +78,7 @@ identity {
 
 
 app_settings = {
-  "BLOB_CONTAINER_NAME"              = azurerm_storage_container.container_raw.name
+  "BLOB_DIRECTORY" = var.nome_pasta_json
   "AZURE_STORAGE_ACCOUNT_NAME"       = azurerm_storage_account.conta_armazenamento.name
   "AZURE_STORAGE_CONNECTION_STRING"  = var.storage_connection_string
   "AzureWebJobsStorage"              = var.storage_connection_string

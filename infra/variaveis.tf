@@ -45,12 +45,6 @@ variable "nome_do_container_raw" {
   description = "Nome do container RAW"
 }
 
-variable "nome_pasta_json" {
-  type        = string
-  description = "Nome da pasta json"
-}
-
-
 
 # Databricks Workspace
 variable "id_workspace_databricks" {
@@ -69,4 +63,10 @@ variable "storage_connection_string" {
   description = "Connection string do Storage Account"
   type        = string
   sensitive   = true
+}
+
+
+variable "nome_pasta_json" {
+  type        = string
+  description = "Nome da pasta json"
 }
