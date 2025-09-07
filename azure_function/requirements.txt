@@ -1,4 +1,3 @@
 azure-functions
-azure-storage-blob
+azure-storage-blob>=12.17.0
 faker
-azure-storage-blob
