@@ -161,3 +161,4 @@ $env:BLOB_DIRECTORY="json"
 
 # Depois, rode sua função local
 func start
+#apagar
