@@ -161,4 +161,5 @@ $env:BLOB_DIRECTORY="json"
 
 # Depois, rode sua função local
 func start
-#apas
+#atualizar function
+ func azure functionapp publish rg-dev-projeto-func --build remote --python

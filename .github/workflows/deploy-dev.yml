@@ -25,7 +25,6 @@ jobs:
       TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-
       AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
       AZURE_RESOURCE_GROUP: rg-dev-projeto
       RAW_CONTAINER_NAME: raw
@@ -61,12 +60,20 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-# 🚀 Deploy do código para Azure Function
+      # 🔹 Limpar pacotes antigos do Python
+      - name: Clean Azure Function Python packages
+        run: |
+          az functionapp config appsettings delete \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --setting-names WEBSITE_RUN_FROM_PACKAGE
+
+      # 🚀 Deploy do código para Azure Function
       - name: 'Azure Functions Action'
         uses: Azure/functions-action@v1
         with:
-          app-name: rg-dev-projeto-func   # mesmo nome que você criou no main.tf
-          package: './azure_function'                   # envia o código da pasta atual
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: './azure_function'                   # envia o código da pasta com requirements.txt
           enable-oryx-build: true
           scm-do-build-during-deployment: true
         env:
@@ -74,4 +81,3 @@ jobs:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-
