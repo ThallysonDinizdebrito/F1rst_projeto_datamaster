@@ -75,9 +75,19 @@ jobs:
 #         uses: Azure/functions-action@v1
 #         with:
 #           app-name: rg-dev-projeto-func   # nome da azure function no main.tf
-#           package: './azure_function'                   # envia o código da pasta atual
+#           package: './azure_function\GenerateFakeData'                   # envia o código da pasta atual
 #           enable-oryx-build: true
 #           scm-do-build-during-deployment: true
+
+
+# 🚀 Deploy do código para Azure Function
+      - name: 'Azure Functions Action - Validate Blob'
+        uses: Azure/functions-action@v1
+        with:
+          app-name: rg-dev-projeto-func-validate   # nome da azure function no main.tf
+          package: './azure_function\\ValidateFakeData'                   # envia o código da pasta atual
+          enable-oryx-build: true
+          scm-do-build-during-deployment: true
 
         env:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
