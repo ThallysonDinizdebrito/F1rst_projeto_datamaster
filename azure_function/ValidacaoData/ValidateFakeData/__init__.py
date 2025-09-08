@@ -2,19 +2,24 @@ import logging
 import json
 import azure.functions as func
 from azure.storage.blob import BlobServiceClient
-from pydantic import BaseModel, EmailStr, constr, ValidationError
+from pydantic import BaseModel, EmailStr, conint, ValidationError
+import os
 
-# Modelo de validação
+# Modelo de validação baseado no JSON real
 class Pessoa(BaseModel):
-    CPF: constr(regex=r'^\d{11}$')  # exatamente 11 dígitos
+    id: str
+    nome: str
     email: EmailStr
-    idade: int
+    telefone: str
+    endereco: str
+    idade: conint(ge=18, le=100)  # idade entre 18 e 100
+    criado_em: str
 
 def main(event: func.EventGridEvent):
     logging.info('Evento recebido do Event Grid: %s', event.get_json())
 
-    # Conexão Storage
-    storage_connection = "<AzureWebJobsStorage>"
+    # Conexão com o Storage
+    storage_connection = os.getenv("AzureWebJobsStorage")
     blob_service_client = BlobServiceClient.from_connection_string(storage_connection)
 
     # Detalhes do evento
@@ -27,18 +32,37 @@ def main(event: func.EventGridEvent):
     # Lê blob
     blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
     blob_data = blob_client.download_blob().readall()
-    json_data = json.loads(blob_data)
+    registros = json.loads(blob_data)
 
-    try:
-        # Valida com Pydantic
-        Pessoa(**json_data)
-        target_container = "validado"
-    except ValidationError as e:
-        logging.warning(f"Validação falhou: {e}")
-        target_container = "rejeitado"
+    # Containers de destino
+    valid_container = os.getenv("VALIDATED_CONTAINER_NAME", "validado")
+    reject_container = os.getenv("REJECTED_CONTAINER_NAME", "rejeitado")
 
-    # Move para container final
-    new_blob_client = blob_service_client.get_blob_client(container=target_container, blob=blob_name)
-    new_blob_client.upload_blob(blob_data, overwrite=True)
+    validos = []
+    rejeitados = []
 
-    logging.info(f"Arquivo {blob_name} movido para {target_container}")
+    for registro in registros:
+        try:
+            Pessoa(**registro)
+            validos.append(registro)
+        except ValidationError as e:
+            logging.warning(f"Registro inválido: {e}")
+            rejeitados.append(registro)
+
+    # Salva registros válidos
+    if validos:
+        blob_client_valid = blob_service_client.get_blob_client(
+            container=valid_container,
+            blob=blob_name
+        )
+        blob_client_valid.upload_blob(json.dumps(validos, ensure_ascii=False, indent=2), overwrite=True)
+
+    # Salva registros inválidos
+    if rejeitados:
+        blob_client_reject = blob_service_client.get_blob_client(
+            container=reject_container,
+            blob=blob_name
+        )
+        blob_client_reject.upload_blob(json.dumps(rejeitados, ensure_ascii=False, indent=2), overwrite=True)
+
+    logging.info(f"Arquivo {blob_name} processado: {len(validos)} válidos, {len(rejeitados)} rejeitados")
