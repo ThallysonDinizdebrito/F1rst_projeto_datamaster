@@ -80,12 +80,12 @@ jobs:
 #           scm-do-build-during-deployment: true
 
 
-# 🚀 Deploy do código para Azure Function
+# 🚀 Deploy do código para Azure Function - Validate Blob
       - name: 'Azure Functions Action - Validate Blob'
         uses: Azure/functions-action@v1
         with:
           app-name: rg-dev-projeto-func-validate   # nome da azure function no main.tf
-          package: './azure_function/GeracaoData'            # envia o código da pasta atual
+          package: './azure_function/ValidacaoData'            # envia o código da pasta atual
           enable-oryx-build: true
           scm-do-build-during-deployment: true
 
