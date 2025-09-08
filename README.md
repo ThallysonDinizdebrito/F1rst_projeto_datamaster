@@ -162,4 +162,6 @@ $env:BLOB_DIRECTORY="json"
 # Depois, rode sua função local
 func start
 #atualizar function
- func azure functionapp publish rg-dev-projeto-func --build remote --python
+ func azure functionapp publish rg-dev-projeto-func-validate --build remote --python
+
+ az functionapp delete --name rg-dev-projeto-func-validate --resource-group rg-dev-projeto
