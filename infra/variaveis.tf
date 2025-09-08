@@ -60,9 +60,18 @@ variable "nome_function_app" {
 }
 
 
-
-
 variable "nome_pasta_json" {
   type        = string
   description = "Nome da pasta json"
 }
+
+variable "nome_do_container_rejeitados" {
+  type        = string
+  description = "Nome do container rejeitados"
+}
+
+variable "nome_do_container_validado" {
+  type        = string
+  description = "Nome do container validado"
+}
+

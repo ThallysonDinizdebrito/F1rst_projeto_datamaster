@@ -36,3 +36,14 @@ output "nome_function_app" {
   description = "Nome da Function App"
   value       = azurerm_linux_function_app.function_app.name
 }
+
+output "nome_do_container_rejeitados" {
+  description = "Nome do container rejeitados criado"
+  value       = azurerm_storage_container.container_raw.name
+}
+
+output "nome_do_container_validado" {
+  description = "Nome do container validado criado"
+  value       = azurerm_storage_container.container_raw.name
+}
+

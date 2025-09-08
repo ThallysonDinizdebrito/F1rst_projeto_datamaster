@@ -20,6 +20,9 @@ resource "azurerm_storage_account" "conta_armazenamento" {
   location                 = azurerm_resource_group.grupo_principal.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+
+  # Habilita Data Lake Gen2 ideal para big data
+  # is_hns_enabled = true
 }
 
 # ===========================
@@ -85,3 +88,25 @@ app_settings = {
 }
 
 
+# =======================================================================================
+# CRIAÇÃO DOS CONTAINERS PARA A FUNCTION PROX DE VALIDADOS DE CAMPOS PARA ENVIO AOS CONTAINERS 
+# =======================================================================================
+
+# ===========================
+# Container 'rejeitados'
+# ===========================
+resource "azurerm_storage_container" "container_rejeitados" {
+  name                  = var.nome_do_container_rejeitados
+  storage_account_name  = azurerm_storage_account.conta_armazenamento.name
+  container_access_type = "private"
+}
+
+
+# ===========================
+# Container 'validado'
+# ===========================
+resource "azurerm_storage_container" "container_validado" {
+  name                  = var.nome_do_container_validado
+  storage_account_name  = azurerm_storage_account.conta_armazenamento.name
+  container_access_type = "private"
+}

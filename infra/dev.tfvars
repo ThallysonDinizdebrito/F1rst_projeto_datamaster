@@ -25,3 +25,12 @@ nome_function_app      = "rg-dev-projeto-func"
 
 # Container raw (padrão)
 nome_pasta_json        = "json"
+
+
+
+# Container raw (padrão)
+nome_do_container_rejeitados       = "rejeitados"
+
+
+# Container raw (padrão)
+nome_do_container_validado        = "validado"

@@ -12,9 +12,11 @@ localizacao                  = "westeurope"
 # Storage Account
 nome_da_conta_de_armazenamento = "prodprojetoarmazen"
 
-# Container raw (padrão)
+# Container raw (padrão) vai ser chamado de Source
 nome_do_container_raw        = "raw"
 
 
 # Workspace Databricks (opcional, se for diferente do padrão)
 id_workspace_databricks      = ""
+
+
