@@ -144,15 +144,14 @@ resource "azurerm_linux_function_app" "function_validate" {
     # Cria uma identidade gerenciada pelo Azure para a Function,
     # que pode ser usada para acessar recursos do Azure (ex: Storage, Key Vault) sem usar keys diretamente
   }
-
   app_settings = {
     "RAW_CONTAINER_NAME"               = azurerm_storage_container.container_raw.name  
     # Nome do container onde os blobs de entrada (raw) vão chegar
 
-    "VALIDATED_CONTAINER_NAME"         = "validado"    
+    "VALIDATED_CONTAINER_NAME" = azurerm_storage_container.container_validado.name
     # Nome do container destino para arquivos válidos (você vai criar manualmente)
 
-    "REJECTED_CONTAINER_NAME"          = "rejeitado"   
+   "REJECTED_CONTAINER_NAME"  = azurerm_storage_container.container_rejeitados.name   
     # Nome do container destino para arquivos inválidos (você vai criar manualmente)
 
     "AZURE_STORAGE_ACCOUNT_NAME"       = azurerm_storage_account.conta_armazenamento.name  
@@ -195,6 +194,11 @@ resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
   azure_function_endpoint {
     function_id = "${azurerm_linux_function_app.function_validate.id}/functions/ValidateFakeData"
   }
+  
+  # webhook_endpoint {
+  #  url = "${azurerm_linux_function_app.function_validate.default_hostname}/runtime/webhooks/eventgrid?functionName=ValidateFakeData"
+  #  }
+
 
   retry_policy {
     max_delivery_attempts = 5   # Número máximo de tentativas caso falhe a entrega do evento

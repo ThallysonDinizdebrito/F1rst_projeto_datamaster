@@ -24,7 +24,7 @@ def main(event: func.EventGridEvent):
 
     # Detalhes do evento
     event_data = event.get_json()
-    blob_url = event_data['url']
+    blob_url = event_data['data']['url']
     parts = blob_url.split('/')
     container_name = parts[-2]
     blob_name = parts[-1]
