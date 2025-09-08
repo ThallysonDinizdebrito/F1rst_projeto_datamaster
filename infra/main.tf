@@ -110,3 +110,17 @@ resource "azurerm_storage_container" "container_validado" {
   storage_account_name  = azurerm_storage_account.conta_armazenamento.name
   container_access_type = "private"
 }
+
+
+
+# =======================================================================================
+# Event Grid - System Topic
+# =======================================================================================
+resource "azurerm_eventgrid_system_topic" "raw_topic" {
+  name                = "${var.nome_do_grupo_de_recursos}-raw-topic"
+  location            = azurerm_resource_group.grupo_principal.location
+  resource_group_name = azurerm_resource_group.grupo_principal.name
+  source_arm_resource_id = azurerm_storage_account.conta_armazenamento.id
+  topic_type          = "Microsoft.Storage.StorageAccounts"
+}
+
