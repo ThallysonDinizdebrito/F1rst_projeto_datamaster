@@ -37,12 +37,12 @@ resource "azurerm_storage_container" "container_raw" {
 # ===========================
 # Workspace Databricks
 # ===========================
-resource "azurerm_databricks_workspace" "workspace" {
-  name                = "${var.nome_do_grupo_de_recursos}-databricks"
-  resource_group_name = azurerm_resource_group.grupo_principal.name
-  location            = azurerm_resource_group.grupo_principal.location
-  sku                 = "premium"
-}
+# resource "azurerm_databricks_workspace" "workspace" {
+#  name                = "${var.nome_do_grupo_de_recursos}-databricks"
+#  resource_group_name = azurerm_resource_group.grupo_principal.name
+#  location            = azurerm_resource_group.grupo_principal.location
+#  sku                 = "premium"
+#}
 
 # ===========================
 # App Service Plan (para Azure Function)
