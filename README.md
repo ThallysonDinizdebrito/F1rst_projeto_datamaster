@@ -165,3 +165,8 @@ func start
  func azure functionapp publish rg-dev-projeto-func-validate --build remote --python
 
  az functionapp delete --name rg-dev-projeto-func-validate --resource-group rg-dev-projeto
+
+
+#venv
+venv\Scripts\Activate.ps1  # para ativar
+deactivate                  # para desativar
