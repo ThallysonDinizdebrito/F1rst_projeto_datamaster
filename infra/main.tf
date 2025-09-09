@@ -184,24 +184,24 @@ resource "azurerm_eventgrid_system_topic" "raw_topic" {
 # ===========================
 # Event Grid - Subscription para Function
 # ===========================
-resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
-  name  = "${var.nome_do_grupo_de_recursos}-sub-func"  # Nome da subscription
-  scope = azurerm_eventgrid_system_topic.raw_topic.id  # Escopo: o tópico criado acima
+#resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
+#   name  = "${var.nome_do_grupo_de_recursos}-sub-func"  # Nome da subscription
+#  scope = azurerm_eventgrid_system_topic.raw_topic.id  # Escopo: o tópico criado acima
 
-  included_event_types = ["Microsoft.Storage.BlobCreated"]  # Apenas eventos de "Blob criado"
+#  included_event_types = ["Microsoft.Storage.BlobCreated"]  # Apenas eventos de "Blob criado"
 
   # endpoint da Function
-  azure_function_endpoint {
-    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/ValidateFakeData"
-  }
+#  azure_function_endpoint {
+#    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/ValidateFakeData"
+#  }
   
-  # webhook_endpoint {
-  #  url = "${azurerm_linux_function_app.function_validate.default_hostname}/runtime/webhooks/eventgrid?functionName=ValidateFakeData"
-  #  }
+#  # webhook_endpoint {
+#  #  url = "${azurerm_linux_function_app.function_validate.default_hostname}/runtime/webhooks/eventgrid?functionName=ValidateFakeData"
+#  #  }
 
 
-  retry_policy {
-    max_delivery_attempts = 5   # Número máximo de tentativas caso falhe a entrega do evento
-    event_time_to_live    = 1440 # Tempo de vida do evento (em minutos, aqui 1 dia)
-  }
-}
+#  retry_policy {
+#    max_delivery_attempts = 5   # Número máximo de tentativas caso falhe a entrega do evento
+#    event_time_to_live    = 1440 # Tempo de vida do evento (em minutos, aqui 1 dia)
+#  }
+#}
