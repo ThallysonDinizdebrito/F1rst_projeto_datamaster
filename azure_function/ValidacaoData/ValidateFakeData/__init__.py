@@ -1,30 +1,5 @@
 import logging
 import azure.functions as func
-
-
-app = func.FunctionApp()
-
-@app.event_grid_trigger(arg_name="azeventgrid")
-def EventGridTriggerteste(azeventgrid: func.EventGridEvent):
-    logging.info('Python EventGrid trigger processed an event')
-
-
-
-import logging
-import azure.functions as func   # importa o SDK oficial do Azure Functions
-
-# cria a "aplicação de funções"
-app = func.FunctionApp()
-
-# define uma Function que será disparada pelo Event Grid
-@app.event_grid_trigger(arg_name="azeventgrid")
-def ValidateFakeData(azeventgrid: func.EventGridEvent):
-    # registra nos logs que um evento foi recebido
-    logging.info('Event Grid trigger processed an event: %s', azeventgrid)
-
-
-import logging
-import azure.functions as func
 import json
 
 # Cria a aplicação de funções
