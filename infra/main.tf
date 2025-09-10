@@ -190,7 +190,7 @@ resource "azurerm_eventgrid_topic" "topic" {
   input_schema        = "CloudEventSchemaV1_0"
 }
 
-# ===========================
+## ===========================
 # Event Subscription
 # ===========================
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
