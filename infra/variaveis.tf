@@ -75,3 +75,4 @@ variable "nome_do_container_validado" {
   description = "Nome do container validado"
 }
 
+

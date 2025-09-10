@@ -184,7 +184,7 @@ resource "azurerm_eventgrid_system_topic" "raw_topic" {
 # Event Grid Subscription para Function App
 # =================================
 resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
-  name  = "${var.resource_group_name}-sub-func"       # Nome da subscription
+  name = "${var.nome_do_grupo_de_recursos}-sub-func"      # Nome da subscription
   scope = azurerm_eventgrid_system_topic.raw_topic.id # Escopo: System Topic do container raw
 
   # Apenas eventos de blob criado
