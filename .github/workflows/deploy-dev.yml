@@ -25,7 +25,6 @@ jobs:
       TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-
       AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
       AZURE_RESOURCE_GROUP: rg-dev-projeto
       RAW_CONTAINER_NAME: raw
@@ -38,18 +37,20 @@ jobs:
         with:
           terraform_version: 1.7.0
 
+      # 🔹 Primeira parte: criar infra básica (sem subscription)
       - name: Terraform Init -update
         working-directory: infra
         run: terraform init -reconfigure -upgrade
 
-      - name: Terraform Plan
+      - name: Terraform Plan Infra
         working-directory: infra
         run: terraform plan -var-file=dev.tfvars -lock-timeout=300s
 
-      - name: Terraform Apply
+      - name: Terraform Apply Infra
         working-directory: infra
         run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
 
+      # 🔹 Login Azure
       - name: Azure CLI Login
         uses: azure/login@v1
         with:
@@ -61,31 +62,12 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-#       # 🔹 Limpar pacotes antigos do Python
-#       - name: Clean Azure Function Python packages
-#         run: |
-#           az functionapp config appsettings delete \
-#             --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
-#             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-#             --setting-names WEBSITE_RUN_FROM_PACKAGE
-
-
-# # 🚀 Deploy do código para Azure Function
-#       - name: 'Azure Functions Action'
-#         uses: Azure/functions-action@v1
-#         with:
-#           app-name: rg-dev-projeto-func   # nome da azure function no main.tf
-#           package: './azure_function/GenerateFakeData'                   # envia o código da pasta atual
-#           enable-oryx-build: true
-#           scm-do-build-during-deployment: true
-
-
-# 🚀 Deploy do código para Azure Function - Validate Blob
+      # 🚀 Deploy do código para Azure Function - Validate Blob
       - name: 'Azure Functions Action - validate'
         uses: Azure/functions-action@v1
         with:
-          app-name: rg-dev-projeto-func-validate   # nome da azure function no main.tf
-          package: './azure_function/ValidacaoData'            # envia o código da pasta atual
+          app-name: rg-dev-projeto-func-validate   # nome da azure function criada pelo Terraform
+          package: './azure_function/ValidacaoData'
           enable-oryx-build: true
           scm-do-build-during-deployment: true
 
@@ -95,3 +77,7 @@ jobs:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 
+      # 🔹 Segunda parte: criar subscription depois do deploy
+      - name: Terraform Apply Final (com subscription)
+        working-directory: infra
+        run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
