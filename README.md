@@ -108,6 +108,39 @@ $ctx=New-AzStorageContext -StorageAccountName $sa -StorageAccountKey $key;
 New-AzStorageContainer -Name $cont -Context $ctx
 
 
+#remover os recursos caso precise
+
+Remove-AzResourceGroup -Name "rg-backend-dev" -Force
+Remove-AzResourceGroup -Name "rg-dev-projeto" -Force
+
+
+# criar o plano de hospedagem da function
+ az functionapp plan create --name rg-dev-projeto-func-plan --resource-group rg-dev-projeto --location westeurope --sku EP1 --is-linux
+
+ # criar a function 
+
+ az functionapp create --name rg-dev-projeto-func --resource-group rg-dev-projeto --storage-account devprojetoarmazen --plan rg-dev-projeto-func-plan --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
+
+
+# desscobrir o Azure Key Vault da conta de armazenamento 
+
+az storage account keys list --resource-group rg-dev-projeto --account-name devprojetoarmazen  --query "[0].value" --output tsv
+
+#delete function
+az functionapp delete --name rg-dev-projeto-func --resource-group rg-dev-projeto
+
+
+# ver suas variaveis de ambiente dentro da azure
+az functionapp config appsettings list --name rg-dev-projeto-func --resource-group rg-dev-projeto
+
+# Depois, rode sua função local
+func start
+
+#cria um arquivo json teste na pasta aberta
+echo "{'teste':'ok'}" > teste.json
+# envia o arquivo para o blobstorage
+az storage blob upload --account-name devprojetoarmazen --container-name raw --name teste.json --file teste.json --account-key  <key>
+
 #back commite
 escolher o comite com a ser excluido ou editado
 git log --oneline
