@@ -203,8 +203,8 @@ resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
 
   # Dead-letter para armazenar eventos falhos no container "rejeitado"
   storage_blob_dead_letter_destination {
-    resource_id         = azurerm_storage_account.conta_armazenamento.id
-    blob_container_name = "rejeitado"
+    storage_account_id        = azurerm_storage_account.conta_armazenamento.id
+    storage_blob_container_name = "rejeitado"
   }
 
   # Garante ordem de criação
@@ -213,4 +213,5 @@ resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
     azurerm_eventgrid_system_topic.raw_topic
   ]
 }
+
 
