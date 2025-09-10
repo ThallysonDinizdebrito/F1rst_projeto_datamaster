@@ -47,40 +47,21 @@ Criar Service Principal no Azure:
 az ad sp create-for-rbac --name "terraform-prod" --role="Contributor" --scopes="/subscriptions/<SUBSCRIPTION_ID>"
 
 
-az ad sp create-for-rbac --name "terraform-dev" --role="Contributor" --scopes="/subscriptions/<SUBSCRIPTION_ID>"
+
 
 
 Copie o JSON resultante para usar como secret:
-Dev
+
 {
   "clientId": "<ID_DO_CLIENTE>",
   "clientSecret": "<SEGREDO_DO_CLIENTE>",
   "subscriptionId": "<ID_DA_SUBSCRIPTION>",
   "tenantId": "<ID_DO_TENANT>"
 }
-Prod
-{
-  "clientId": "<ID_DO_CLIENTE>",
-  "clientSecret": "<SEGREDO_DO_CLIENTE>",
-  "subscriptionId": "<ID_DA_SUBSCRIPTION>",
-  "tenantId": "<ID_DO_TENANT>"
-}
+
 
 ---
-crie dois ambientes 
-https://github.com/<seu repositoriogit>/settings/environments
- - dev
- -prod
- 
 
- cadastre as secrets 
-AZURE_CLIENT_ID = "clientId": "<ID_DO_CLIENTE>",
-AZURE_CLIENT_SECRET = "clientSecret": "<SEGREDO_DO_CLIENTE>"
-AZURE_CREDENTIALS_DEV
-AZURE_STORAGE_ACCOUNT_DEV = "Nome do estore de account azure"
-AZURE_SUBSCRIPTION_ID = "subscriptionId": "<ID_DA_SUBSCRIPTION>"
-AZURE_TENANT_ID = "tenantId": "<ID_DO_TENANT>"
-AZURE_STORAGE_CONNECTION_STRING
 
 
 ## Backend Remoto do Terraform
@@ -126,47 +107,4 @@ $key=(Get-AzStorageAccountKey -ResourceGroupName $rg -Name $sa)[0].Value;
 $ctx=New-AzStorageContext -StorageAccountName $sa -StorageAccountKey $key;
 New-AzStorageContainer -Name $cont -Context $ctx
 
-#remover os recursos caso precise
 
-Remove-AzResourceGroup -Name "rg-backend-dev" -Force
-Remove-AzResourceGroup -Name "rg-dev-projeto" -Force
-
-
-# criar o plano de hospedagem da function
- az functionapp plan create --name rg-dev-projeto-func-plan --resource-group rg-dev-projeto --location westeurope --sku EP1 --is-linux
-
- # criar a function 
-
- az functionapp create --name rg-dev-projeto-func --resource-group rg-dev-projeto --storage-account devprojetoarmazen --plan rg-dev-projeto-func-plan --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
-
-#
-# desscobrir o Azure Key Vault da conta de armazenamento 
-
-az storage account keys list --resource-group rg-dev-projeto --account-name devprojetoarmazen  --query "[0].value" --output tsv
-
-#delete function
-az functionapp delete --name rg-dev-projeto-func --resource-group rg-dev-projeto
-
-
-# ver suas variaveis de ambiente dentro da azure
-az functionapp config appsettings list --name rg-dev-projeto-func --resource-group rg-dev-projeto
-
-
-# Define a variável temporariamente só para a sessão atual
-$env:AZURE_STORAGE_CONNECTION_STRING="sua_connection_string_aqui"
-
-$env:FUNCTIONS_WORKER_RUNTIME="python"
-$env:RAW_CONTAINER_NAME="raw"
-$env:BLOB_DIRECTORY="json"
-
-# Depois, rode sua função local
-func start
-#atualizar function
- func azure functionapp publish rg-dev-projeto-func-validate --build remote --python
-
- az functionapp delete --name rg-dev-projeto-func-validate --resource-group rg-dev-projeto
-
-
-#venv
-venv\Scripts\Activate.ps1  # para ativar
-deactivate                  # para desativar

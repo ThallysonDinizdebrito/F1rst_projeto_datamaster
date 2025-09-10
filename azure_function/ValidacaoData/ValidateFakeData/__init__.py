@@ -1,20 +1,52 @@
 import logging
 import azure.functions as func
+
+
+app = func.FunctionApp()
+
+@app.event_grid_trigger(arg_name="azeventgrid")
+def EventGridTriggerteste(azeventgrid: func.EventGridEvent):
+    logging.info('Python EventGrid trigger processed an event')
+
+
+
+import logging
+import azure.functions as func   # importa o SDK oficial do Azure Functions
+
+# cria a "aplicação de funções"
+app = func.FunctionApp()
+
+# define uma Function que será disparada pelo Event Grid
+@app.event_grid_trigger(arg_name="azeventgrid")
+def ValidateFakeData(azeventgrid: func.EventGridEvent):
+    # registra nos logs que um evento foi recebido
+    logging.info('Event Grid trigger processed an event: %s', azeventgrid)
+
+
+import logging
+import azure.functions as func
 import json
 
-def main(event: func.EventGridEvent):
-    logging.info('CloudEvent received')
+# Cria a aplicação de funções
+app = func.FunctionApp()
 
-    # O evento CloudEvent tem dados do blob em event.get_json()['data']
-    cloud_event = event.get_json()
-    logging.info(f"CloudEvent: {json.dumps(cloud_event)}")
+# Function disparada por Event Grid
+@app.event_grid_trigger(arg_name="azeventgrid")
+def validate_fake_data(azeventgrid: func.EventGridEvent):
+    logging.info("Evento do Event Grid recebido.")
 
-    data = cloud_event.get("data", {})
-    blob_url = data.get("url")
-    logging.info(f"Blob URL: {blob_url}")
+    # Converte os dados do evento em JSON
+    event_data = azeventgrid.get_json()
+    logging.info(f"Evento recebido: {json.dumps(event_data)}")
 
-    if blob_url:
-        # Aqui você pode chamar sua função de validação passando a URL ou conteúdo
-        logging.info(f"Pronto para processar o blob: {blob_url}")
+    # Pega a URL do blob que disparou o evento
+    blob_url = event_data.get("url")
+    logging.info(f"Blob recebido: {blob_url}")
+
+    # Aqui você pode implementar a lógica de validação
+    if blob_url and blob_url.endswith(".txt"):
+        logging.info("Arquivo válido! Enviar para o container 'validado'.")
+        # TODO: código para copiar/mover para 'validado'
     else:
-        logging.warning("Nenhuma URL de blob encontrada no evento")
+        logging.warning("Arquivo rejeitado! Enviar para o container 'rejeitado'.")
+        # TODO: código para copiar/mover para 'rejeitado'

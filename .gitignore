@@ -4,8 +4,3 @@
 *.tfstate.backup
 *.tfplan
 .terraform.lock.hcl   # opcional, pode versionar se quiser travar providers
-.azure_function/__blobstorage__
-azure_function/local.settings.json
-azure_function/GenerateFakeData/json/
-azure_function/GenerateFakeData/__pycache__/
-azure_function/__azurite_db_*
