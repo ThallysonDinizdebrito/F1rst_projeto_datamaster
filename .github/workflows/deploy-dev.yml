@@ -67,7 +67,7 @@ jobs:
         uses: Azure/functions-action@v1
         with:
           app-name: rg-dev-projeto-func-validate   # nome da azure function criada pelo Terraform
-          package: './azure_function/ValidacaoData'
+          package: './azure_function/functionvalidacao'
           enable-oryx-build: true
           scm-do-build-during-deployment: true
 
