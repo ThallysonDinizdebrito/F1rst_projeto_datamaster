@@ -23,5 +23,5 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
         logging.info("Arquivo válido! Enviar para o container 'validado'...")
         # TODO: código para copiar/mover para 'validado'
     else:
-        logging.warning("Arquivo rejeitado! Enviar para o container 'rejeitado'...")
+        logging.warning("Arquivo rejeitado! Enviar para o container 'rejeitado'..")
         # TODO: código para copiar/mover para 'rejeitado'

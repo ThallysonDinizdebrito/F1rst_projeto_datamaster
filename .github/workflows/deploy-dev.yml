@@ -72,16 +72,16 @@ jobs:
           scm-do-build-during-deployment: true
 
 
-      - name: Clean old Azure Function package
-        run: |
-          az functionapp config appsettings delete \
-            --name rg-dev-projeto-func-validate \
-            --resource-group rg-dev-projeto \
-            --setting-names WEBSITE_RUN_FROM_PACKAGE || true
+      # - name: Clean old Azure Function package
+      #   run: |
+      #     az functionapp config appsettings delete \
+      #       --name rg-dev-projeto-func-validate \
+      #       --resource-group rg-dev-projeto \
+      #       --setting-names WEBSITE_RUN_FROM_PACKAGE || true
 
-          az functionapp restart \
-            --name rg-dev-projeto-func-validate \
-            --resource-group rg-dev-projeto
+      #     az functionapp restart \
+      #       --name rg-dev-projeto-func-validate \
+      #       --resource-group rg-dev-projeto
 
 
         env:
