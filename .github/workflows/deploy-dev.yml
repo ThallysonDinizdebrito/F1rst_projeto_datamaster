@@ -33,11 +33,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # - uses: hashicorp/setup-terraform@v2
-      #   with:
-      #     terraform_version: 1.7.0
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.0
 
-      # # 🔹 Primeira parte: criar infra básica (sem subscription)
+      # 🔹 Primeira parte: criar infra básica (sem subscription)
       # - name: Terraform Init -update
       #   working-directory: infra
       #   run: terraform init -reconfigure -upgrade
@@ -62,7 +62,6 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-
       # 🚀 Deploy do código para Azure Function - Validate Blob
       - name: 'Azure Functions Action - validate'
         uses: Azure/functions-action@v1
@@ -72,7 +71,6 @@ jobs:
           enable-oryx-build: true
           scm-do-build-during-deployment: true
 
-           # 🚀 Deploy do código para Azure Function limpeza de pacote
 
       - name: Clean old Azure Function package
         run: |
@@ -84,6 +82,7 @@ jobs:
           az functionapp restart \
             --name rg-dev-projeto-func-validate \
             --resource-group rg-dev-projeto
+
 
         env:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
