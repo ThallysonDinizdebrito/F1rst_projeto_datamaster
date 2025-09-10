@@ -198,10 +198,9 @@ resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
 
   # Endpoint da Function App (função validate_fake_data dentro do Function App criado)
   azure_function_endpoint {
-    function_app_id = azurerm_linux_function_app.function_validate.id
-    function_name   = "validate_fake_data"
+    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
   }
-  
+
   # Dead-letter para armazenar eventos falhos no container "rejeitado"
   storage_blob_dead_letter_destination {
     storage_account_id        = azurerm_storage_account.conta_armazenamento.id
