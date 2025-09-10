@@ -180,28 +180,33 @@ resource "azurerm_eventgrid_system_topic" "raw_topic" {
 }
 
 
+# =================================
+# Event Grid Subscription para Function App
+# =================================
+resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
+  name  = "${var.resource_group_name}-sub-func"       # Nome da subscription
+  scope = azurerm_eventgrid_system_topic.raw_topic.id # Escopo: System Topic do container raw
 
-# ===========================
-# Event Grid - Subscription para Function
-# ===========================
-#resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
-#   name  = "${var.nome_do_grupo_de_recursos}-sub-func"  # Nome da subscription
-#  scope = azurerm_eventgrid_system_topic.raw_topic.id  # Escopo: o tópico criado acima
+  # Apenas eventos de blob criado
+  included_event_types = ["Microsoft.Storage.BlobCreated"]
 
-#  included_event_types = ["Microsoft.Storage.BlobCreated"]  # Apenas eventos de "Blob criado"
+  # CloudEvents v1.0
+  event_delivery_schema = "CloudEventSchemaV1_0"
 
-  # endpoint da Function
-#  azure_function_endpoint {
-#    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/ValidateFakeData"
-#  }
-  
-#  # webhook_endpoint {
-#  #  url = "${azurerm_linux_function_app.function_validate.default_hostname}/runtime/webhooks/eventgrid?functionName=ValidateFakeData"
-#  #  }
+  # Endpoint da Function App (usando ID da função)
+  azure_function_endpoint {
+    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/ValidateFakeData"
+  }
 
+  # Retry policy opcional
+  retry {
+    max_delivery_attempts = 5
+    event_time_to_live   = 1440 # em minutos (24h)
+  }
 
-#  retry_policy {
-#    max_delivery_attempts = 5   # Número máximo de tentativas caso falhe a entrega do evento
-#    event_time_to_live    = 1440 # Tempo de vida do evento (em minutos, aqui 1 dia)
-#  }
-#}
+  # Identity do Event Grid vai usar a identidade gerenciada da Function App
+  depends_on = [
+    azurerm_linux_function_app.function_validate,
+    azurerm_eventgrid_system_topic.raw_topic
+  ]
+}
