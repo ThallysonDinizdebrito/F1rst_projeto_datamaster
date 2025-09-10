@@ -108,6 +108,20 @@ $ctx=New-AzStorageContext -StorageAccountName $sa -StorageAccountKey $key;
 New-AzStorageContainer -Name $cont -Context $ctx
 
 
-#apagar
+#back commite
+escolher o comite com a ser excluido ou editado
+git log --oneline
+
+
+numeros de commites 
+git rebase -i HEAD~5
+
+D para dropar os commites
+:wq
+para salvar e fechar
+
+continuar ou abortar o rebase
+git rebase --continue
+git rebase --abort
 
 
