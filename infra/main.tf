@@ -200,12 +200,9 @@ resource "azurerm_eventgrid_event_subscription" "sub_func" {
   included_event_types  = ["Microsoft.Storage.BlobCreated"]
   event_delivery_schema = "CloudEventSchemaV1_0"
 
-  azure_function_endpoint {
-    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
-  }
 
-  azure_function_endpoint {
-  function_id = "/subscriptions/97eb265c-59ce-4122-bbe4-98f0d58d9208/resourceGroups/rg-dev-projeto/providers/Microsoft.Web/sites/rg-dev-projeto-func-validate/functions/validate_fake_data"
+  zure_function_endpoint {
+  function_id = "/subscriptiaons/97eb265c-59ce-4122-bbe4-98f0d58d9208/resourceGroups/rg-dev-projeto/providers/Microsoft.Web/sites/rg-dev-projeto-func-validate/functions/validate_fake_data"
 }
 
 storage_blob_dead_letter_destination {
