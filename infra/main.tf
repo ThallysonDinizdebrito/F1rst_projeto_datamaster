@@ -185,8 +185,8 @@ resource "azurerm_eventgrid_system_topic" "raw_topic" {
 # ===========================
 resource "azurerm_eventgrid_topic" "topic" {
   name                = "rg-dev-projeto-topic"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.grupo_principal.name
+  location            = azurerm_resource_group.grupo_principal.location
   input_schema        = "CloudEventSchemaV1_0"
 }
 
