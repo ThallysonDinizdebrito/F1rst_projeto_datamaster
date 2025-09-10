@@ -201,8 +201,9 @@ resource "azurerm_eventgrid_event_subscription" "sub_func" {
   event_delivery_schema = "CloudEventSchemaV1_0"
 
 azure_function_endpoint {
-  function_id = "/subscriptions/${var.subscription_id}/resourceGroups/rg-dev-projeto/providers/Microsoft.Web/sites/rg-dev-projeto-func-validate/functions/ValidateFakeData"
+  function_id = "/subscriptions/97eb265c-59ce-4122-bbe4-98f0d58d9208/resourceGroups/rg-dev-projeto/providers/Microsoft.Web/sites/rg-dev-projeto-func-validate/functions/ValidateFakeData"
 }
+
 
 storage_blob_dead_letter_destination {
   storage_account_id          = azurerm_storage_account.conta_armazenamento.id
