@@ -62,14 +62,6 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
- # 🚀 Deploy do código para Azure Function limpeza de pacote
-      - name: 'Azure Functions Action'
-        uses: Azure/functions-action@v1
-        with:
-          app-name: rg-dev-projeto-func-validate   # nome da azure function no main.tf
-          package: './azure_function/functionvalidacao'                   # envia o código da pasta atual
-          enable-oryx-build: true
-          scm-do-build-during-deployment: true
 
       # 🚀 Deploy do código para Azure Function - Validate Blob
       - name: 'Azure Functions Action - validate'
@@ -77,6 +69,15 @@ jobs:
         with:
           app-name: rg-dev-projeto-func-validate   # nome da azure function criada pelo Terraform
           package: './azure_function/functionvalidacao'
+          enable-oryx-build: true
+          scm-do-build-during-deployment: true
+
+           # 🚀 Deploy do código para Azure Function limpeza de pacote
+      - name: 'Azure Functions Action'
+        uses: Azure/functions-action@v1
+        with:
+          app-name: rg-dev-projeto-func-validate   # nome da azure function no main.tf
+          package: './azure_function/functionvalidacao'                   # envia o código da pasta atual
           enable-oryx-build: true
           scm-do-build-during-deployment: true
 
