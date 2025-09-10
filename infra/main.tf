@@ -195,14 +195,15 @@ resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
 
   # Endpoint da Function App (usando ID da função)
   azure_function_endpoint {
-    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/ValidateFakeData"
-  }
+  function_id = azurerm_linux_function_app.function_validate.id
+ }
 
   # Retry policy opcional
   retry {
-    max_delivery_attempts = 5
-    event_time_to_live   = 1440 # em minutos (24h)
-  }
+  max_delivery_attempts = 5
+  event_time_to_live_minutes = 1440 # em minutos (24h)
+ }
+
 
   # Identity do Event Grid vai usar a identidade gerenciada da Function App
   depends_on = [
