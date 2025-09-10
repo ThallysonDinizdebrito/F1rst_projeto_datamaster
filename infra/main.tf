@@ -115,7 +115,7 @@ resource "azurerm_storage_container" "container_validado" {
 # ===========================
 # Linux Function App - Validação
 # ===========================
-resource "azurerm_linux_function_app" "function_init" {
+resource "azurerm_linux_function_app" "function_validate" {
   name                = "${var.nome_do_grupo_de_recursos}-func-init"  
   # Nome da Azure Function App de validação, baseado no nome do Resource Group
 
