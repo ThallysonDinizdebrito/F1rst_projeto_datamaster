@@ -192,7 +192,7 @@ resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
 
   # Endpoint da Function App (precisa do nome da function)
   azure_function_endpoint {
-    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/ValidateFakeData"
+    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
   }
 
   depends_on = [
