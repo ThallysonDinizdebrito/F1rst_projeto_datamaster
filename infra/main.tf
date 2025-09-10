@@ -189,14 +189,10 @@ resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
   included_event_types  = ["Microsoft.Storage.BlobCreated"]
   event_delivery_schema = "CloudEventSchemaV1_0"
 
-  dynamic "azure_function_endpoint" {
-    for_each = [1] # só um endpoint
-    content {
-      function_id = azurerm_linux_function_app.function_validate.id
-      function_name = "validate_fake_data"
-    }
+  azure_function_endpoint {
+    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
   }
-
+  
   dynamic "storage_blob_dead_letter_destination" {
     for_each = [1] # só um destino
     content {
