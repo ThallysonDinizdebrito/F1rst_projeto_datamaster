@@ -40,7 +40,9 @@ jobs:
 
       - name: Terraform Init -upgrade
         working-directory: infra
-        run: terraform init -reconfigure -upgrade
+        run: |
+          rm -f terraform.lock.hcl
+          terraform init -reconfigure -upgrade
 
       - name: Terraform Plan
         working-directory: infra
