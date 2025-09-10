@@ -40,7 +40,7 @@ jobs:
 
       - name: Terraform Init -update
         working-directory: infra
-        run: terraform init -reconfigure
+        # run: terraform init -reconfigure
 
       - name: Terraform Plan
         working-directory: infra
