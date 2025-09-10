@@ -184,27 +184,33 @@ resource "azurerm_eventgrid_system_topic" "raw_topic" {
 # Event Grid Subscription para Function App
 # =================================
 resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
+  # Nome da assinatura de evento
   name  = "${var.nome_do_grupo_de_recursos}-sub-func"
+
+  # Escopo: o Event Grid System Topic configurado para o container raw
   scope = azurerm_eventgrid_system_topic.raw_topic.id
 
+  # Dispara somente quando um blob é criado
   included_event_types  = ["Microsoft.Storage.BlobCreated"]
+
+  # Usa o padrão CloudEvent
   event_delivery_schema = "CloudEventSchemaV1_0"
 
-  # Endpoint da Function App (precisa do nome da function)
+  # Endpoint da Function App (função validate_fake_data dentro do Function App criado)
   azure_function_endpoint {
     function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
   }
 
-  # Dead-letter opcional para capturar eventos que falharem
-  dead_letter_destination {
-    storage_blob {
-      resource_id        = azurerm_storage_account.conta_armazenamento.id
-      blob_container_name = "rejeitado"
-    }
+  # Dead-letter para armazenar eventos falhos no container "rejeitado"
+  storage_blob_dead_letter_destination {
+    resource_id         = azurerm_storage_account.conta_armazenamento.id
+    blob_container_name = "rejeitado"
   }
 
+  # Garante ordem de criação
   depends_on = [
     azurerm_linux_function_app.function_validate,
     azurerm_eventgrid_system_topic.raw_topic
   ]
 }
+
