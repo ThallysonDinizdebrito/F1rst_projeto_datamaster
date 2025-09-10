@@ -38,9 +38,9 @@ jobs:
         with:
           terraform_version: 1.7.0
 
-      - name: Terraform Init -update
+      - name: Terraform Init -upgrade
         working-directory: infra
-        run: terraform init -reconfigure
+        run: terraform init -reconfigure -upgrade
 
       - name: Terraform Plan
         working-directory: infra
