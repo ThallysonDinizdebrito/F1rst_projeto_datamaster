@@ -33,22 +33,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.7.0
+      # - uses: hashicorp/setup-terraform@v2
+      #   with:
+      #     terraform_version: 1.7.0
 
-      # 🔹 Primeira parte: criar infra básica (sem subscription)
-      - name: Terraform Init -update
-        working-directory: infra
-        run: terraform init -reconfigure -upgrade
+      # # 🔹 Primeira parte: criar infra básica (sem subscription)
+      # - name: Terraform Init -update
+      #   working-directory: infra
+      #   run: terraform init -reconfigure -upgrade
 
-      - name: Terraform Plan Infra
-        working-directory: infra
-        run: terraform plan -var-file=dev.tfvars -lock-timeout=300s
+      # - name: Terraform Plan Infra
+      #   working-directory: infra
+      #   run: terraform plan -var-file=dev.tfvars -lock-timeout=300s
 
-      - name: Terraform Apply Infra
-        working-directory: infra
-        run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
+      # - name: Terraform Apply Infra
+      #   working-directory: infra
+      #   run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
 
       # 🔹 Login Azure
       - name: Azure CLI Login
@@ -61,6 +61,15 @@ jobs:
               "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
+
+ # 🚀 Deploy do código para Azure Function limpeza de pacote
+      - name: 'Azure Functions Action'
+        uses: Azure/functions-action@v1
+        with:
+          app-name: rg-dev-projeto-func-validate   # nome da azure function no main.tf
+          package: './azure_function/functionvalidacao'                   # envia o código da pasta atual
+          enable-oryx-build: true
+          scm-do-build-during-deployment: true
 
       # 🚀 Deploy do código para Azure Function - Validate Blob
       - name: 'Azure Functions Action - validate'
