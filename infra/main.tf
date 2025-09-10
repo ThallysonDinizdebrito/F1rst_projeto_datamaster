@@ -204,10 +204,10 @@ resource "azurerm_eventgrid_event_subscription" "sub_func" {
     function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
   }
 
-  storage_blob_dead_letter_destination {
-    storage_account_id          = azurerm_storage_account.sa.id
-    storage_blob_container_name = azurerm_storage_container.container_rejeitados.name
-  }
+storage_blob_dead_letter_destination {
+  storage_account_id          = azurerm_storage_account.conta_armazenamento.id
+  storage_blob_container_name = azurerm_storage_container.container_rejeitados.name
+}
 
   depends_on = [
     azurerm_linux_function_app.function_validate,
