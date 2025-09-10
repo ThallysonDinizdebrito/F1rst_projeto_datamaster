@@ -195,14 +195,6 @@ resource "azurerm_eventgrid_event_subscription" "raw_to_function" {
     function_id = "${azurerm_linux_function_app.function_validate.id}/functions/ValidateFakeData"
   }
 
-  # Dead-letter opcional para capturar eventos que falharem
-  dead_letter_destination {
-    storage_blob {
-      resource_id        = azurerm_storage_account.conta_armazenamento.id
-      blob_container_name = "rejeitado"
-    }
-  }
-
   depends_on = [
     azurerm_linux_function_app.function_validate,
     azurerm_eventgrid_system_topic.raw_topic

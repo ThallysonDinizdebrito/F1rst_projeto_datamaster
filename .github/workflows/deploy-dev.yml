@@ -38,11 +38,9 @@ jobs:
         with:
           terraform_version: 1.7.0
 
-      - name: Terraform Init -upgrade
+      - name: Terraform Init -update
         working-directory: infra
-        run: |
-          rm -f terraform.lock.hcl
-          terraform init -reconfigure -upgrade
+        run: terraform init -reconfigure
 
       - name: Terraform Plan
         working-directory: infra
