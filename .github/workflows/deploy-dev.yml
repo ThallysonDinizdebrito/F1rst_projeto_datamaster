@@ -34,21 +34,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.7.0
+      # - uses: hashicorp/setup-terraform@v2
+      #   with:
+      #     terraform_version: 1.7.0
 
-      - name: Terraform Init -update
-        working-directory: infra
-        run: terraform init -reconfigure -upgrade
+      # - name: Terraform Init -update
+      #   working-directory: infra
+      #   run: terraform init -reconfigure -upgrade
 
-      - name: Terraform Plan
-        working-directory: infra
-        run: terraform plan -var-file=dev.tfvars -lock-timeout=300s
+      # - name: Terraform Plan
+      #   working-directory: infra
+      #   run: terraform plan -var-file=dev.tfvars -lock-timeout=300s
 
-      - name: Terraform Apply
-        working-directory: infra
-        run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
+      # - name: Terraform Apply
+      #   working-directory: infra
+      #   run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
 
       - name: Azure CLI Login
         uses: azure/login@v1
