@@ -25,10 +25,8 @@ jobs:
       TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
+      AZURE_FUNCTIONAPP_NAME_VALIDATE: rg-dev-projeto-func-validate
       AZURE_RESOURCE_GROUP: rg-dev-projeto
-      RAW_CONTAINER_NAME: raw
-      BLOB_DIRECTORY: json
 
     steps:
       - uses: actions/checkout@v3
@@ -37,18 +35,14 @@ jobs:
         with:
           terraform_version: 1.7.0
 
-      # 🔹 Primeira parte: criar infra básica (sem subscription)
-      # - name: Terraform Init -update
-      #   working-directory: infra
-      #   run: terraform init -reconfigure -upgrade
+      # 🔹 Criar infra básica (Function App e Storage)
+      - name: Terraform Init
+        working-directory: infra
+        run: terraform init -reconfigure -upgrade
 
-      # - name: Terraform Plan Infra
-      #   working-directory: infra
-      #   run: terraform plan -var-file=dev.tfvars -lock-timeout=300s
-
-      # - name: Terraform Apply Infra
-      #   working-directory: infra
-      #   run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
+      - name: Terraform Apply Infra
+        working-directory: infra
+        run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
 
       # 🔹 Login Azure
       - name: Azure CLI Login
@@ -62,35 +56,32 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-      # 🚀 Deploy do código para Azure Function - Validate Blob
-      - name: 'Azure Functions Action - validate'
+      # 🔹 Limpar pacotes antigos do Python
+      - name: Clean old Azure Function package
+        run: |
+          az functionapp config appsettings delete \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --setting-names WEBSITE_RUN_FROM_PACKAGE || true
+          az functionapp restart \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
+
+      # 🚀 Deploy do código atualizado
+      - name: Deploy Azure Function - Validate
         uses: Azure/functions-action@v1
         with:
-          app-name: rg-dev-projeto-func-validate   # nome da azure function criada pelo Terraform
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
           package: './azure_function/functionvalidacao'
           enable-oryx-build: true
           scm-do-build-during-deployment: true
-
-
-      # - name: Clean old Azure Function package
-      #   run: |
-      #     az functionapp config appsettings delete \
-      #       --name rg-dev-projeto-func-validate \
-      #       --resource-group rg-dev-projeto \
-      #       --setting-names WEBSITE_RUN_FROM_PACKAGE || true
-
-      #     az functionapp restart \
-      #       --name rg-dev-projeto-func-validate \
-      #       --resource-group rg-dev-projeto
-
-
         env:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 
-      # 🔹 Segunda parte: criar subscription depois do deploy
-      - name: Terraform Apply Final (com subscription)
+      # 🔹 Criar Event Grid Subscription depois do deploy da Function
+      - name: Terraform Apply Event Grid Subscription
         working-directory: infra
         run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
