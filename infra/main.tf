@@ -183,42 +183,27 @@ resource "azurerm_eventgrid_system_topic" "raw_topic" {
 # ===========================
 # Event Grid Topic (custom)
 # ===========================
-resource "azurerm_eventgrid_topic" "topic" {
-  name                = "rg-dev-projeto-topic"
-  resource_group_name = azurerm_resource_group.grupo_principal.name
-  location            = azurerm_resource_group.grupo_principal.location
-  input_schema        = "CloudEventSchemaV1_0"
-}
-
-## ===========================
-# Event Subscription
-# ===========================
-
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
-  name  = "testefakedatafunctioninit2"
+  name  = "testefakedatafunctioninit"
   scope = azurerm_eventgrid_topic.topic.id
 
-  # Schema usado no JSON
   event_delivery_schema = "CloudEventSchemaV1_0"
 
-  # Filtros (no JSON estavam nulos → significa "todos os eventos")
-  included_event_types = null
-  subject_begins_with  = ""
-  subject_ends_with    = ""
-
-  # Retry policy
+  # Retry policy correto
   retry_policy {
-    event_time_to_live_in_minutes = 1440
-    max_delivery_attempts         = 30
+    max_delivery_attempts = 30
+    event_time_to_live    = 1440
   }
 
-  # Destination → sua Function
   azure_function_endpoint {
     function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
-    max_events_per_batch             = 1
-    preferred_batch_size_in_kilobytes = 64
   }
 
-  # Dead-letter não estava configurado (null no JSON)
+  # Subject filter vazio (equivalente a "todos os eventos")
+  subject_filter {
+    begins_with = ""
+    ends_with   = ""
+  }
 }
+
 
