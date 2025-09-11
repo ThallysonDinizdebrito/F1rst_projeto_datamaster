@@ -180,14 +180,20 @@ resource "azurerm_eventgrid_system_topic" "raw_topic" {
 }
 
 
-# ===========================
-# Event Grid Topic (custom)
-# ===========================
-# Pega o EventGrid Topic que já existe
+# ========================================
+# Data block para pegar o topic existente
+# ========================================
+data "azurerm_eventgrid_topic" "topic" {
+  name                = "rg-dev-projeto-topic"
+  resource_group_name = "rg-dev-projeto"
+}
 
+# ========================================
+# Event Subscription
+# ========================================
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
-  name  = "testefakedatafunctioninit2"
-  scope = data.azurerm_eventgrid_topic.topic.id  # topic existente
+  name  = "testefakedatafunctioninit"
+  scope = data.azurerm_eventgrid_topic.topic.id  # referência ao topic existente
 
   event_delivery_schema = "CloudEventSchemaV1_0"
 
@@ -200,5 +206,5 @@ resource "azurerm_eventgrid_event_subscription" "sub_func" {
     function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
   }
 
-  # Nenhum filter declarado → todos os eventos serão incluídos
+  # Sem filter declarado → todos os eventos
 }
