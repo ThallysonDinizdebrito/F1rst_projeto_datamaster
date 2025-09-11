@@ -193,26 +193,32 @@ resource "azurerm_eventgrid_topic" "topic" {
 ## ===========================
 # Event Subscription
 # ===========================
+
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
-  name  = "rg-dev-projeto-sub-func"
+  name  = "testefakedatafunctioninit2"
   scope = azurerm_eventgrid_topic.topic.id
 
-  included_event_types  = ["Microsoft.Storage.BlobCreated"]
+  # Schema usado no JSON
   event_delivery_schema = "CloudEventSchemaV1_0"
 
-azure_function_endpoint {
-  function_id = "/subscriptions/97eb265c-59ce-4122-bbe4-98f0d58d9208/resourceGroups/rg-dev-projeto/providers/Microsoft.Web/sites/rg-dev-projeto-func-init/functions/validate_fake_data"
-}
+  # Filtros (no JSON estavam nulos → significa "todos os eventos")
+  included_event_types = null
+  subject_begins_with  = ""
+  subject_ends_with    = ""
 
+  # Retry policy
+  retry_policy {
+    event_time_to_live_in_minutes = 1440
+    max_delivery_attempts         = 30
+  }
 
-storage_blob_dead_letter_destination {
-  storage_account_id          = azurerm_storage_account.conta_armazenamento.id
-  storage_blob_container_name = azurerm_storage_container.container_rejeitados.name
-}
+  # Destination → sua Function
+  azure_function_endpoint {
+    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
+    max_events_per_batch             = 1
+    preferred_batch_size_in_kilobytes = 64
+  }
 
-  depends_on = [
-    azurerm_linux_function_app.function_validate,
-    azurerm_eventgrid_topic.topic
-  ]
+  # Dead-letter não estava configurado (null no JSON)
 }
 
