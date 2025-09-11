@@ -3,10 +3,6 @@
 # Objetivo: Provisionar recursos Azure + Function App + Event Subscription
 ###############################
 
-provider "azurerm" {
-  features {}
-}
-
 # ===========================
 # Resource Group
 # ===========================
@@ -132,7 +128,7 @@ data "azurerm_eventgrid_topic" "topic" {
 # Event Subscription para a Function
 # ========================================
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
-  name  = "testefakedatafunctioninit"
+  name  = "testefakedatafunctioninit2"
   scope = data.azurerm_eventgrid_topic.topic.id
 
   event_delivery_schema = "CloudEventSchemaV1_0"
