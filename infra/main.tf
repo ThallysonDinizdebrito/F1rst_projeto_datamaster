@@ -183,27 +183,30 @@ resource "azurerm_eventgrid_system_topic" "raw_topic" {
 # ===========================
 # Event Grid Topic (custom)
 # ===========================
+# Pega o EventGrid Topic que já existe
+data "azurerm_eventgrid_topic" "topic" {
+  name                = "rg-dev-projeto-topic"
+  resource_group_name = "rg-dev-projeto"
+}
+
+# Event Subscription apontando para a Function
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
   name  = "testefakedatafunctioninit"
-  scope = azurerm_eventgrid_topic.topic.id
+  scope = data.azurerm_eventgrid_topic.topic.id  # usa o topic existente
 
   event_delivery_schema = "CloudEventSchemaV1_0"
 
-  # Retry policy correto
   retry_policy {
-    max_delivery_attempts = 30
     event_time_to_live    = 1440
+    max_delivery_attempts = 30
   }
 
   azure_function_endpoint {
     function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
   }
 
-  # Subject filter vazio (equivalente a "todos os eventos")
   subject_filter {
     begins_with = ""
     ends_with   = ""
   }
 }
-
-
