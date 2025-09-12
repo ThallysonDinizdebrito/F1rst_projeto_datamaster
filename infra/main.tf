@@ -119,17 +119,17 @@ resource "azurerm_linux_function_app" "function_validate" {
 # ========================================
 # EventGrid Topic existente (data block)
 # ========================================
-data "azurerm_eventgrid_topic" "topic" {
+
+resource "azurerm_eventgrid_topic" "topic" {
   name                = "rg-dev-projeto-topic"
-  resource_group_name = "rg-dev-projeto"
+  resource_group_name = azurerm_resource_group.grupo_principal.name
+  location            = azurerm_resource_group.grupo_principal.location
+  sku                 = "Basic"
 }
 
-# ========================================
-# Event Subscription para a Function
-# ========================================
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
   name  = "testefakedatafunctioninit2"
-  scope = data.azurerm_eventgrid_topic.topic.id
+  scope = azurerm_eventgrid_topic.topic.id
 
   event_delivery_schema = "CloudEventSchemaV1_0"
 
@@ -141,6 +141,5 @@ resource "azurerm_eventgrid_event_subscription" "sub_func" {
   azure_function_endpoint {
     function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
   }
-
-  # Sem filtros → todos os eventos
 }
+
