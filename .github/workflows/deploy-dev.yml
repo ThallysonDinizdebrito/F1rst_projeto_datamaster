@@ -35,6 +35,15 @@ jobs:
         with:
           terraform_version: 1.7.0
 
+      # 🚀 Deploy do código atualizado
+      - name: Deploy Azure Function - Validate
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
+          package: './azure_function/functionvalidacao'
+          enable-oryx-build: true
+          scm-do-build-during-deployment: true
+
       # 🔹 Criar infra básica (Function App e Storage)
       - name: Terraform Init
         working-directory: infra
@@ -67,14 +76,7 @@ jobs:
       #       --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
       #       --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
-      # 🚀 Deploy do código atualizado
-      - name: Deploy Azure Function - Validate
-        uses: Azure/functions-action@v1
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
-          package: './azure_function/functionvalidacao'
-          enable-oryx-build: true
-          scm-do-build-during-deployment: true
+
         env:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
