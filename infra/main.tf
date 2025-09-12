@@ -124,7 +124,10 @@ resource "azurerm_eventgrid_topic" "topic" {
   name                = "rg-dev-projeto-topic"
   resource_group_name = azurerm_resource_group.grupo_principal.name
   location            = azurerm_resource_group.grupo_principal.location
-  sku                 = "Basic"
+
+  sku {
+    name = "Basic"
+  }
 }
 
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
