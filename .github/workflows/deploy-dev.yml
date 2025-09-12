@@ -74,14 +74,14 @@ jobs:
       #       --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
       #       --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
-      # 🚀 Deploy do código geracaodata
+      # 🚀 Deploy do código GeracaoData
       - uses: actions/checkout@v3
 
       - name: Deploy Azure Function - Geracao
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: ./azure_function/geracaodata
+          package: ./azure_function/GeracaoData
           enable-oryx-build: true
           scm-do-build-during-deployment: true
 
