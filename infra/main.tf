@@ -115,3 +115,5 @@ resource "azurerm_linux_function_app" "function_validate" {
     "ENABLE_ORYX_BUILD" = "true"
   }
 }
+
+

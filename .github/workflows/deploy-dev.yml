@@ -35,6 +35,19 @@ jobs:
         with:
           terraform_version: 1.7.0
 
+      # 🔹 Criar infra básica (Function App e Storage)
+      - name: Terraform Init
+        working-directory: /app
+        run: terraform init -reconfigure -upgrade
+
+      - name: Executar Terraform Plan
+        run: terraform plan -var-file=prod.tfvars
+        working-directory: infra
+
+      - name: Terraform Apply Infra
+        working-directory: infra
+        run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
+
       # 🔹 Login Azure
       - name: Azure CLI Login
         uses: azure/login@v1
@@ -81,18 +94,7 @@ jobs:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 
-      # 🔹 Criar infra básica (Function App e Storage)
-      - name: Terraform Init
-        working-directory: /app
-        run: terraform init -reconfigure -upgrade
 
-      - name: Executar Terraform Plan
-        run: terraform plan -var-file=prod.tfvars
-        working-directory: infra
-
-      - name: Terraform Apply Infra
-        working-directory: infra
-        run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
 
       # # # 🔹 Criar Event Grid Subscription depois do deploy da Function
       # - name: Terraform Apply Event Grid Subscription
