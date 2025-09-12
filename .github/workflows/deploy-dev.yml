@@ -37,7 +37,7 @@ jobs:
 
       # 🔹 Criar infra básica (Function App e Storage)
       - name: Terraform Init
-        working-directory: /app
+        working-directory: infra
         run: terraform init 
         #-reconfigure -upgrade
 
