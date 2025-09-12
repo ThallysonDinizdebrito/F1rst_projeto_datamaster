@@ -121,13 +121,13 @@ resource "azurerm_linux_function_app" "function_validate" {
 # ========================================
 
 resource "azurerm_eventgrid_topic" "topic" {
-  name                = "rg-dev-projeto-topic2"
+  name                = "rg-dev-projeto-topic"
   resource_group_name = azurerm_resource_group.grupo_principal.name
   location            = azurerm_resource_group.grupo_principal.location
 }
 
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
-  name  = "testetetetets2"
+  name  = "testetetetets3"
   scope = azurerm_eventgrid_topic.topic.id  # agora existe o recurso
 
   event_delivery_schema = "CloudEventSchemaV1_0"
