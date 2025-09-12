@@ -58,7 +58,16 @@ jobs:
       #       --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
       #       --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
-      # 🚀 Deploy do código atualizado
+      # 🚀 Deploy do código geracaodata
+      - name: Deploy Azure Function - Geracao
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
+          package: './azure_function/geracaodata'
+          enable-oryx-build: true
+          scm-do-build-during-deployment: true
+
+      # 🚀 Deploy do código functionvalidacao
       - name: Deploy Azure Function - Validate
         uses: Azure/functions-action@v1
         with:
