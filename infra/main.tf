@@ -120,9 +120,18 @@ resource "azurerm_linux_function_app" "function_validate" {
 # EventGrid Topic existente (data block)
 # ========================================
 
+resource "azurerm_eventgrid_topic" "topic" {
+  name                = "rg-dev-projeto-topic2"
+  resource_group_name = azurerm_resource_group.grupo_principal.name
+  location            = azurerm_resource_group.grupo_principal.location
+  sku {
+    name = "Basic"
+  }
+}
+
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
   name  = "testefakedatafunctioninit2"
-  scope = azurerm_eventgrid_topic.topic.id
+  scope = azurerm_eventgrid_topic.topic.id  # agora existe o recurso
 
   event_delivery_schema = "CloudEventSchemaV1_0"
 
@@ -137,10 +146,10 @@ resource "azurerm_eventgrid_event_subscription" "sub_func" {
 
   lifecycle {
     ignore_changes = [
-      # evita falhar se a subscription já existir
       azure_function_endpoint,
     ]
   }
 }
+
 
 
