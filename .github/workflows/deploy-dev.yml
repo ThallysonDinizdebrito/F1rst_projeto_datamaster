@@ -38,18 +38,18 @@ jobs:
 
       # 🔹 Criar infra básica (Function App e Storage)
 
-      - name: Terraform Init
-        working-directory: infra
-        run: terraform init 
-        #-reconfigure -upgrade
+      # - name: Terraform Init
+      #   working-directory: infra
+      #   run: terraform init 
+      #   #-reconfigure -upgrade
 
-      - name: Executar Terraform Plan
-        run: terraform plan -var-file=dev.tfvars
-        working-directory: infra
+      # - name: Executar Terraform Plan
+      #   run: terraform plan -var-file=dev.tfvars
+      #   working-directory: infra
 
-      - name: Terraform Apply Infra
-        working-directory: infra
-        run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
+      # - name: Terraform Apply Infra
+      #   working-directory: infra
+      #   run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
 
       # 🔹 Login Azure
       - name: Azure CLI Login
@@ -75,11 +75,13 @@ jobs:
       #       --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
       # 🚀 Deploy do código geracaodata
+      - uses: actions/checkout@v3
+
       - name: Deploy Azure Function - Geracao
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: './azure_function/geracaodata'
+          package: ./azure_function/geracaodata
           enable-oryx-build: true
           scm-do-build-during-deployment: true
 
