@@ -127,7 +127,7 @@ resource "azurerm_eventgrid_topic" "topic" {
 }
 
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
-  name  = "testefakedatafunctioninit2"
+  name  = "testetetetets2"
   scope = azurerm_eventgrid_topic.topic.id  # agora existe o recurso
 
   event_delivery_schema = "CloudEventSchemaV1_0"
