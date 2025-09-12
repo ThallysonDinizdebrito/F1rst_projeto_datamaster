@@ -26,6 +26,7 @@ jobs:
       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       AZURE_FUNCTIONAPP_NAME_VALIDATE: rg-dev-projeto-func-init
+      AZURE_FUNCTIONAPP_NAME : rg-dev-projeto-func
       AZURE_RESOURCE_GROUP: rg-dev-projeto
 
     steps:
@@ -77,7 +78,7 @@ jobs:
       - name: Deploy Azure Function - Geracao
         uses: Azure/functions-action@v1
         with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           package: './azure_function/geracaodata'
           enable-oryx-build: true
           scm-do-build-during-deployment: true
