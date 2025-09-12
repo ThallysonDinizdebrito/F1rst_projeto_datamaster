@@ -77,6 +77,10 @@ jobs:
         working-directory: infra
         run: terraform init -reconfigure -upgrade
 
+      - name: Executar Terraform Plan
+        run: terraform plan -var-file=prod.tfvars
+        working-directory: infra
+
       - name: Terraform Apply Infra
         working-directory: infra
         run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
