@@ -37,17 +37,9 @@ jobs:
 
       # 🔹 Criar infra básica (Function App e Storage)
 
-      - name: Inicializar Terraform
-        run: terraform init -backend-config="storage_account_name=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
-                                -backend-config="container_name=tfstate" \
-                                -backend-config="key=terraform.tfstate" \
-                                -backend-config="resource_group_name=rg-backend-prod" \
-                                -reconfigure
+      - name: Terraform Init
         working-directory: infra
-
-      # - name: Terraform Init
-      #   working-directory: infra
-      #   run: terraform init 
+        run: terraform init 
         #-reconfigure -upgrade
 
       - name: Executar Terraform Plan
