@@ -126,23 +126,18 @@ resource "azurerm_eventgrid_topic" "topic" {
   location            = azurerm_resource_group.grupo_principal.location
 }
 
-resource "azurerm_eventgrid_event_subscription" "sub_func" {
-  name  = "testefakedatafunctioninit2"
-  scope = azurerm_eventgrid_topic.topic.id
+resource "null_resource" "event_subscription_cli" {
+  depends_on = [azurerm_linux_function_app.function_validate, azurerm_eventgrid_topic.topic]
 
-  event_delivery_schema = "CloudEventSchemaV1_0"
-
-  retry_policy {
-    event_time_to_live    = 1440
-    max_delivery_attempts = 30
+  provisioner "local-exec" {
+    command = <<EOT
+      az eventgrid event-subscription create \
+        --name testefakedatafunctioninit2 \
+        --source-resource-id ${azurerm_eventgrid_topic.topic.id} \
+        --endpoint-type azurefunction \
+        --endpoint ${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data \
+        --disable-validation
+    EOT
   }
-
-  azure_function_endpoint {
-    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
-  }
-
-  depends_on = [
-    azurerm_linux_function_app.function_validate
-  ]
 }
 
