@@ -43,7 +43,7 @@ jobs:
         #-reconfigure -upgrade
 
       - name: Executar Terraform Plan
-        run: terraform plan -var-file=prod.tfvars
+        run: terraform plan -var-file=dev.tfvars
         working-directory: infra
 
       - name: Terraform Apply Infra
