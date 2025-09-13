@@ -1,114 +1,118 @@
-# name: Deploy-resources-dev
+name: Deploy-resources-dev
 
-# on:
-#   push:
-#     branches:
-#       - dev
+on:
+  push:
+    branches:
+      - dev
 
-# jobs:
-#   infra_functions:
-#     runs-on: ubuntu-latest
-#     environment: dev
+jobs:
+  infra_functions:
+    runs-on: ubuntu-latest
+    environment: dev
 
-#     concurrency:
-#       group: terraform-dev
-#       cancel-in-progress: true
+    steps:
+    - name: Test Print
+      run: echo "Este é um print no primeiro job"
 
-#     env:
-#       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-#       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-#       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-#       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    # concurrency:
+    #   group: terraform-dev
+    #   cancel-in-progress: true
 
-#       TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
-#       TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
-#       TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
-#       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    # env:
+    #   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+    #   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+    #   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+    #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-#       AZURE_FUNCTIONAPP_NAME_VALIDATE: rg-dev-projeto-func-init
-#       AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
-#       AZURE_RESOURCE_GROUP: rg-dev-projeto
+    #   TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+    #   TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+    #   TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
+    #   TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-#     steps:
-#       - uses: actions/checkout@v3
+    #   AZURE_FUNCTIONAPP_NAME_VALIDATE: rg-dev-projeto-func-init
+    #   AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
+    #   AZURE_RESOURCE_GROUP: rg-dev-projeto
 
-#       - uses: hashicorp/setup-terraform@v2
-#         with:
-#           terraform_version: 1.7.0
+    # steps:
+    #   - uses: actions/checkout@v3
 
-#       - name: Terraform Init
-#         run: terraform -chdir=infra init
+    #   - uses: hashicorp/setup-terraform@v2
+    #     with:
+    #       terraform_version: 1.7.0
 
-#       - name: Terraform Apply Infra + Functions
-#         run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_service_plan.function_plan -target=azurerm_linux_function_app.function_app -target=azurerm_linux_function_app.function_validate
-#       - name: Azure CLI Login
-#         uses: azure/login@v1
-#         with:
-#           creds: |
-#             {
-#               "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
-#               "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
-#               "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
-#               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
-#             }
+    #   - name: Terraform Init
+    #     run: terraform -chdir=infra init
 
-#       - name: Deploy Azure Function - Geracao
-#         uses: Azure/functions-action@v1
-#         with:
-#           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-#           package: ./azure_function/GeracaoData
-#           enable-oryx-build: true
-#           scm-do-build-during-deployment: true
+    #   - name: Terraform Apply Infra + Functions
+    #     run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_service_plan.function_plan -target=azurerm_linux_function_app.function_app -target=azurerm_linux_function_app.function_validate
+    #   - name: Azure CLI Login
+    #     uses: azure/login@v1
+    #     with:
+    #       creds: |
+    #         {
+    #           "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+    #           "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+    #           "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+    #           "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+    #         }
 
-#       - name: Deploy Azure Function - Validate
-#         uses: Azure/functions-action@v1
-#         with:
-#           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
-#           package: './azure_function/functionvalidacao'
-#           enable-oryx-build: true
-#           scm-do-build-during-deployment: true
-#         env:
-#           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-#           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-#           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-#           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+    #   - name: Deploy Azure Function - Geracao
+    #     uses: Azure/functions-action@v1
+    #     with:
+    #       app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+    #       package: ./azure_function/GeracaoData
+    #       enable-oryx-build: true
+    #       scm-do-build-during-deployment: true
 
-eventgrid:
-runs-on: ubuntu-latest
-# needs: infra_functions   # só roda depois que o job 1 terminar
-env:
-    ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-    ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-    ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-    ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    #   - name: Deploy Azure Function - Validate
+    #     uses: Azure/functions-action@v1
+    #     with:
+    #       app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
+    #       package: './azure_function/functionvalidacao'
+    #       enable-oryx-build: true
+    #       scm-do-build-during-deployment: true
+    #     env:
+    #       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+    #       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+    #       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    #       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 
-    TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
-    TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
-    TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
-    TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  eventgrid:
+    runs-on: ubuntu-latest
+    needs: infra_functions   # só roda depois que o job 1 terminar
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-steps:
-    - uses: actions/checkout@v3
+      TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+      TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+      TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
+      TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    - uses: hashicorp/setup-terraform@v2
-    with:
-        terraform_version: 1.7.0
-    
-# 🔹 Login no Azure antes do terraform init
-    - name: Azure CLI Login
-    uses: azure/login@v1
-    with:
-        creds: |
-        {
-            "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
-            "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
-            "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
-            "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
-        }    
+    steps:
+      - uses: actions/checkout@v3
 
-    - name: Terraform Init
-    run: terraform -chdir=infra init
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.0
+      
+    # 🔹 Login no Azure antes do terraform init
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: |
+            {
+                "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+                "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+                "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+                "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }    
 
-    - name: Terraform Apply Event Grid
-    run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars \
-            -target=azurerm_eventgrid_event_subscription.sub_func
+      - name: Terraform Init
+        run: terraform -chdir=infra init
+
+      - name: Terraform Apply Event Grid
+        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars \
+             -target=azurerm_eventgrid_event_subscription.sub_func
