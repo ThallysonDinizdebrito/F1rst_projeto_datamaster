@@ -1,4 +1,4 @@
-name: Deploy Dev
+name: Deploy-resources-dev
 
 on:
   push:

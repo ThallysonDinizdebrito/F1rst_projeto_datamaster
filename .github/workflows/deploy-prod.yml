@@ -1,8 +1,11 @@
-name: Deploy Dev EventGrid
+name: Deploy-Dev-EventGrid
 
 on:
+  push:
+    branches:
+      - dev     
   workflow_run:
-    workflows: ["Deploy Dev"]
+    workflows: ["Deploy-resources-dev"]
     types:
       - completed
 
