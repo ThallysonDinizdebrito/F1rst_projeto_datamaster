@@ -1,4 +1,4 @@
-name: Deploy Event Grid
+name: Deploy Event Grid.
 
 on:
   push:
