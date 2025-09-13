@@ -50,7 +50,7 @@ resource "azurerm_service_plan" "function_plan" {
 }
 
 # ===========================
-# Function Apps (vazias)
+# Function Apps (vazias) - func  
 # ===========================
 resource "azurerm_linux_function_app" "function_app" {
   name                      = "${var.nome_do_grupo_de_recursos}-func"
@@ -77,6 +77,10 @@ resource "azurerm_linux_function_app" "function_app" {
   }
 }
 
+# ===========================
+# Function Apps (vazias) - func-init  
+# ===========================
+
 resource "azurerm_linux_function_app" "function_validate" {
   name                      = "${var.nome_do_grupo_de_recursos}-func-init"
   location                  = azurerm_resource_group.grupo_principal.location
@@ -102,4 +106,13 @@ resource "azurerm_linux_function_app" "function_validate" {
     "SCM_DO_BUILD_DURING_DEPLOYMENT"= "true"
     "ENABLE_ORYX_BUILD"              = "true"
   }
+}
+
+# ========================================
+# EventGrid Topic
+# ========================================
+resource "azurerm_eventgrid_topic" "topic" {
+  name                = "rg-dev-projeto-topic"
+  resource_group_name = azurerm_resource_group.grupo_principal.name
+  location            = azurerm_resource_group.grupo_principal.location
 }
