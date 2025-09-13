@@ -1,10 +1,9 @@
 name: Deploy Infra + Functions
 
 on:
-  workflow_dispatch:
   push:
     branches:
-      - main
+      - dev
     paths:
       - 'terraform/**'
       - '!terraform/modules/eventgrid/**'
