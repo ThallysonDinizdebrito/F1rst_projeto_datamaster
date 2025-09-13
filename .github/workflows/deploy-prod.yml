@@ -1,42 +1,29 @@
-# name: Deploy Prod
+name: Deploy Dev EventGrid
 
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  workflow_run:
+    workflows: ["Deploy Dev Infra"]
+    types:
+      - completed
 
-# jobs:
-#   terraform:
-#     name: Terraform Prod
-#     runs-on: ubuntu-latest
-#     environment: prod
+jobs:
+  terraform_eventgrid:
+    runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    steps:
+      - uses: actions/checkout@v3
 
-#     steps:
-#       - name: Checar repositório
-#         uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.0
 
-#       - name: Configurar Terraform
-#         uses: hashicorp/setup-terraform@v2
-#         with:
-#           terraform_version: 1.7.0
+      - name: Terraform Init
+        run: terraform -chdir=infra init
 
-#       - name: Autenticar no Azure
-#         uses: azure/login@v1
-#         with:
-#           creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
-
-#       - name: Inicializar Terraform
-#         run: terraform init -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_PROD }}" \
-#                                 -backend-config="container_name=tfstate" \
-#                                 -backend-config="key=terraform.tfstate" \
-#                                 -backend-config="resource_group_name=rg-backend-prod" \
-#                                 -reconfigure
-#         working-directory: infra
-
-#       - name: Executar Terraform Plan
-#         run: terraform plan -var-file=prod.tfvars
-#         working-directory: infra
-
-#       - name: Executar Terraform Apply
-#         run: terraform apply -auto-approve -var-file=prod.tfvars
-#         working-directory: infra
+      - name: Terraform Apply Event Grid
+        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars \
+             -target=azurerm_eventgrid_event_subscription.sub_func

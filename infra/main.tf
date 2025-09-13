@@ -1,8 +1,3 @@
-###############################
-# main.tf - Terraform Azure
-# Objetivo: Provisionar recursos Azure + Function App + Event Subscription
-###############################
-
 # ===========================
 # Resource Group
 # ===========================
@@ -51,19 +46,19 @@ resource "azurerm_service_plan" "function_plan" {
   location            = azurerm_resource_group.grupo_principal.location
   resource_group_name = azurerm_resource_group.grupo_principal.name
   os_type             = "Linux"
-  sku_name            = "Y1"  # Plano consumo
+  sku_name            = "Y1"
 }
 
 # ===========================
-# Function App - App principal
+# Function Apps (vazias)
 # ===========================
 resource "azurerm_linux_function_app" "function_app" {
-  name                = "${var.nome_do_grupo_de_recursos}-func"
-  location            = azurerm_resource_group.grupo_principal.location
-  resource_group_name = azurerm_resource_group.grupo_principal.name
-  service_plan_id     = azurerm_service_plan.function_plan.id
-  storage_account_name       = azurerm_storage_account.conta_armazenamento.name
-  storage_account_access_key = azurerm_storage_account.conta_armazenamento.primary_access_key
+  name                      = "${var.nome_do_grupo_de_recursos}-func"
+  location                  = azurerm_resource_group.grupo_principal.location
+  resource_group_name       = azurerm_resource_group.grupo_principal.name
+  service_plan_id           = azurerm_service_plan.function_plan.id
+  storage_account_name      = azurerm_storage_account.conta_armazenamento.name
+  storage_account_access_key= azurerm_storage_account.conta_armazenamento.primary_access_key
 
   site_config {
     application_stack {
@@ -71,29 +66,24 @@ resource "azurerm_linux_function_app" "function_app" {
     }
   }
 
-  identity {
-    type = "SystemAssigned"
-  }
+  identity { type = "SystemAssigned" }
 
   app_settings = {
-    "RAW_CONTAINER_NAME"               = azurerm_storage_container.container_raw.name
-    "AZURE_STORAGE_ACCOUNT_NAME"       = azurerm_storage_account.conta_armazenamento.name
-    "FUNCTIONS_WORKER_RUNTIME"         = "python"
-    "SCM_DO_BUILD_DURING_DEPLOYMENT"   = "true"
-    "ENABLE_ORYX_BUILD"                = "true"
+    "RAW_CONTAINER_NAME"             = azurerm_storage_container.container_raw.name
+    "AZURE_STORAGE_ACCOUNT_NAME"     = azurerm_storage_account.conta_armazenamento.name
+    "FUNCTIONS_WORKER_RUNTIME"       = "python"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"= "true"
+    "ENABLE_ORYX_BUILD"              = "true"
   }
 }
 
-# ===========================
-# Function App - Validação
-# ===========================
 resource "azurerm_linux_function_app" "function_validate" {
-  name                = "${var.nome_do_grupo_de_recursos}-func-init"
-  location            = azurerm_resource_group.grupo_principal.location
-  resource_group_name = azurerm_resource_group.grupo_principal.name
-  service_plan_id     = azurerm_service_plan.function_plan.id
-  storage_account_name       = azurerm_storage_account.conta_armazenamento.name
-  storage_account_access_key = azurerm_storage_account.conta_armazenamento.primary_access_key
+  name                      = "${var.nome_do_grupo_de_recursos}-func-init"
+  location                  = azurerm_resource_group.grupo_principal.location
+  resource_group_name       = azurerm_resource_group.grupo_principal.name
+  service_plan_id           = azurerm_service_plan.function_plan.id
+  storage_account_name      = azurerm_storage_account.conta_armazenamento.name
+  storage_account_access_key= azurerm_storage_account.conta_armazenamento.primary_access_key
 
   site_config {
     application_stack {
@@ -101,50 +91,15 @@ resource "azurerm_linux_function_app" "function_validate" {
     }
   }
 
-  identity {
-    type = "SystemAssigned"
-  }
+  identity { type = "SystemAssigned" }
 
   app_settings = {
-    "RAW_CONTAINER_NAME"       = azurerm_storage_container.container_raw.name
-    "VALIDATED_CONTAINER_NAME" = azurerm_storage_container.container_validado.name
-    "REJECTED_CONTAINER_NAME"  = azurerm_storage_container.container_rejeitados.name
-    "AZURE_STORAGE_ACCOUNT_NAME" = azurerm_storage_account.conta_armazenamento.name
-    "FUNCTIONS_WORKER_RUNTIME"   = "python"
-    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
-    "ENABLE_ORYX_BUILD" = "true"
+    "RAW_CONTAINER_NAME"             = azurerm_storage_container.container_raw.name
+    "VALIDATED_CONTAINER_NAME"       = azurerm_storage_container.container_validado.name
+    "REJECTED_CONTAINER_NAME"        = azurerm_storage_container.container_rejeitados.name
+    "AZURE_STORAGE_ACCOUNT_NAME"     = azurerm_storage_account.conta_armazenamento.name
+    "FUNCTIONS_WORKER_RUNTIME"       = "python"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"= "true"
+    "ENABLE_ORYX_BUILD"              = "true"
   }
 }
-
-# ========================================
-# EventGrid Topic existente (data block)
-# ========================================
-
-resource "azurerm_eventgrid_topic" "topic" {
-  name                = "rg-dev-projeto-topic"
-  resource_group_name = azurerm_resource_group.grupo_principal.name
-  location            = azurerm_resource_group.grupo_principal.location
-}
-
-resource "azurerm_eventgrid_event_subscription" "sub_func" {
-  name  = "testetetetets3"
-  scope = azurerm_eventgrid_topic.topic.id  # agora existe o recurso
-
-  event_delivery_schema = "CloudEventSchemaV1_0"
-
-  retry_policy {
-    event_time_to_live    = 1440
-    max_delivery_attempts = 30
-  }
-
-  azure_function_endpoint {
-    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
-  }
-
-  lifecycle {
-    ignore_changes = [
-      azure_function_endpoint,
-    ]
-  }
-}
-
