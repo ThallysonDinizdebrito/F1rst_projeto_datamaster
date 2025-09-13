@@ -79,6 +79,7 @@ jobs:
 
   eventgrid:
     runs-on: ubuntu-latest
+    environment: dev
     needs: infra_functions   # só roda depois que o job 1 terminar
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
