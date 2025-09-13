@@ -7,30 +7,21 @@
 nome_do_grupo_de_recursos   = "rg-dev-projeto"
 
 # Localização
-localizacao                  = "westeurope"
+localizacao = "westeurope"
 
 # Storage Account
 nome_da_conta_de_armazenamento = "devprojetoarmazen"
 
-# Container raw (padrão)
+# Containers
 nome_do_container_raw        = "raw"
+nome_do_container_validado   = "validado"
+nome_do_container_rejeitados = "rejeitados"
 
+# Function App
+nome_function_app = "rg-dev-projeto-func"
 
-# Workspace Databricks (opcional, se for diferente do padrão)
-id_workspace_databricks      = ""
+# Pasta de JSON usada na function
+nome_pasta_json = "json"
 
-
-# App Function 
-nome_function_app      = "rg-dev-projeto-func"
-
-# Container raw (padrão)
-nome_pasta_json        = "json"
-
-
-
-# Container raw (padrão)
-nome_do_container_rejeitados       = "rejeitados"
-
-
-# Container raw (padrão)
-nome_do_container_validado        = "validado"
+# Databricks (opcional, vazio por enquanto)
+id_workspace_databricks = ""

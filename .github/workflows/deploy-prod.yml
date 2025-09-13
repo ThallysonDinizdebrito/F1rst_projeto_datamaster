@@ -1,42 +1,42 @@
-name: Deploy Prod
+# name: Deploy Prod
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  terraform:
-    name: Terraform Prod
-    runs-on: ubuntu-latest
-    environment: prod
+# jobs:
+#   terraform:
+#     name: Terraform Prod
+#     runs-on: ubuntu-latest
+#     environment: prod
 
-    steps:
-      - name: Checar repositório
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checar repositório
+#         uses: actions/checkout@v3
 
-      - name: Configurar Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.7.0
+#       - name: Configurar Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: 1.7.0
 
-      - name: Autenticar no Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
+#       - name: Autenticar no Azure
+#         uses: azure/login@v1
+#         with:
+#           creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
 
-      - name: Inicializar Terraform
-        run: terraform init -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_PROD }}" \
-                                -backend-config="container_name=tfstate" \
-                                -backend-config="key=terraform.tfstate" \
-                                -backend-config="resource_group_name=rg-backend-prod" \
-                                -reconfigure
-        working-directory: infra
+#       - name: Inicializar Terraform
+#         run: terraform init -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_PROD }}" \
+#                                 -backend-config="container_name=tfstate" \
+#                                 -backend-config="key=terraform.tfstate" \
+#                                 -backend-config="resource_group_name=rg-backend-prod" \
+#                                 -reconfigure
+#         working-directory: infra
 
-      - name: Executar Terraform Plan
-        run: terraform plan -var-file=prod.tfvars
-        working-directory: infra
+#       - name: Executar Terraform Plan
+#         run: terraform plan -var-file=prod.tfvars
+#         working-directory: infra
 
-      - name: Executar Terraform Apply
-        run: terraform apply -auto-approve -var-file=prod.tfvars
-        working-directory: infra
+#       - name: Executar Terraform Apply
+#         run: terraform apply -auto-approve -var-file=prod.tfvars
+#         working-directory: infra

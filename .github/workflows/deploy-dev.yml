@@ -1,107 +1,107 @@
-name: Deploy Dev
+# name: Deploy Dev
 
-on:
-  push:
-    branches:
-      - dev
+# on:
+#   push:
+#     branches:
+#       - dev
 
-jobs:
-  terraform:
-    runs-on: ubuntu-latest
-    environment: dev
+# jobs:
+#   terraform:
+#     runs-on: ubuntu-latest
+#     environment: dev
 
-    concurrency:
-      group: terraform-dev
-      cancel-in-progress: true
+#     concurrency:
+#       group: terraform-dev
+#       cancel-in-progress: true
 
-    env:
-      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#     env:
+#       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+#       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+#       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
-      TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
-      TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
-      TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#       TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+#       TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+#       TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
+#       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      AZURE_FUNCTIONAPP_NAME_VALIDATE: rg-dev-projeto-func-init
-      AZURE_FUNCTIONAPP_NAME : rg-dev-projeto-func
-      AZURE_RESOURCE_GROUP: rg-dev-projeto
+#       AZURE_FUNCTIONAPP_NAME_VALIDATE: rg-dev-projeto-func-init
+#       AZURE_FUNCTIONAPP_NAME : rg-dev-projeto-func
+#       AZURE_RESOURCE_GROUP: rg-dev-projeto
 
-    steps:
-      - uses: actions/checkout@v3
+#     steps:
+#       - uses: actions/checkout@v3
 
-      - uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.7.0
+#       - uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: 1.7.0
 
-      # 🔹 Criar infra básica (Function App e Storage)
+#       # 🔹 Criar infra básica (Function App e Storage)
 
-      - name: Terraform Init
-        working-directory: infra
-        run: terraform init 
-        #-reconfigure -upgrade
+#       - name: Terraform Init
+#         working-directory: infra
+#         run: terraform init 
+#         #-reconfigure -upgrade
 
-      - name: Executar Terraform Plan
-        run: terraform plan -var-file=dev.tfvars
-        working-directory: infra
+#       - name: Executar Terraform Plan
+#         run: terraform plan -var-file=dev.tfvars
+#         working-directory: infra
 
-      - name: Terraform Apply Infra
-        working-directory: infra
-        run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
+#       - name: Terraform Apply Infra
+#         working-directory: infra
+#         run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
 
-      # 🔹 Login Azure
-      - name: Azure CLI Login
-        uses: azure/login@v1
-        with:
-          creds: |
-            {
-              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
-              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
-              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
-            }
+#       # 🔹 Login Azure
+#       - name: Azure CLI Login
+#         uses: azure/login@v1
+#         with:
+#           creds: |
+#             {
+#               "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+#               "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+#               "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+#               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+#             }
 
-      # 🔹 Limpar pacotes antigos do Python
-      # - name: Clean old Azure Function package
-      #   run: |
-      #     az functionapp config appsettings delete \
-      #       --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
-      #       --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-      #       --setting-names WEBSITE_RUN_FROM_PACKAGE || true
-      #     az functionapp restart \
-      #       --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
-      #       --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
+#       # 🔹 Limpar pacotes antigos do Python
+#       # - name: Clean old Azure Function package
+#       #   run: |
+#       #     az functionapp config appsettings delete \
+#       #       --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
+#       #       --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+#       #       --setting-names WEBSITE_RUN_FROM_PACKAGE || true
+#       #     az functionapp restart \
+#       #       --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
+#       #       --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
-      # 🚀 Deploy do código GeracaoData
-      - uses: actions/checkout@v3
+#       # 🚀 Deploy do código GeracaoData
+#       - uses: actions/checkout@v3
 
-      - name: Deploy Azure Function - Geracao
-        uses: Azure/functions-action@v1
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: ./azure_function/GeracaoData
-          enable-oryx-build: true
-          scm-do-build-during-deployment: true
+#       - name: Deploy Azure Function - Geracao
+#         uses: Azure/functions-action@v1
+#         with:
+#           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+#           package: ./azure_function/GeracaoData
+#           enable-oryx-build: true
+#           scm-do-build-during-deployment: true
 
-      # 🚀 Deploy do código functionvalidacao
-      - name: Deploy Azure Function - Validate
-        uses: Azure/functions-action@v1
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
-          package: './azure_function/functionvalidacao'
-          enable-oryx-build: true
-          scm-do-build-during-deployment: true
-        env:
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+#       # 🚀 Deploy do código functionvalidacao
+#       - name: Deploy Azure Function - Validate
+#         uses: Azure/functions-action@v1
+#         with:
+#           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
+#           package: './azure_function/functionvalidacao'
+#           enable-oryx-build: true
+#           scm-do-build-during-deployment: true
+#         env:
+#           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+#           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 
 
 
-      # # # 🔹 Criar Event Grid Subscription depois do deploy da Function
-      # - name: Terraform Apply Event Grid Subscription
-      #   working-directory: infra
-      #   run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
+#       # # # 🔹 Criar Event Grid Subscription depois do deploy da Function
+#       # - name: Terraform Apply Event Grid Subscription
+#       #   working-directory: infra
+#       #   run: terraform apply -auto-approve -var-file=dev.tfvars -lock-timeout=300s
