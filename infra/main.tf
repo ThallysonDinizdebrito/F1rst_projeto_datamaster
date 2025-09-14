@@ -77,6 +77,23 @@ resource "azurerm_linux_function_app" "function_app" {
   }
 }
 
+# ===========================
+# Data Source da Function App existente
+# ===========================
+data "azurerm_linux_function_app" "function_validate" {
+  name                = "${var.nome_do_grupo_de_recursos}-func-init"
+  resource_group_name = azurerm_resource_group.grupo_principal.name
+}
+
+# Exemplo de uso das infos
+output "function_validate_id" {
+  value = data.azurerm_linux_function_app.function_validate.id
+}
+
+output "function_validate_default_hostname" {
+  value = data.azurerm_linux_function_app.function_validate.default_hostname
+}
+
 
 
 
