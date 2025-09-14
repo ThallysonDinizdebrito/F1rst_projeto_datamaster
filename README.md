@@ -130,6 +130,9 @@ az storage account keys list --resource-group rg-dev-projeto --account-name devp
 az functionapp delete --name rg-dev-projeto-func --resource-group rg-dev-projeto
 
 
+#delete function
+az functionapp delete --name rg-dev-projeto-func-init --resource-group rg-dev-projeto
+
 # ver suas variaveis de ambiente dentro da azure
 az functionapp config appsettings list --name rg-dev-projeto-func --resource-group rg-dev-projeto
 
@@ -162,3 +165,15 @@ az eventgrid event-subscription show --name testefakedatafunctioninit --source-r
 
 # caso precise criar o zip dos pacotes das function 
 Compress-Archive -Path * -DestinationPath functionvalidacao.zip
+
+#Reinstalar Libs ja deploada das function 
+cd site/wwwroot
+python -m pip install --force-reinstall -r requirements.txt
+
+
+#reiniciar a function 
+# Via Azure CLI
+az functionapp restart --name rg-dev-projeto-func --resource-group rg-dev-projeto
+
+
+# Ou pelo portal: Restart
