@@ -17,6 +17,17 @@ app = func.FunctionApp()
 def validate_fake_data(azeventgrid: func.EventGridEvent):
     logging.info("Evento do Event Grid recebido.")
 
+    # Carrega schema JSON dentro da function
+    SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "schema.json")
+    try:
+        with open(SCHEMA_FILE, "r") as f:
+            SCHEMA = json.load(f)
+    except Exception as e:
+        logging.error(f"Erro ao carregar schema.json: {e}")
+        return
+
+
+
     # Converte os dados do evento em JSON
     event_data = azeventgrid.get_json()
     logging.info(f"Evento recebido: {json.dumps(event_data)}")
@@ -43,9 +54,9 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
 #     # ================================================================
 #     # Carrega schema JSON
 #     # ================================================================
-    SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "schema.json")
-    with open(SCHEMA_FILE, "r") as f:
-        SCHEMA = json.load(f)
+    # SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "schema.json")
+    # with open(SCHEMA_FILE, "r") as f:
+    #     SCHEMA = json.load(f)
 
 #     # ================================================================
 #     # Conecta no Blob Storage
