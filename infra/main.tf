@@ -38,16 +38,6 @@ resource "azurerm_storage_container" "container_rejeitados" {
   container_access_type = "private"
 }
 
-# ===========================
-# Service Plan para Function App
-# ===========================
-resource "azurerm_service_plan" "function_plan" {
-  name                = "${var.nome_do_grupo_de_recursos}-func-plan"
-  location            = azurerm_resource_group.grupo_principal.location
-  resource_group_name = azurerm_resource_group.grupo_principal.name
-  os_type             = "Linux"
-  sku_name            = "Y1"
-}
 
 
 

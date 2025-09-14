@@ -47,7 +47,7 @@ jobs:
         run: terraform -chdir=infra init
 
       - name: Terraform Apply Infra (sem func-init)
-        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_service_plan.function_plan -target=azurerm_linux_function_app.function_app
+        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_linux_function_app.function_app
 
       - name: Azure CLI Login
         uses: azure/login@v1

@@ -126,6 +126,18 @@ Remove-AzResourceGroup -Name "rg-dev-projeto" -Force
  az functionapp create --name rg-dev-projeto-func --resource-group rg-dev-projeto --storage-account devprojetoarmazen --plan rg-dev-projeto-func-plan --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
 
 
+modelo
+# az functionapp create `
+# >>   --resource-group rg-dev-projeto `
+# >>   --name rg-dev-projeto-func-init `
+# >>   --storage-account devprojetoarmazen `
+# >>   --consumption-plan-location westeurope `
+# >>   --runtime python `
+# >>   --runtime-version 3.11 `
+# >>   --functions-version 4 `
+# >>   --os-type Linux
+
+
 # desscobrir o Azure Key Vault da conta de armazenamento 
 
 az storage account keys list --resource-group rg-dev-projeto --account-name devprojetoarmazen  --query "[0].value" --output tsv
@@ -183,3 +195,7 @@ az functionapp restart --name rg-dev-projeto-func --resource-group rg-dev-projet
 # remover ID Lock em Deploy mal sucedido ou cancelado
  cd C:\Users\Thall\infra\F1rstDatamaster\infra
 terraform force-unlock 1a55c1d2-cf51-561c-2934-74b79b4bcbc5
+F
+
+#listar os serviços na azure
+az appservice plan list --resource-group rg-dev-projeto -o table
