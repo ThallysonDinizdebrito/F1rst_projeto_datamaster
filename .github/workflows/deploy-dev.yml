@@ -66,29 +66,29 @@ jobs:
     #         az functionapp create  --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_FUNCTIONAPP_NAME }} --storage-account ${{ env.STORAGE_ACCOUNT }} --consumption-plan-location westeurope --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
 
 
-    #   - name: Deploy Azure Function - func
-    #     uses: Azure/functions-action@v1
-    #     with:
-    #       app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-    #       package: './azure_function/GeracaoData'
-    #       enable-oryx-build: true
-    #       scm-do-build-during-deployment: true
+      - name: Deploy Azure Function - func
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: './azure_function/GeracaoData'
+          enable-oryx-build: true
+          scm-do-build-during-deployment: true
 
 
 
-    #   - name: Create Function App + Deploy Package init
-    #     run: |
-    #       # Cria a Function App Linux
-    #         az functionapp create  --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --storage-account ${{ env.STORAGE_ACCOUNT }} --consumption-plan-location westeurope --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
+      - name: Create Function App + Deploy Package init
+        run: |
+          # Cria a Function App Linux
+            az functionapp create  --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --storage-account ${{ env.STORAGE_ACCOUNT }} --consumption-plan-location westeurope --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
 
 
-    #   - name: Deploy Azure Function - Validate
-    #     uses: Azure/functions-action@v1
-    #     with:
-    #       app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
-    #       package: './azure_function/functionvalidacao'
-    #       enable-oryx-build: true
-    #       scm-do-build-during-deployment: true
+      - name: Deploy Azure Function - Validate
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
+          package: './azure_function/functionvalidacao'
+          enable-oryx-build: true
+          scm-do-build-during-deployment: true
             
 
   eventgrid:
@@ -132,4 +132,4 @@ jobs:
         # -target=azurerm_eventgrid_event_subscription.sub_func 
 
 
-        
+
