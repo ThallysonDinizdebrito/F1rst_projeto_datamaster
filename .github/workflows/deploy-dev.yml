@@ -76,10 +76,10 @@ jobs:
 
 
 
-      - name: Create Function App init
-        run: |
-          # Cria a Function App Linux
-            az functionapp create  --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --storage-account ${{ env.STORAGE_ACCOUNT }} --consumption-plan-location westeurope --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
+      # - name: Create Function App init
+      #   run: |
+      #     # Cria a Function App Linux
+      #       az functionapp create  --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --storage-account ${{ env.STORAGE_ACCOUNT }} --consumption-plan-location westeurope --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
 
 
       - name: Deploy Azure Function - Deploy Package init
