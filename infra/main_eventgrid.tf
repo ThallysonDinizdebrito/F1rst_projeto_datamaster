@@ -29,11 +29,12 @@ data "azurerm_linux_function_app" "function_validate" {
 # ================================================================
 # Event Grid Subscription - System Topic -> Function App
 # ================================================================
-resource "azurerm_eventgrid_system_topic_event_subscription" "sub_func_system_topic" {
-  name            = "${var.nome_do_grupo_de_recursos}-sub-func-system"
-  system_topic_id = azurerm_eventgrid_system_topic.raw_topic.id
+resource "azurerm_eventgrid_event_subscription" "sub_func_system_topic" {
+  name                = "${var.nome_do_grupo_de_recursos}-sub-func-system"
+  resource_group_name = azurerm_resource_group.grupo_principal.name
+  system_topic        = azurerm_eventgrid_system_topic.raw_topic.name
 
-  included_event_types  = ["Microsoft.Storage.BlobCreated"] # apenas eventos de blob criado
+  included_event_types  = ["Microsoft.Storage.BlobCreated"]
   event_delivery_schema = "CloudEventSchemaV1_0"
 
   azure_function_endpoint {
@@ -49,6 +50,7 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "sub_func_system_to
     azurerm_eventgrid_system_topic.raw_topic
   ]
 }
+
 
 # ================================================================
 # Event Grid Subscription - Custom Topic -> Function App
