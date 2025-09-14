@@ -77,51 +77,6 @@ resource "azurerm_linux_function_app" "function_app" {
   }
 }
 
-# ===========================
-# Function Apps (vazias) - func-init
-# ===========================
-resource "azurerm_linux_function_app" "function_validate" {
-  name                      = "${var.nome_do_grupo_de_recursos}-func-init"
-  location                  = azurerm_resource_group.grupo_principal.location
-  resource_group_name       = azurerm_resource_group.grupo_principal.name
-  service_plan_id           = azurerm_service_plan.function_plan.id
-  storage_account_name      = azurerm_storage_account.conta_armazenamento.name
-  storage_account_access_key= azurerm_storage_account.conta_armazenamento.primary_access_key
-
-  site_config {
-    application_stack {
-      python_version = "3.11"
-    }
-  }
-
-  identity { type = "SystemAssigned" }
-
-  app_settings = {
-    "RAW_CONTAINER_NAME"              = azurerm_storage_container.container_raw.name
-    "VALIDATED_CONTAINER_NAME"        = azurerm_storage_container.container_validado.name
-    "REJECTED_CONTAINER_NAME"         = azurerm_storage_container.container_rejeitados.name
-    "AZURE_STORAGE_ACCOUNT_NAME"      = azurerm_storage_account.conta_armazenamento.name
-    "FUNCTIONS_WORKER_RUNTIME"        = "python"
-    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
-    "ENABLE_ORYX_BUILD"               = "true"
-  }
-}
-
-# ===========================
-# Deploy do código via ZIP usando Azure CLI
-# ===========================
-resource "null_resource" "deploy_validate_zip" {
-  provisioner "local-exec" {
-    command = <<EOT
-      az functionapp deployment source config-zip \
-        --resource-group ${azurerm_resource_group.grupo_principal.name} \
-        --name ${azurerm_linux_function_app.function_validate.name} \
-        --src ../azure_function/functionvalidacao/functionvalidacao.zip
-    EOT
-  }
-
-  depends_on = [azurerm_linux_function_app.function_validate]
-}
 
 
 

@@ -10,10 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
 
-    # steps:
-    # - name: Test Print
-    #   run: echo "Este é um print no primeiro job"
-
     concurrency:
       group: terraform-dev
       cancel-in-progress: true
@@ -32,6 +28,9 @@ jobs:
       AZURE_FUNCTIONAPP_NAME_VALIDATE: rg-dev-projeto-func-init
       AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
       AZURE_RESOURCE_GROUP: rg-dev-projeto
+      LOCATION: westeurope
+      STORAGE_ACCOUNT: nome_da_conta_armazenamento
+      SERVICE_PLAN: nome_do_service_plan
 
     steps:
       - uses: actions/checkout@v3
@@ -43,8 +42,9 @@ jobs:
       - name: Terraform Init
         run: terraform -chdir=infra init
 
-      - name: Terraform Apply Infra + Functions
-        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_service_plan.function_plan -target=azurerm_linux_function_app.function_app -target=azurerm_linux_function_app.function_validate
+      - name: Terraform Apply Infra (sem func-init)
+        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_service_plan.function_plan -target=azurerm_linux_function_app.function_app
+
       - name: Azure CLI Login
         uses: azure/login@v1
         with:
@@ -56,31 +56,29 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-    #   - name: Deploy Azure Function - Geracao
-    #     uses: Azure/functions-action@v1
-    #     with:
-    #       app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-    #       package: ./azure_function/GeracaoData
-    #       enable-oryx-build: true
-    #       scm-do-build-during-deployment: true
+      - name: Create Function App + Deploy Package
+        run: |
+          # Cria a Function App Linux
+          az functionapp create \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
+            --storage-account ${{ env.STORAGE_ACCOUNT }} \
+            --plan ${{ env.SERVICE_PLAN }} \
+            --runtime python \
+            --runtime-version 3.11 \
+            --functions-version 4 \
+            --os-type Linux
 
-    #   - name: Deploy Azure Function - Validate
-    #     uses: Azure/functions-action@v1
-    #     with:
-    #       app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
-    #       package: './azure_function/functionvalidacao'
-    #       enable-oryx-build: true
-    #       scm-do-build-during-deployment: true
-        env:
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          # Faz o deploy do pacote ZIP
+          az functionapp deployment source config-zip \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
+            --src ./azure_function/functionvalidacao
 
   eventgrid:
     runs-on: ubuntu-latest
     environment: dev
-    needs: infra_functions   # só roda depois que o job 1 terminar
+    needs: infra_functions
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -98,8 +96,7 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.0
-      
-    # 🔹 Login no Azure antes do terraform init
+
       - name: Azure CLI Login
         uses: azure/login@v1
         with:
