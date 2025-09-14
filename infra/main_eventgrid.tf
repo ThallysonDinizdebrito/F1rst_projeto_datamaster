@@ -1,13 +1,3 @@
-# ================================================================
-# Event Grid - System Topic (Storage Account)
-# ================================================================
-resource "azurerm_eventgrid_system_topic" "raw_topic" {
-  name                   = "${var.nome_do_grupo_de_recursos}-raw-topic"
-  location               = azurerm_resource_group.grupo_principal.location
-  resource_group_name    = azurerm_resource_group.grupo_principal.name
-  source_arm_resource_id = azurerm_storage_account.conta_armazenamento.id
-  topic_type             = "Microsoft.Storage.StorageAccounts"
-}
 
 # ================================================================
 # Event Grid - Custom Topic (opcional)
@@ -29,6 +19,16 @@ data "azurerm_linux_function_app" "function_validate" {
 # ================================================================
 # Event Grid Subscription - System Topic -> Function App
 # ================================================================
+# System Topic ligado à Storage Account
+resource "azurerm_eventgrid_system_topic" "raw_topic" {
+  name                   = "${var.nome_do_grupo_de_recursos}-raw-topic"
+  location               = azurerm_resource_group.grupo_principal.location
+  resource_group_name    = azurerm_resource_group.grupo_principal.name
+  source_arm_resource_id = azurerm_storage_account.conta_armazenamento.id
+  topic_type             = "Microsoft.Storage.StorageAccounts"
+}
+
+# Subscription para System Topic apontando para uma Function
 resource "azurerm_eventgrid_system_topic_event_subscription" "sub_func_system_topic" {
   name                = "${var.nome_do_grupo_de_recursos}-sub-func-system"
   resource_group_name = azurerm_resource_group.grupo_principal.name
@@ -45,10 +45,6 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "sub_func_system_to
     storage_account_id          = azurerm_storage_account.conta_armazenamento.id
     storage_blob_container_name = azurerm_storage_container.container_rejeitados.name
   }
-
-  depends_on = [
-    azurerm_eventgrid_system_topic.raw_topic
-  ]
 }
 
 
