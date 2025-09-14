@@ -1,13 +1,13 @@
 # Data source para Function App existente
 data "azurerm_linux_function_app" "function_validate" {
-  name                = "projeto-func-validate"   # CONFIRMAR no portal Azure
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = "projeto-func-validate"   # Nome exato da Function App no Azure
+  resource_group_name = "rg-dev-projeto"          # Nome do RG onde a Function App está
 }
 
-# Subscription do EventGrid -> Function
+# EventGrid Subscription apontando para a Function
 resource "azurerm_eventgrid_event_subscription" "sub_func" {
   name  = "sub-func-validate"
-  scope = azurerm_storage_account.sa.id
+  scope = azurerm_eventgrid_topic.topic.id        # Ou storage_account.sa.id se for o caso
 
   event_delivery_schema = "CloudEventSchemaV1_0"
 
