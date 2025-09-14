@@ -81,21 +81,31 @@ resource "azurerm_linux_function_app" "function_app" {
 # Function Apps (vazias) - func-init  
 # ===========================
 
-resource "azurerm_linux_function_app" "function_validate" {
-  name                      = "${var.nome_do_grupo_de_recursos}-func-init"
-  location                  = azurerm_resource_group.grupo_principal.location
-  resource_group_name       = azurerm_resource_group.grupo_principal.name
-  service_plan_id           = azurerm_service_plan.function_plan.id
-  storage_account_name      = azurerm_storage_account.conta_armazenamento.name
-  storage_account_access_key= azurerm_storage_account.conta_armazenamento.primary_access_key
+
+resource "azurerm_function_app" "function_validate" {
+  name                = "rg-dev-projeto-func-init"
+  location            = azurerm_resource_group.grupo_principal.location
+  resource_group_name = azurerm_resource_group.grupo_principal.name
+  service_plan_id     = azurerm_service_plan.function_plan.id
+  storage_account_name = azurerm_storage_account.conta_armazenamento.name
+  storage_account_access_key = azurerm_storage_account.conta_armazenamento.primary_access_key
+  os_type             = "Linux"
+  runtime_stack       = "python|3.11"
+}
+
+resource "azurerm_function_app_slot" "deploy_validate_zip" {
+  name                = "validate_slot"
+  function_app_id     = azurerm_function_app.function_validate.id
+  resource_group_name = azurerm_resource_group.grupo_principal.name
 
   site_config {
-    application_stack {
-      python_version = "3.11"
-    }
+    app_command_line = ""
   }
 
-  identity { type = "SystemAssigned" }
+  depends_on = [
+    azurerm_function_app.function_validate
+  ]
+}
 
   app_settings = {
     "RAW_CONTAINER_NAME"             = azurerm_storage_container.container_raw.name
@@ -106,7 +116,14 @@ resource "azurerm_linux_function_app" "function_validate" {
     "SCM_DO_BUILD_DURING_DEPLOYMENT"= "true"
     "ENABLE_ORYX_BUILD"              = "true"
   }
+
+resource "azurerm_function_app_zip_deploy" "validate" {
+  function_app_id = azurerm_function_app.function_validate.id
+  src_path        = "../azure_function/functionvalidacao/functionvalidacao.zip"
+
+  depends_on = [azurerm_function_app.function_validate]
 }
+
 
 # ========================================
 # EventGrid Topic
