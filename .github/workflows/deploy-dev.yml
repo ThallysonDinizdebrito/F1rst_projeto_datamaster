@@ -10,65 +10,69 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
 
-    concurrency:
-      group: terraform-dev
-      cancel-in-progress: true
+    steps: 
+    - name: Test Print
+      run: echo "Este é um print no primeiro job dev"
 
-    env:
-      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    # concurrency:
+    #   group: terraform-dev
+    #   cancel-in-progress: true
 
-      TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
-      TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
-      TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
-      TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    # env:
+    #   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+    #   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+    #   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+    #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      AZURE_FUNCTIONAPP_NAME_VALIDATE: rg-dev-projeto-func-init
-      AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
-      AZURE_RESOURCE_GROUP: rg-dev-projeto
-      LOCATION: westeurope
-      STORAGE_ACCOUNT: devprojetoarmazen
-      SERVICE_PLAN: rg-dev-projeto-func-plan
+    #   TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+    #   TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+    #   TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
+    #   TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    steps:
-      - uses: actions/checkout@v3
+    #   AZURE_FUNCTIONAPP_NAME_VALIDATE: rg-dev-projeto-func-init
+    #   AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
+    #   AZURE_RESOURCE_GROUP: rg-dev-projeto
+    #   LOCATION: westeurope
+    #   STORAGE_ACCOUNT: devprojetoarmazen
+    #   SERVICE_PLAN: rg-dev-projeto-func-plan
 
-      - uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.7.0
+    # steps:
+    #   - uses: actions/checkout@v3
 
-      - name: Terraform Init
-        run: terraform -chdir=infra init
+    #   - uses: hashicorp/setup-terraform@v2
+    #     with:
+    #       terraform_version: 1.7.0
 
-      - name: Terraform Apply Infra (sem func-init)
-        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_service_plan.function_plan -target=azurerm_linux_function_app.function_app
+    #   - name: Terraform Init
+    #     run: terraform -chdir=infra init
 
-      - name: Azure CLI Login
-        uses: azure/login@v1
-        with:
-          creds: |
-            {
-              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
-              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
-              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
-            }
+    #   - name: Terraform Apply Infra (sem func-init)
+    #     run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_service_plan.function_plan -target=azurerm_linux_function_app.function_app
 
-      - name: Create Function App + Deploy Package
-        run: |
-          # Cria a Function App Linux
-            az functionapp create  --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --storage-account ${{ env.STORAGE_ACCOUNT }} --consumption-plan-location westeurope --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
+    #   - name: Azure CLI Login
+    #     uses: azure/login@v1
+    #     with:
+    #       creds: |
+    #         {
+    #           "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+    #           "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+    #           "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+    #           "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+    #         }
+
+    #   - name: Create Function App + Deploy Package
+    #     run: |
+    #       # Cria a Function App Linux
+    #         az functionapp create  --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --storage-account ${{ env.STORAGE_ACCOUNT }} --consumption-plan-location westeurope --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
 
 
-      - name: Deploy Azure Function - Validate
-        uses: Azure/functions-action@v1
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
-          package: './azure_function/functionvalidacao'
-          enable-oryx-build: true
-          scm-do-build-during-deployment: true
+    #   - name: Deploy Azure Function - Validate
+    #     uses: Azure/functions-action@v1
+    #     with:
+    #       app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
+    #       package: './azure_function/functionvalidacao'
+    #       enable-oryx-build: true
+    #       scm-do-build-during-deployment: true
             
 
   eventgrid:

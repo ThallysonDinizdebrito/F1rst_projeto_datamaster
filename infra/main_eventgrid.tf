@@ -1,7 +1,7 @@
 # Data source para Function App existente
 data "azurerm_linux_function_app" "function_validate" {
-  name                = "projeto-func-validate"   # Nome exato da Function App no Azure
-  resource_group_name = "rg-dev-projeto"          # Nome do RG onde a Function App está
+  name                = "rg-dev-projeto-func-init"
+  resource_group_name = "rg-dev-projeto"
 }
 
 # EventGrid Subscription apontando para a Function
