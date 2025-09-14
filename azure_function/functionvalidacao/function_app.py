@@ -2,8 +2,8 @@ import logging
 import azure.functions as func
 import json
 import os
-# from azure.storage.blob import BlobServiceClient
-# from jsonschema import validate, ValidationError
+from azure.storage.blob import BlobServiceClient
+from jsonschema import validate, ValidationError
 
 # ================================================================
 # Cria a aplicação de funções
