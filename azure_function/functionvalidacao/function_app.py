@@ -41,11 +41,11 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
     REJEITADO_CONTAINER = "rejeitado"
 
 
-    # ================================================================
-    # Conecta no Blob Storage
-    # ================================================================
-    blob_service = BlobServiceClient.from_connection_string(STORAGE_CONN_STR)
-    raw_container_client = blob_service.get_container_client(RAW_CONTAINER)
+    # # ================================================================
+    # # Conecta no Blob Storage
+    # # ================================================================
+    # blob_service = BlobServiceClient.from_connection_string(STORAGE_CONN_STR)
+    # raw_container_client = blob_service.get_container_client(RAW_CONTAINER)
 
     # try:
     #     blob_data = raw_container_client.get_blob_client(blob_name).download_blob().readall().decode("utf-8")
