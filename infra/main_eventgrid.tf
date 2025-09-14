@@ -13,7 +13,7 @@ resource "azurerm_eventgrid_event_subscription" "sub_func" {
   }
 
   azure_function_endpoint {
-    function_id = "${azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
+    function_id = "${azurerm_linux_function_app.function_validate_id}/functions/validate_fake_data"
   }
 
   lifecycle {
