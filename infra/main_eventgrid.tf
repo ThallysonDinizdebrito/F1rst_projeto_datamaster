@@ -28,11 +28,11 @@ resource "azurerm_eventgrid_system_topic" "raw_topic" {
   topic_type             = "Microsoft.Storage.StorageAccounts"
 }
 
-# Subscription para System Topic apontando para uma Function
+# Subscription para System Topic apontando para Function
 resource "azurerm_eventgrid_system_topic_event_subscription" "sub_func_system_topic" {
   name                = "${var.nome_do_grupo_de_recursos}-sub-func-system"
   resource_group_name = azurerm_resource_group.grupo_principal.name
-  system_topic_name   = azurerm_eventgrid_system_topic.raw_topic.name
+  system_topic        = azurerm_eventgrid_system_topic.raw_topic.name
 
   included_event_types  = ["Microsoft.Storage.BlobCreated"]
   event_delivery_schema = "CloudEventSchemaV1_0"
@@ -45,7 +45,12 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "sub_func_system_to
     storage_account_id          = azurerm_storage_account.conta_armazenamento.id
     storage_blob_container_name = azurerm_storage_container.container_rejeitados.name
   }
+
+  depends_on = [
+    azurerm_eventgrid_system_topic.raw_topic
+  ]
 }
+
 
 
 # ================================================================
