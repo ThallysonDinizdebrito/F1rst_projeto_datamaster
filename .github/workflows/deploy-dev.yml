@@ -94,6 +94,12 @@ jobs:
           package: './azure_function/functionvalidacao'
           enable-oryx-build: true
           scm-do-build-during-deployment: true
+
+      - name: Reinstal libs
+        run: |
+          # Clear Reinstalar Libs
+            func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python
+
             
 
   eventgrid:

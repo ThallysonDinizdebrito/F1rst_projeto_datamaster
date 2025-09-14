@@ -3,7 +3,7 @@ import azure.functions as func
 import json
 import os
 from azure.storage.blob import BlobServiceClient
-# from jsonschema import validate, ValidationError
+from jsonschema import validate, ValidationError
 
 # ================================================================
 # Função auxiliar para carregar schema JSON
@@ -52,30 +52,30 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
     blob_service = BlobServiceClient.from_connection_string(storage_conn_srt)
     raw_container_client = blob_service.get_container_client(raw_container)
 
-    # try:
-    #     blob_data = raw_container_client.get_blob_client(blob_name).download_blob().readall().decode("utf-8")
-    #     data = json.loads(blob_data)
-    # except Exception as e:
-    #     logging.error(f"Erro ao ler JSON ou baixar blob: {e}")
-    #     mover_blob(blob_service, blob_name, blob_data if 'blob_data' in locals() else "", Rejeitado_container)
-    #     return
+    try:
+        blob_data = raw_container_client.get_blob_client(blob_name).download_blob().readall().decode("utf-8")
+        data = json.loads(blob_data)
+    except Exception as e:
+        logging.error(f"Erro ao ler JSON ou baixar blob: {e}")
+        mover_blob(blob_service, blob_name, blob_data if 'blob_data' in locals() else "", Rejeitado_container)
+        return
 
-#     try:
-#         # Validação usando JSON Schema
-#         validate(instance=data, schema=SCHEMA)
-#         logging.info(f"JSON válido ✔ - {blob_name} enviado para '{Validado_container}'")
-#         mover_blob(blob_service, blob_name, blob_data, Validado_container)
-#     except ValidationError as e:
-#         logging.warning(f"JSON inválido ✘ - {blob_name} enviado para '{Rejeitado_container}': {e.message}")
-#         mover_blob(blob_service, blob_name, blob_data, Rejeitado_container)
+    try:
+        # Validação usando JSON Schema
+        validate(instance=data, schema=SCHEMA)
+        logging.info(f"JSON válido ✔ - {blob_name} enviado para '{Validado_container}'")
+        mover_blob(blob_service, blob_name, blob_data, Validado_container)
+    except ValidationError as e:
+        logging.warning(f"JSON inválido ✘ - {blob_name} enviado para '{Rejeitado_container}': {e.message}")
+        mover_blob(blob_service, blob_name, blob_data, Rejeitado_container)
 
-# # ================================================================
-# # Função auxiliar para mover blob
-# # ================================================================
-# def mover_blob(blob_service: BlobServiceClient, blob_name: str, content: str, destino: str):
-#     try:
-#         container_client = blob_service.get_container_client(destino)
-#         container_client.upload_blob(name=blob_name, data=content, overwrite=True)
-#         logging.info(f"Blob {blob_name} movido para {destino}")
-#     except Exception as e:
-#         logging.error(f"Erro ao mover blob {blob_name} para {destino}: {e}")
+# ================================================================
+# Função auxiliar para mover blob
+# ================================================================
+def mover_blob(blob_service: BlobServiceClient, blob_name: str, content: str, destino: str):
+    try:
+        container_client = blob_service.get_container_client(destino)
+        container_client.upload_blob(name=blob_name, data=content, overwrite=True)
+        logging.info(f"Blob {blob_name} movido para {destino}")
+    except Exception as e:
+        logging.error(f"Erro ao mover blob {blob_name} para {destino}: {e}")
