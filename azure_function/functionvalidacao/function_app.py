@@ -43,9 +43,9 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
 #     # ================================================================
 #     # Carrega schema JSON
 #     # ================================================================
-#     SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "schema.json")
-#     with open(SCHEMA_FILE, "r") as f:
-#         SCHEMA = json.load(f)
+    SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "schema.json")
+    with open(SCHEMA_FILE, "r") as f:
+        SCHEMA = json.load(f)
 
 #     # ================================================================
 #     # Conecta no Blob Storage
