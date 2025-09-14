@@ -39,8 +39,6 @@ resource "azurerm_storage_container" "container_rejeitados" {
 }
 
 
-
-
 # ========================================
 # EventGrid Topic
 # ========================================

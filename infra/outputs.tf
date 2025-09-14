@@ -32,10 +32,6 @@ output "nome_container_raw" {
 #   value       = azurerm_databricks_workspace.workspace.workspace_url
 # }
 
-output "nome_function_app" {
-  description = "Nome da Function App"
-  value       = azurerm_linux_function_app.function_app.name
-}
 
 output "nome_do_container_rejeitados" {
   description = "Nome do container rejeitados criado"
