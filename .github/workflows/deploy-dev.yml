@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
 
-    steps:
-    - name: Test Print
-      run: echo "Este é um print no primeiro job dev"
+    # steps:
+    # - name: Test Print
+    #   run: echo "Este é um print no primeiro job"
 
     concurrency:
       group: terraform-dev
