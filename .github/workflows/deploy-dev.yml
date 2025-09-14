@@ -75,6 +75,7 @@ jobs:
           scm-do-build-during-deployment: true
 
 
+
       - name: Create Function App + Deploy Package init
         run: |
           # Cria a Function App Linux
