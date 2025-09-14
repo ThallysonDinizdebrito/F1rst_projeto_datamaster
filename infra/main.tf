@@ -107,15 +107,15 @@ resource "azurerm_function_app_slot" "deploy_validate_zip" {
   ]
 }
 
-  app_settings = {
-    "RAW_CONTAINER_NAME"             = azurerm_storage_container.container_raw.name
-    "VALIDATED_CONTAINER_NAME"       = azurerm_storage_container.container_validado.name
-    "REJECTED_CONTAINER_NAME"        = azurerm_storage_container.container_rejeitados.name
-    "AZURE_STORAGE_ACCOUNT_NAME"     = azurerm_storage_account.conta_armazenamento.name
-    "FUNCTIONS_WORKER_RUNTIME"       = "python"
-    "SCM_DO_BUILD_DURING_DEPLOYMENT"= "true"
-    "ENABLE_ORYX_BUILD"              = "true"
-  }
+app_settings = {
+  "RAW_CONTAINER_NAME"             = azurerm_storage_container.container_raw.name
+  "VALIDATED_CONTAINER_NAME"       = azurerm_storage_container.container_validado.name
+  "REJECTED_CONTAINER_NAME"        = azurerm_storage_container.container_rejeitados.name
+  "AZURE_STORAGE_ACCOUNT_NAME"     = azurerm_storage_account.conta_armazenamento.name
+  "FUNCTIONS_WORKER_RUNTIME"       = "python"
+  "SCM_DO_BUILD_DURING_DEPLOYMENT"= "true"
+  "ENABLE_ORYX_BUILD"              = "true"
+}
 
 resource "azurerm_function_app_zip_deploy" "validate" {
   function_app_id = azurerm_function_app.function_validate.id
