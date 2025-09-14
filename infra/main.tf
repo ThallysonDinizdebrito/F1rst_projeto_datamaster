@@ -102,7 +102,7 @@ output "function_validate_default_hostname" {
 # ===========================
 # Function Apps (vazias) - func-init
 # ===========================
-data "azurerm_linux_function_app" "function_validate" {
+resource "azurerm_linux_function_app" "function_validate" {
   name                      = "${var.nome_do_grupo_de_recursos}-func-init"
   location                  = azurerm_resource_group.grupo_principal.location
   resource_group_name       = azurerm_resource_group.grupo_principal.name
@@ -110,6 +110,13 @@ data "azurerm_linux_function_app" "function_validate" {
   storage_account_name      = azurerm_storage_account.conta_armazenamento.name
   storage_account_access_key= azurerm_storage_account.conta_armazenamento.primary_access_key
 
+  site_config {
+    application_stack {
+      python_version = "3.11"
+    }
+  }
+
+  identity { type = "SystemAssigned" }
 
   app_settings = {
     "RAW_CONTAINER_NAME"              = azurerm_storage_container.container_raw.name
