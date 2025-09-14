@@ -2,7 +2,7 @@ import logging
 import azure.functions as func
 import json
 import os
-from azure.storage.blob import BlobServiceClient
+# from azure.storage.blob import BlobServiceClient
 
 # Cria a aplicação de funções
 app = func.FunctionApp()

@@ -203,3 +203,5 @@ az appservice plan list --resource-group rg-dev-projeto -o table
 
 # garante a reinstalação das libs das function principalmente para a function que gera dados
 C:\Users\Thall\infra\F1rstDatamaster\azure_function\GeracaoData> func azure functionapp publish rg-dev-projeto-func --build remote --python
+
+C:\Users\Thall\infra\F1rstDatamaster\azure_function\functionvalidacao> func azure functionapp publish rg-dev-projeto-func-init --build remote --python
