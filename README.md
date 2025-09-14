@@ -114,9 +114,13 @@ Remove-AzResourceGroup -Name "rg-backend-dev" -Force
 Remove-AzResourceGroup -Name "rg-dev-projeto" -Force
 
 
+
+
 # criar o plano de hospedagem da function
  az functionapp plan create --name rg-dev-projeto-func-plan --resource-group rg-dev-projeto --location westeurope --sku EP1 --is-linux
 
+
+#JA ESTA PROVISIONADA A SER CRIADA NO CLI NO DEPLOY 
  # criar a function 
 
  az functionapp create --name rg-dev-projeto-func --resource-group rg-dev-projeto --storage-account devprojetoarmazen --plan rg-dev-projeto-func-plan --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
