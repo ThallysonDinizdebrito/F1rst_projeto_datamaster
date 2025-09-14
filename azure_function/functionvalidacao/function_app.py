@@ -20,30 +20,35 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
     blob_url = event_data.get("url")
     logging.info(f"Blob recebido: {blob_url}")
 
-    # Aqui você pode implementar a lógica de validação
+    # lógica de validação
     if not blob_url:
         logging.error("Blob URL não encontrada no evento!")
         return
 
     blob_name = blob_url.split("/")[-1]
 
-    STORAGE_CONN_STR = os.getenv("AzureWebJobsStorage")
-    RAW_CONTAINER = os.getenv("RAW_CONTAINER_NAME", "raw")
-    VALIDADO_CONTAINER = "validado"
-    REJEITADO_CONTAINER = "rejeitado"
+    storage_conn_srt = os.getenv("AzureWebJobsStorage") 
+    raw_container = os.getenv("RAW_CONTAINER_NAME", "raw") 
+    Validado_container = "validado" 
+    Rejeitado_container = "rejeitado" 
+
+    container_name = os.getenv("RAW_CONTAINER_NAME", "raw")
+
+    # ================================================================
+    # Carrega schema JSON
+    # ================================================================
 
 def load_schema(filename="schema.json"):
     schema_path = os.path.join(os.path.dirname(__file__), filename)
     with open(schema_path, "r") as f:
         return json.load(f)
     
-    # ================================================================
-    # Carrega schema JSON
-    # ================================================================
     SCHEMA = load_schema()
 
     # ================================================================
     # Conecta no Blob Storage
     # ================================================================
-    blob_service = BlobServiceClient.from_connection_string(STORAGE_CONN_STR)
-    raw_container_client = blob_service.get_container_client(RAW_CONTAINER)
+    blob_service = BlobServiceClient.from_connection_string(storage_conn_srt)
+    raw_container_client = blob_service.get_container_client(raw_container)
+
+

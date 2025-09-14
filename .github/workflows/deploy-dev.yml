@@ -81,6 +81,11 @@ jobs:
           # Cria a Function App Linux
             az functionapp create  --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --storage-account ${{ env.STORAGE_ACCOUNT }} --consumption-plan-location westeurope --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
 
+      - name: Clear Package
+        run: |
+          # Clear WEBSITE_RUN_FROM_PACKAGE
+            az functionapp config appsettings delete --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --setting-names WEBSITE_RUN_FROM_PACKAGE
+
 
       - name: Deploy Azure Function - Deploy Package init
         uses: Azure/functions-action@v1
