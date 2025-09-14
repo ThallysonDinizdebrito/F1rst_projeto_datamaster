@@ -205,3 +205,7 @@ az appservice plan list --resource-group rg-dev-projeto -o table
 C:\Users\Thall\infra\F1rstDatamaster\azure_function\GeracaoData> func azure functionapp publish rg-dev-projeto-func --build remote --python
 
 C:\Users\Thall\infra\F1rstDatamaster\azure_function\functionvalidacao> func azure functionapp publish rg-dev-projeto-func-init --build remote --python
+
+
+# APAGAR O PACKAGE DA FUNCTION
+ az functionapp config appsettings delete --name rg-dev-projeto-func --resource-group rg-dev-projeto --setting-names WEBSITE_RUN_FROM_PACKAGE
