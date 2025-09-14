@@ -13,8 +13,8 @@ RAW_CONTAINER = os.getenv("RAW_CONTAINER_NAME", "raw")
 VALIDADO_CONTAINER = "validado"
 REJEITADO_CONTAINER = "rejeitado"
 
-# Carrega schema do arquivo
-SCHEMA_PATH = os.path.join(os.path.dirname(__file__), "schema.json")
+# Caminho ajustado para schema.json fora da pasta da Function
+SCHEMA_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "schema_json", "schema.json")
 with open(SCHEMA_PATH, "r") as f:
     SCHEMA = json.load(f)
 
@@ -41,12 +41,11 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
         return
 
     try:
-        # Valida o JSON usando schema
         validate(instance=data, schema=SCHEMA)
-        logging.info(f"JSON válido [OK SUCESSO] - {blob_name} enviado para '{VALIDADO_CONTAINER}'")
+        logging.info(f"JSON válido [OK SUCESS] - {blob_name} enviado para '{VALIDADO_CONTAINER}'")
         mover_blob(blob_service, blob_name, blob_data, VALIDADO_CONTAINER)
     except ValidationError as e:
-        logging.warning(f"JSON inválido [X ERROR] - {blob_name} enviado para '{REJEITADO_CONTAINER}': {e.message}")
+        logging.warning(f"JSON inválido [X error] - {blob_name} enviado para '{REJEITADO_CONTAINER}': {e.message}")
         mover_blob(blob_service, blob_name, blob_data, REJEITADO_CONTAINER)
 
 
