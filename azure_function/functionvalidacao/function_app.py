@@ -5,6 +5,16 @@ import os
 from azure.storage.blob import BlobServiceClient
 # from jsonschema import validate, ValidationError
 
+# ================================================================
+# Função auxiliar para carregar schema JSON
+# ================================================================
+def load_schema(filename="schema.json"):
+    schema_path = os.path.join(os.path.dirname(__file__), filename)
+    with open(schema_path, "r") as f:
+        return json.load(f)
+
+SCHEMA = load_schema()
+
 # Cria a aplicação de funções
 app = func.FunctionApp()
 
@@ -35,16 +45,6 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
 
     container_name = os.getenv("RAW_CONTAINER_NAME", "raw")
 
-    # ================================================================
-    # Carrega schema JSON
-    # ================================================================
-
-def load_schema(filename="schema.json"):
-    schema_path = os.path.join(os.path.dirname(__file__), filename)
-    with open(schema_path, "r") as f:
-        return json.load(f)
-    
-    SCHEMA = load_schema()
 
     # ================================================================
     # Conecta no Blob Storage
