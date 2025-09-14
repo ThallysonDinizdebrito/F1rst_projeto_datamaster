@@ -180,4 +180,6 @@ python -m pip install --force-reinstall -r requirements.txt
 az functionapp restart --name rg-dev-projeto-func --resource-group rg-dev-projeto
 
 
-# Ou pelo portal: Restart
+# remover ID Lock em Deploy mal sucedido ou cancelado
+ cd C:\Users\Thall\infra\F1rstDatamaster\infra
+terraform force-unlock 1a55c1d2-cf51-561c-2934-74b79b4bcbc5
