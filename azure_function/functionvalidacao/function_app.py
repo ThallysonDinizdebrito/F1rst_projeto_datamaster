@@ -18,13 +18,13 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
     logging.info("Evento do Event Grid recebido.")
 
     # Carrega schema JSON dentro da function
-    SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "schema.json")
-    try:
-        with open(SCHEMA_FILE, "r") as f:
-            SCHEMA = json.load(f)
-    except Exception as e:
-        logging.error(f"Erro ao carregar schema.json: {e}")
-        return
+    # SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "schema.json")
+    # try:
+    #     with open(SCHEMA_FILE, "r") as f:
+    #         SCHEMA = json.load(f)
+    # except Exception as e:
+    #     logging.error(f"Erro ao carregar schema.json: {e}")
+    #     return
 
 
 
@@ -52,19 +52,20 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
     REJEITADO_CONTAINER = "rejeitado"
 
 
-#     # ================================================================
-#     # Conecta no Blob Storage
-#     # ================================================================
-#     blob_service = BlobServiceClient.from_connection_string(STORAGE_CONN_STR)
-#     raw_container_client = blob_service.get_container_client(RAW_CONTAINER)
+    # ================================================================
+    # Conecta no Blob Storage
+    # ================================================================
+    blob_service = BlobServiceClient.from_connection_string(STORAGE_CONN_STR)
+    raw_container_client = blob_service.get_container_client(RAW_CONTAINER)
 
-#     try:
-#         blob_data = raw_container_client.get_blob_client(blob_name).download_blob().readall().decode("utf-8")
-#         data = json.loads(blob_data)
-#     except Exception as e:
-#         logging.error(f"Erro ao ler JSON ou baixar blob: {e}")
-#         mover_blob(blob_service, blob_name, blob_data if 'blob_data' in locals() else "", REJEITADO_CONTAINER)
-#         return
+    try:
+        blob_data = raw_container_client.get_blob_client(blob_name).download_blob().readall().decode("utf-8")
+        data = json.loads(blob_data)
+    except Exception as e:
+        logging.error(f"Erro ao ler JSON ou baixar blob: {e}")
+    #     mover_blob(blob_service, blob_name, blob_data if 'blob_data' in locals() else "", REJEITADO_CONTAINER)
+    #     return
+    # print("fim")
 
 #     try:
 #         # Validação usando JSON Schema
