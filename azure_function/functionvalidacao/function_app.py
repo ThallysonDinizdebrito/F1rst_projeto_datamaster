@@ -11,30 +11,17 @@ from jsonschema import validate, ValidationError
 app = func.FunctionApp()
 
 # ================================================================
-# Configuração de storage e containers
-# ================================================================
-STORAGE_CONN_STR = os.getenv("AzureWebJobsStorage")
-RAW_CONTAINER = os.getenv("RAW_CONTAINER_NAME", "raw")
-VALIDADO_CONTAINER = "validado"
-REJEITADO_CONTAINER = "rejeitado"
-
-# ================================================================
-# Carrega schema JSON (coloque schema.json na mesma pasta que function_app.py)
-# ================================================================
-SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "schema.json")
-with open(SCHEMA_FILE, "r") as f:
-    SCHEMA = json.load(f)
-
-# ================================================================
 # Function disparada por Event Grid
 # ================================================================
 @app.event_grid_trigger(arg_name="azeventgrid")
 def validate_fake_data(azeventgrid: func.EventGridEvent):
     logging.info("Evento do Event Grid recebido.")
 
+    # Converte os dados do evento em JSON
     event_data = azeventgrid.get_json()
     logging.info(f"Evento recebido: {json.dumps(event_data)}")
 
+    # Pega a URL do blob que disparou o evento
     blob_url = event_data.get("url")
     logging.info(f"Blob recebido: {blob_url}")
 
@@ -43,6 +30,25 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
         return
 
     blob_name = blob_url.split("/")[-1]
+
+    # ================================================================
+    # Configuração de storage e containers
+    # ================================================================
+    STORAGE_CONN_STR = os.getenv("AzureWebJobsStorage")
+    RAW_CONTAINER = os.getenv("RAW_CONTAINER_NAME", "raw")
+    VALIDADO_CONTAINER = "validado"
+    REJEITADO_CONTAINER = "rejeitado"
+
+    # ================================================================
+    # Carrega schema JSON
+    # ================================================================
+    SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "schema.json")
+    with open(SCHEMA_FILE, "r") as f:
+        SCHEMA = json.load(f)
+
+    # ================================================================
+    # Conecta no Blob Storage
+    # ================================================================
     blob_service = BlobServiceClient.from_connection_string(STORAGE_CONN_STR)
     raw_container_client = blob_service.get_container_client(RAW_CONTAINER)
 
