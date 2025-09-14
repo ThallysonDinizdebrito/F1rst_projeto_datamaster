@@ -52,13 +52,13 @@ def load_schema(filename="schema.json"):
     blob_service = BlobServiceClient.from_connection_string(storage_conn_srt)
     raw_container_client = blob_service.get_container_client(raw_container)
 
-    try:
-        blob_data = raw_container_client.get_blob_client(blob_name).download_blob().readall().decode("utf-8")
-        data = json.loads(blob_data)
-    except Exception as e:
-        logging.error(f"Erro ao ler JSON ou baixar blob: {e}")
-        mover_blob(blob_service, blob_name, blob_data if 'blob_data' in locals() else "", Rejeitado_container)
-        return
+    # try:
+    #     blob_data = raw_container_client.get_blob_client(blob_name).download_blob().readall().decode("utf-8")
+    #     data = json.loads(blob_data)
+    # except Exception as e:
+    #     logging.error(f"Erro ao ler JSON ou baixar blob: {e}")
+    #     mover_blob(blob_service, blob_name, blob_data if 'blob_data' in locals() else "", Rejeitado_container)
+    #     return
 
 #     try:
 #         # Validação usando JSON Schema
