@@ -2,7 +2,7 @@ import logging
 import azure.functions as func
 import json
 import os
-# from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobServiceClient
 
 # Cria a aplicação de funções
 app = func.FunctionApp()
@@ -31,8 +31,19 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
     RAW_CONTAINER = os.getenv("RAW_CONTAINER_NAME", "raw")
     VALIDADO_CONTAINER = "validado"
     REJEITADO_CONTAINER = "rejeitado"
-    
+
 def load_schema(filename="schema.json"):
     schema_path = os.path.join(os.path.dirname(__file__), filename)
     with open(schema_path, "r") as f:
         return json.load(f)
+    
+    # ================================================================
+    # Carrega schema JSON
+    # ================================================================
+    SCHEMA = load_schema()
+
+    # ================================================================
+    # Conecta no Blob Storage
+    # ================================================================
+    blob_service = BlobServiceClient.from_connection_string(STORAGE_CONN_STR)
+    raw_container_client = blob_service.get_container_client(RAW_CONTAINER)
