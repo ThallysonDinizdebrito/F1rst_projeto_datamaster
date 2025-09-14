@@ -90,16 +90,6 @@ data "azurerm_linux_function_app" "function_validate" {
   storage_account_name      = azurerm_storage_account.conta_armazenamento.name
   storage_account_access_key= azurerm_storage_account.conta_armazenamento.primary_access_key
 
-
-  app_settings = {
-    "RAW_CONTAINER_NAME"              = azurerm_storage_container.container_raw.name
-    "VALIDATED_CONTAINER_NAME"        = azurerm_storage_container.container_validado.name
-    "REJECTED_CONTAINER_NAME"         = azurerm_storage_container.container_rejeitados.name
-    "AZURE_STORAGE_ACCOUNT_NAME"      = azurerm_storage_account.conta_armazenamento.name
-    "FUNCTIONS_WORKER_RUNTIME"        = "python"
-    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
-    "ENABLE_ORYX_BUILD"               = "true"
-  }
 }
 
 
