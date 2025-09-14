@@ -1,6 +1,9 @@
 import logging
 import azure.functions as func
 import json
+import os
+from azure.storage.blob import BlobServiceClient
+from jsonschema import validate, ValidationError
 
 # Cria a aplicação de funções
 app = func.FunctionApp()
@@ -19,9 +22,13 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
     logging.info(f"Blob recebido: {blob_url}")
 
     # Aqui você pode implementar a lógica de validação
-    if blob_url and blob_url.endswith(".txt"):
-        logging.info("Arquivo válido! Enviar para o container 'validado'...")
-        # TODO: código para copiar/mover para 'validado'
-    else:
-        logging.warning("Arquivo rejeitado! Enviar para o container 'rejeitado'..")
-        # TODO: código para copiar/mover para 'rejeitado'
+    if not blob_url:
+        logging.error("Blob URL não encontrada no evento!")
+        return
+
+    blob_name = blob_url.split("/")[-1]
+
+    STORAGE_CONN_STR = os.getenv("AzureWebJobsStorage")
+    RAW_CONTAINER = os.getenv("RAW_CONTAINER_NAME", "raw")
+    VALIDADO_CONTAINER = "validado"
+    REJEITADO_CONTAINER = "rejeitado"
