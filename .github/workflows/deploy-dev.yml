@@ -128,4 +128,8 @@ jobs:
         run: terraform -chdir=infra init
 
       - name: Terraform Apply Event Grid
-        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_eventgrid_event_subscription.sub_func
+        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars 
+        # -target=azurerm_eventgrid_event_subscription.sub_func 
+
+
+        
