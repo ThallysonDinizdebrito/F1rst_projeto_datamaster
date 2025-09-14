@@ -30,7 +30,7 @@ jobs:
       AZURE_RESOURCE_GROUP: rg-dev-projeto
       LOCATION: westeurope
       STORAGE_ACCOUNT: nome_da_conta_armazenamento
-      SERVICE_PLAN: nome_do_service_plan
+      SERVICE_PLAN: rg-dev-projeto-func-plan
 
     steps:
       - uses: actions/checkout@v3
