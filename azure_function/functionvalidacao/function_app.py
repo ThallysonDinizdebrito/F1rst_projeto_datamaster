@@ -23,7 +23,7 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
 
     # lógica de validação
     if not blob_url:
-        logging.error("Blob URL não encontrada no evento!")
+        logging.error("Blob URL não encontrada no evento!!")
         return
 
     blob_name = blob_url.split("/")[-1]
