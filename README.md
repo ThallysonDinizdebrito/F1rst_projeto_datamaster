@@ -159,3 +159,6 @@ git rebase --abort
 #
 #trazer o json do recurso subscrition
 az eventgrid event-subscription show --name testefakedatafunctioninit --source-resource-id $(az eventgrid topic show -g rg-dev-projeto -n rg-dev-projeto-topic --query id -o tsv) -o json
+
+# caso precise criar o zip dos pacotes das function 
+Compress-Archive -Path * -DestinationPath functionvalidacao.zip
