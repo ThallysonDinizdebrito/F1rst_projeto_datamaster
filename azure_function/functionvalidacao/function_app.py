@@ -1,7 +1,7 @@
 import logging
 import azure.functions as func
 import json
-# import os
+import os
 # from azure.storage.blob import BlobServiceClient
 # from jsonschema import validate, ValidationError
 
@@ -35,10 +35,10 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
 #     # ================================================================
 #     # Configuração de storage e containers
 #     # ================================================================
-#     STORAGE_CONN_STR = os.getenv("AzureWebJobsStorage")
-#     RAW_CONTAINER = os.getenv("RAW_CONTAINER_NAME", "raw")
-#     VALIDADO_CONTAINER = "validado"
-#     REJEITADO_CONTAINER = "rejeitado"
+    STORAGE_CONN_STR = os.getenv("AzureWebJobsStorage")
+    RAW_CONTAINER = os.getenv("RAW_CONTAINER_NAME", "raw")
+    VALIDADO_CONTAINER = "validado"
+    REJEITADO_CONTAINER = "rejeitado"
 
 #     # ================================================================
 #     # Carrega schema JSON
