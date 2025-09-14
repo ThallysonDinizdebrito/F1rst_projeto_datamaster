@@ -31,3 +31,8 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
     RAW_CONTAINER = os.getenv("RAW_CONTAINER_NAME", "raw")
     VALIDADO_CONTAINER = "validado"
     REJEITADO_CONTAINER = "rejeitado"
+    
+def load_schema(filename="schema.json"):
+    schema_path = os.path.join(os.path.dirname(__file__), filename)
+    with open(schema_path, "r") as f:
+        return json.load(f)
