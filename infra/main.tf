@@ -78,42 +78,47 @@ resource "azurerm_linux_function_app" "function_app" {
 }
 
 # ===========================
-# Function Apps (vazias) - func-init  
+# Function Apps - func-init com deploy via ZIP
 # ===========================
-
-
-resource "azurerm_function_app" "function_validate" {
-  name                = "rg-dev-projeto-func-init"
-  location            = azurerm_resource_group.grupo_principal.location
-  resource_group_name = azurerm_resource_group.grupo_principal.name
-  service_plan_id     = azurerm_service_plan.function_plan.id
-  storage_account_name = azurerm_storage_account.conta_armazenamento.name
-  storage_account_access_key = azurerm_storage_account.conta_armazenamento.primary_access_key
-  os_type             = "Linux"
-  runtime_stack       = "python|3.11"
-}
-
-resource "azurerm_function_app_slot" "deploy_validate_zip" {
-  name                = "validate_slot"
-  function_app_id     = azurerm_function_app.function_validate.id
-  resource_group_name = azurerm_resource_group.grupo_principal.name
+resource "azurerm_linux_function_app" "function_validate" {
+  name                      = "${var.nome_do_grupo_de_recursos}-func-init"
+  location                  = azurerm_resource_group.grupo_principal.location
+  resource_group_name       = azurerm_resource_group.grupo_principal.name
+  service_plan_id           = azurerm_service_plan.function_plan.id
+  storage_account_name      = azurerm_storage_account.conta_armazenamento.name
+  storage_account_access_key= azurerm_storage_account.conta_armazenamento.primary_access_key
 
   site_config {
-    app_command_line = ""
+    application_stack {
+      python_version = "3.11"
+    }
   }
 
+  identity { type = "SystemAssigned" }
+
+  app_settings = {
+    "RAW_CONTAINER_NAME"             = azurerm_storage_container.container_raw.name
+    "VALIDATED_CONTAINER_NAME"       = azurerm_storage_container.container_validado.name
+    "REJECTED_CONTAINER_NAME"        = azurerm_storage_container.container_rejeitados.name
+    "AZURE_STORAGE_ACCOUNT_NAME"     = azurerm_storage_account.conta_armazenamento.name
+    "FUNCTIONS_WORKER_RUNTIME"       = "python"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"= "true"
+    "ENABLE_ORYX_BUILD"              = "true"
+  }
+}
+
+# ===========================
+# Deploy do código via ZIP
+# ===========================
+resource "azurerm_function_app_zip_deploy" "validate_zip" {
+  function_app_id = azurerm_linux_function_app.function_validate.id
+  src_path        = "../azure_function/functionvalidacao/functionvalidacao.zip"
+
   depends_on = [
-    azurerm_function_app.function_validate
+    azurerm_linux_function_app.function_validate
   ]
 }
 
-
-resource "azurerm_function_app_zip_deploy" "validate" {
-  function_app_id = azurerm_function_app.function_validate.id
-  src_path        = "../azure_function/functionvalidacao/functionvalidacao.zip"
-
-  depends_on = [azurerm_function_app.function_validate]
-}
 
 
 # ========================================
