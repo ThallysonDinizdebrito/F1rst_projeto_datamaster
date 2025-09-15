@@ -73,7 +73,7 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
     rejeitado_container = "rejeitados"
 
     # ================================================================
-    # Lê o blob
+    # Lê o blob raw
     # ================================================================
     try:
         blob_data = raw_container_client.get_blob_client(blob_path).download_blob().readall().decode("utf-8")
@@ -84,12 +84,28 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
         return
 
     # ================================================================
-    # Validação JSON
+    # Validação item por item
     # ================================================================
-    try:
-        validate(instance=data, schema=SCHEMA)
-        logging.info(f"JSON válido ✔ - {blob_path} enviado para '{validado_container}'")
-        mover_blob(blob_service, blob_path, blob_data, validado_container)
-    except ValidationError as e:
-        logging.warning(f"JSON inválido ✘ - {blob_path} enviado para '{rejeitado_container}': {e.message}")
-        mover_blob(blob_service, blob_path, blob_data, rejeitado_container)
+    valid_items = []
+    invalid_items = []
+
+    for i, item in enumerate(data):
+        try:
+            validate(instance=item, schema=SCHEMA)
+            valid_items.append(item)
+            logging.info(f"Item {i} válido: {item['id']}")
+        except ValidationError as e:
+            invalid_items.append({"item": item, "erro": e.message})
+            logging.warning(f"Item {i} inválido: {item['id']} - Motivo: {e.message}")
+
+    # ================================================================
+    # Move blobs separados para validado e rejeitados
+    # ================================================================
+    if valid_items:
+        mover_blob(blob_service, blob_path, json.dumps(valid_items, indent=2), validado_container)
+        logging.info(f"{len(valid_items)} itens válidos enviados para '{validado_container}'")
+
+    if invalid_items:
+        invalid_data = [i["item"] for i in invalid_items]
+        mover_blob(blob_service, blob_path, json.dumps(invalid_data, indent=2), rejeitado_container)
+        logging.warning(f"{len(invalid_items)} itens inválidos enviados para '{rejeitado_container}'")
