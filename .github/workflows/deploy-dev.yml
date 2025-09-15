@@ -37,15 +37,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - uses: hashicorp/setup-terraform@v2 
-        with: 
-          terraform_version: 1.7.0 
-      - name: Terraform Init 
-        run: terraform -chdir=infra init 
-      - name: Terraform Apply Infra 
-        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_linux_function_app.function_app
+      # # Setup Terraform
+      # - uses: hashicorp/setup-terraform@v2 
+      #   with: 
+      #     terraform_version: 1.7.0 
 
-      # 2. Login no Azure
+      # - name: Terraform Init 
+      #   run: terraform -chdir=infra init 
+
+      # - name: Terraform Apply Infra 
+      #   run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_linux_function_app.function_app
+
+      # 2. Azure CLI Login
       - name: Azure CLI Login
         uses: azure/login@v1
         with:
@@ -72,28 +75,65 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      # 5. Instalar Azure Functions Core Tools
+      # 5. Install Azure Functions Core Tools
       - name: Install Azure Functions Core Tools
         run: |
           npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
-      # 6. Deploy de todas as Functions
+      # 6. Deploy Functions
       - name: Deploy Functions
         run: |
           for func_dir in ./azure_function/functionvalidacao ./azure_function/GeracaoData; do
             echo "Deploying $func_dir..."
 
-        # 6.1 Setup Python
+            # Setup Python e dependências
             python -m pip install --upgrade pip
-            pip install -r $func_dir/requirements.txt
+            if [ -f "$func_dir/requirements.txt" ]; then
+              pip install -r "$func_dir/requirements.txt"
+            fi
 
-        # 6.2 Deploy via func CLI
+            # Deploy via func CLI
             if [[ "$func_dir" == *"functionvalidacao"* ]]; then
               func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python --force
             else
               func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote --python --force
             fi
           done
+
+      ##################################################
+      # Comentados do original, mantidos para referência
+      ##################################################
+      # - name: Create Function App func
+      #   run: |
+      #     az functionapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_FUNCTIONAPP_NAME }} --storage-account ${{ env.STORAGE_ACCOUNT }} --consumption-plan-location westeurope --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
+
+      # - name: Deploy Azure Function -  Deploy Package func
+      #   uses: Azure/functions-action@v1
+      #   with:
+      #     app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+      #     package: './azure_function/GeracaoData'
+      #     enable-oryx-build: true
+      #     scm-do-build-during-deployment: true
+
+      # - name: Create Function App init
+      #   run: |
+      #     az functionapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --storage-account ${{ env.STORAGE_ACCOUNT }} --consumption-plan-location westeurope --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
+
+      # - name: Clear Package
+      #   run: |
+      #     az functionapp config appsettings delete --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --setting-names WEBSITE_RUN_FROM_PACKAGE
+
+      # - name: Deploy Azure Function - Deploy Package init
+      #   uses: Azure/functions-action@v1
+      #   with:
+      #     app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}
+      #     package: './azure_function/functionvalidacao'
+      #     enable-oryx-build: true
+      #     scm-do-build-during-deployment: true
+
+      # - name: Reinstal libs
+      #   run: |
+      #     func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python
 
   eventgrid:
     runs-on: ubuntu-latest
@@ -110,33 +150,27 @@ jobs:
       TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-
     steps: 
-    - name: Test Print
-      run: echo "Este é um print no segundo job dev."
+      - name: Test Print
+        run: echo "Este é um print no segundo job dev."
 
-    # steps:
-    #   - uses: actions/checkout@v3
-
-    #   - uses: hashicorp/setup-terraform@v2
-    #     with:
-    #       terraform_version: 1.7.0
-
-    #   - name: Azure CLI Login
-    #     uses: azure/login@v1
-    #     with:
-    #       creds: |
-    #         {
-    #           "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
-    #           "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
-    #           "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
-    #           "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
-    #         }
-
-      # - name: Terraform Init
-      #   run: terraform -chdir=infra init
-
-      # - name: Terraform Apply Event Grid
-      #   run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars 
-        # # -target=azurerm_eventgrid_event_subscription.sub_func 
-
+      # steps:
+      #   - uses: actions/checkout@v3
+      #   - uses: hashicorp/setup-terraform@v2
+      #     with:
+      #       terraform_version: 1.7.0
+      #   - name: Azure CLI Login
+      #     uses: azure/login@v1
+      #     with:
+      #       creds: |
+      #         {
+      #           "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+      #           "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+      #           "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+      #           "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+      #         }
+      #   - name: Terraform Init
+      #     run: terraform -chdir=infra init
+      #   - name: Terraform Apply Event Grid
+      #     run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars 
+      #       # -target=azurerm_eventgrid_event_subscription.sub_func
