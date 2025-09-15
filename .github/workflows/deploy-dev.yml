@@ -93,7 +93,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          
+
       # 6. Deploy da Azure Function
 
       - name: Deploy Azure Function via func CLI
@@ -101,7 +101,27 @@ jobs:
         run: |
           func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python
 
+##################################################
 
+##################################################
+      # 5. Instala dependências Python (requirements.txt)
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        working-directory: ./azure_function/GeracaoData
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      # 6. Deploy da Azure Function
+
+      - name: Deploy Azure Function via func CLI
+        working-directory: './azure_function/GeracaoData'
+        run: |
+          func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote --python
 
       # - name: Create Function App func
       #   run: |
