@@ -80,7 +80,6 @@ jobs:
         run: |
           npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
-      # 6. Deploy Functions
       - name: Deploy Functions
         run: |
           for func_dir in ./azure_function/functionvalidacao ./azure_function/GeracaoData; do
@@ -92,13 +91,16 @@ jobs:
               pip install -r "$func_dir/requirements.txt"
             fi
 
-            # Deploy via func CLI
+            # Muda para o diretório da função e publica
+            pushd $func_dir
             if [[ "$func_dir" == *"functionvalidacao"* ]]; then
               func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python --force
             else
               func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote --python --force
             fi
+            popd
           done
+
 
       ##################################################
       # Comentados do original, mantidos para referência
