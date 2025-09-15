@@ -12,7 +12,7 @@ jobs:
 
     steps: 
     - name: Test Print
-      run: echo "Este é um print no primeiro job dev.."
+      run: echo "Este é um print no primeiro job dev..."
 
     concurrency:
       group: terraform-dev
