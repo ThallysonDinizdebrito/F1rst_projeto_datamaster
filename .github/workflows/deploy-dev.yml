@@ -82,24 +82,24 @@ jobs:
 
       - name: Deploy Functions
         run: |
-          for func_dir in ./azure_function/functionvalidacao ./azure_function/GeracaoData; do
-            echo "Deploying $func_dir..."
+          # Deploy da função "functionvalidacao"
+          pushd ./azure_function/functionvalidacao
+          python -m pip install --upgrade pip
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          fi
+          func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python --force
+          popd
 
-            # Setup Python e dependências
-            python -m pip install --upgrade pip
-            if [ -f "$func_dir/requirements.txt" ]; then
-              pip install -r "$func_dir/requirements.txt"
-            fi
+          # Deploy da função "GeracaoData"
+          pushd ./azure_function/GeracaoData
+          python -m pip install --upgrade pip
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          fi
+          func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote --python --force
+          popd
 
-            # Muda para o diretório da função e publica
-            pushd $func_dir
-            if [[ "$func_dir" == *"functionvalidacao"* ]]; then
-              func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python --force
-            else
-              func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote --python --force
-            fi
-            popd
-          done
 
 
       ##################################################
