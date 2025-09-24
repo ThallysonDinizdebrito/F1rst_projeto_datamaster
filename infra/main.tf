@@ -25,9 +25,9 @@ resource "azurerm_storage_account" "conta_armazenamento" {
   #account_kind             = "StorageV2"
   #min_tls_version          = "TLS1_2"
 
-  tags = {
-    ambiente = var.ambiente
-  }
+  #tags = {
+  #  ambiente = var.ambiente
+  #}
 
 }
 
