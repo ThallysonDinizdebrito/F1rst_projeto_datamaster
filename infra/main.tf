@@ -71,3 +71,41 @@ resource "azurerm_log_analytics_workspace" "this" {
   sku                 = "PerGB2018"
 }
 
+# ========================================
+# Azure Monitor Diagnostic Settings para Storage Account
+# ========================================
+
+
+resource "azurerm_monitor_diagnostic_setting" "storage_diag" {
+  name                      = "diag-storage-${var.env}"
+  target_resource_id         = azurerm_storage_account.conta_armazenamento.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.this.id
+
+  # Métricas importantes para monitoramento de ingestão
+  metric {
+    category = "Transaction"
+    enabled  = true
+  }
+
+  metric {
+    category = "Capacity"
+    enabled  = true
+  }
+
+  # Logs para leitura e gravação
+  log {
+    category = "StorageRead"
+    enabled  = true
+  }
+
+  log {
+    category = "StorageWrite"
+    enabled  = true
+  }
+
+  log {
+    category = "StorageDelete"
+    enabled  = true
+  }
+}
+
