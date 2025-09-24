@@ -103,10 +103,10 @@ resource "azurerm_monitor_diagnostic_setting" "storage_diag" {
     category = "Capacity"
   }
 }
+
 # ========================================
 # Azure Managed Grafana
 # ========================================
-
 
 resource "azurerm_dashboard_grafana" "grafana" {
   name                = "grafana-rg-dev-projeto"
@@ -123,3 +123,19 @@ resource "azurerm_dashboard_grafana" "grafana" {
   public_network_access_enabled = true
 }
 
+# Pega o objeto do usuário do Azure AD (criador)
+data "azurerm_client_config" "current" {}
+
+# Associa o papel de Grafana Admin ao usuário que aplica o Terraform
+resource "azurerm_role_assignment" "grafana_admin" {
+  scope                = azurerm_dashboard_grafana.grafana.id
+  role_definition_name = "Grafana Admin"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
+# Atribui permissão Log Analytics Reader no LAW para o Grafana
+resource "azurerm_role_assignment" "grafana_law_reader" {
+  scope                = azurerm_log_analytics_workspace.this.id
+  role_definition_name = "Log Analytics Reader"
+  principal_id         = azurerm_dashboard_grafana.grafana.identity[0].principal_id
+}
