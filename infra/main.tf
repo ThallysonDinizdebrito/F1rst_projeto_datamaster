@@ -40,10 +40,33 @@ resource "azurerm_storage_container" "container_rejeitados" {
 
 
 # ========================================
-# EventGrid Topic
+# EventGrid Topic (não criar)
 # ========================================
-resource "azurerm_eventgrid_topic" "topic" {
-  name                = "rg-dev-projeto-topic"
-  resource_group_name = azurerm_resource_group.grupo_principal.name
+#resource "azurerm_eventgrid_topic" "topic" {
+#  name                = "rg-dev-projeto-topic"
+#  resource_group_name = azurerm_resource_group.grupo_principal.name
+#  location            = azurerm_resource_group.grupo_principal.location
+#}
+
+
+# ========================================
+# Log Analytics Workspace
+# ========================================
+
+# Criação de um Log Analytics Workspace, onde ficarão centralizados
+# os logs e métricas de diferentes recursos (ex: Storage Account, Databricks).
+
+resource "azurerm_log_analytics_workspace" "this" {
+  # Nome do workspace, concatenando um prefixo (law) com o ambiente (var.env).
+  name                = "law-rg-dev-projeto-dev"
+
+  # Localização e Resource Group são herdados do RG já existente.
+
   location            = azurerm_resource_group.grupo_principal.location
+  resource_group_name = azurerm_resource_group.grupo_principal.name
+
+  # SKU define o modelo de cobrança/capacidade. "PerGB2018" é o mais comum,
+  # cobra por volume de dados ingeridos.
+  sku                 = "PerGB2018"
 }
+
