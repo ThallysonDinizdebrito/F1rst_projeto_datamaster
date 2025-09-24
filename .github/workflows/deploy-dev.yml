@@ -83,29 +83,29 @@ jobs:
 # CRIAÇÃO DE GRUPO DE RECURSOS BLOBS, ADLS, CONTA DE ARMAZENAMENTO ETC..
 ###################################################################################
 
-#   infra_Resources:
-#     runs-on: ubuntu-latest
-#     environment: dev
-#     needs: setup-tf-backend
+  infra_Resources:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: setup-tf-backend
 
-#     # steps: 
-#     # - name: Test Print
-#     #   run: echo "Este é um print no primeiro job dev..."
+    # steps: 
+    # - name: Test Print
+    #   run: echo "Este é um print no primeiro job dev..."
 
-#     concurrency:
-#       group: terraform-dev
-#       cancel-in-progress: true
+    concurrency:
+      group: terraform-dev
+      cancel-in-progress: true
 
-#     env:
-#       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-#       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-#       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-#       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-#       TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
-#       TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
-#       TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
-#       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+      TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+      TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
+      TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
 
 #     steps:
