@@ -1,0 +1,20 @@
+
+{
+  "pipeline_type": "WORKSPACE",
+  "name": "pipeline-ci-cd",
+  "libraries": [
+    {
+      "glob": {
+        "include": "/Workspace/Users/thallysongreif@gmail.com/F1rst_projeto_datamaster/masterdatabricks/src/pipelines/demopipeline/transformations/**"
+      }
+    }
+  ],
+  "schema": "bronze",
+  "continuous": false,
+  "development": false,
+  "photon": true,
+  "channel": "CURRENT",
+  "catalog": "losdata_prod",
+  "serverless": true,
+  "root_path": "/Workspace/Users/thallysongreif@gmail.com/F1rst_projeto_datamaster/masterdatabricks/src/pipelines/demopipeline"
+}

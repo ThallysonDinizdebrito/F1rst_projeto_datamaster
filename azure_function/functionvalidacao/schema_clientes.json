@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "ClientID": { "type": "string", "pattern": "^C\\d{6}$" },
+    "nome": { "type": "string", "minLength": 3 },
+    "endereco": { "type": "string" },
+    "CPF": { "type": "string", "pattern": "^\\d{11}$" },
+    "tipo_pagamento": { "type": "string", "enum": ["PIX", "CARTAO CREDITO", "CARTAO DEBITO", "VOUCHER"] }
+  },
+  "required": ["ClientID", "nome", "CPF", "tipo_pagamento"]
+}
