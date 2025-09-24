@@ -230,3 +230,9 @@ az keyvault create  --name kv-devprojeto --resource-group rg-dev-projeto  --loca
 
 # CONSEDER PERMISÃO - atenção precisa colocar #@ext@
 az keyvault set-policy --name kv-devprojeto --upn "thallysoncamila2017_outlook.com#EXT#@thallysoncamila2017outlook.onmicrosoft.com"--secret-permissions get list set delete
+
+# registrar um provider no grafana
+az provider register --namespace Microsoft.Dashboard
+
+# verificar se ja esta confirmado o registro
+az provider show --namespace Microsoft.Dashboard --query "registrationState"
