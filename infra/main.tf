@@ -78,34 +78,31 @@ resource "azurerm_log_analytics_workspace" "this" {
 
 resource "azurerm_monitor_diagnostic_setting" "storage_diag" {
   name                      = "diag-storage-${var.env}"
-  target_resource_id         = azurerm_storage_account.conta_armazenamento.id
+  target_resource_id        = azurerm_storage_account.conta_armazenamento.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.this.id
 
-  # Métricas importantes para monitoramento de ingestão
-  metric {
-    category = "Transaction"
-    enabled  = true
-  }
-
-  metric {
-    category = "Capacity"
-    enabled  = true
-  }
-
-  # Logs para leitura e gravação
-  log {
+  enabled_log {
     category = "StorageRead"
     enabled  = true
   }
 
-  log {
+  enabled_log {
     category = "StorageWrite"
     enabled  = true
   }
 
-  log {
+  enabled_log {
     category = "StorageDelete"
     enabled  = true
   }
-}
 
+  enabled_metric {
+    category = "Transaction"
+    enabled  = true
+  }
+
+  enabled_metric {
+    category = "Capacity"
+    enabled  = true
+  }
+}
