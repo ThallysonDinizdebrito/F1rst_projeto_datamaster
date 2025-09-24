@@ -37,7 +37,7 @@ resource "azurerm_storage_container" "container_rejeitados" {
   storage_account_id    = azurerm_storage_account.conta_armazenamento.id
   container_access_type = "private"
 }
--target=azurerm_log_analytics_workspace.container_rejeitados 
+
 
 
 # ========================================
