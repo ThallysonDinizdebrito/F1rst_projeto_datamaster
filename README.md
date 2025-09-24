@@ -236,3 +236,6 @@ az provider register --namespace Microsoft.Dashboard
 
 # verificar se ja esta confirmado o registro
 az provider show --namespace Microsoft.Dashboard --query "registrationState"
+
+so rodar a pipeline quando o status do registro estiver como 
+"Registered"

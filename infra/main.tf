@@ -112,15 +112,14 @@ resource "azurerm_dashboard_grafana" "grafana" {
   name                = "grafana-rg-dev-projeto"
   resource_group_name = azurerm_resource_group.grupo_principal.name
   location            = azurerm_resource_group.grupo_principal.location
+  sku                 = "Standard"
+
+  grafana_major_version = "11"
 
   identity {
     type = "SystemAssigned"
   }
 
-  sku = "Standard"
-
-  api_key_enabled       = false
-  deterministic_outbound_ip_enabled = false
-
-  grafana_major_version = "10" # versão mais recente estável
+  public_network_access_enabled = true
 }
+
