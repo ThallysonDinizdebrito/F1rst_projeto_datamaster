@@ -75,25 +75,17 @@ resource "azurerm_log_analytics_workspace" "this" {
 # Azure Monitor Diagnostic Settings para Storage Account
 # ========================================
 
-
 resource "azurerm_monitor_diagnostic_setting" "storage_diag" {
   name                       = "rg-dev-projeto-storage-diagnostics"
   target_resource_id         = azurerm_storage_account.conta_armazenamento.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.this.id
 
-  enabled_log {
-    category = "StorageRead"
-  }
-
-  enabled_log {
-    category = "StorageWrite"
-  }
-
-  enabled_log {
-    category = "StorageDelete"
+  # Apenas métricas são suportadas nessa conta
+  metric {
+    category = "Transaction"
   }
 
   metric {
-    category = "AllMetrics"
+    category = "Capacity"
   }
 }
