@@ -108,22 +108,22 @@ jobs:
       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
 
-#     steps:
-#       # 1. Checkout do código
-#       - name: Checkout repository
-#         uses: actions/checkout@v3
+    steps:
+      # 1. Checkout do código
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-#       - uses: hashicorp/setup-terraform@v2
-#         with:
-#           terraform_version: 1.7.0
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.0
 
-#       - name: Terraform Init
-#         run: terraform -chdir=infra init
+      - name: Terraform Init
+        run: terraform -chdir=infra init
 
-#       - name: Terraform Apply Infra 
-#         run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados 
+      - name: Terraform Apply Infra 
+        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados 
         
-#         # -target=azurerm_linux_function_app.function_app
+        # -target=azurerm_linux_function_app.function_app
 
 # ###################################################################################
 # # CRIAÇÃO DAS FUNCTIONS  E INSTALAÇÃO DE PACOTES PYTHON
