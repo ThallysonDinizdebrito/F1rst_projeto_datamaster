@@ -149,7 +149,8 @@ resource "azurerm_role_assignment" "grafana_law_reader" {
 data "azurerm_subscription" "current" {}
 
 resource "azurerm_role_assignment" "grafana_monitor_reader" {
-  scope                = azurerm_subscription.primary.id
+  scope                = data.azurerm_subscription.current.id
   role_definition_name = "Monitoring Reader"
   principal_id         = azurerm_user_assigned_identity.grafana_mi.principal_id
 }
+
