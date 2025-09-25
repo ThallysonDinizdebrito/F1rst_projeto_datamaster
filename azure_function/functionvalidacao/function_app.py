@@ -62,7 +62,7 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
     # Pega a URL do blob que disparou o evento
     blob_url = event_data.get("url")
     if not blob_url:
-        logging.error("Blob URL não encontrada no evento!")
+        logging.error("Blob URL não encontrada no evento!!")
         return
 
     logging.info(f"Blob recebido: {blob_url}")
