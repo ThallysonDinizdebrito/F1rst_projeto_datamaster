@@ -13,8 +13,8 @@ localizacao = "westeurope"
 nome_da_conta_de_armazenamento = "devprojetoarmazen"
 
 # Containers
-nome_do_container_raw        = "source"
-nome_do_container_validado   = "raw"
+nome_do_container_raw        = "raw"
+nome_do_container_validado   = "source"
 nome_do_container_rejeitados = "deadletter"
 
 # Function App

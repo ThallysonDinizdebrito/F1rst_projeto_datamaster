@@ -83,47 +83,47 @@ jobs:
 # # CRIAÇÃO DE GRUPO DE RECURSOS BLOBS, ADLS, CONTA DE ARMAZENAMENTO ETC..
 # ###################################################################################
 
-#   infra_Resources:
-#     runs-on: ubuntu-latest
-#     environment: dev
-#     needs: setup-tf-backend
+  infra_Resources:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: setup-tf-backend
 
-#     # steps: 
-#     # - name: Test Print
-#     #   run: echo "Este é um print no primeiro job dev..."
+    # steps: 
+    # - name: Test Print
+    #   run: echo "Este é um print no primeiro job dev..."
 
-#     concurrency:
-#       group: terraform-dev
-#       cancel-in-progress: true
+    concurrency:
+      group: terraform-dev
+      cancel-in-progress: true
 
-#     env:
-#       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-#       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-#       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-#       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-#       TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
-#       TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
-#       TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
-#       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+      TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+      TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
+      TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
 
-#     steps:
-#       # 1. Checkout do código
-#       - name: Checkout repository
-#         uses: actions/checkout@v3
+    steps:
+      # 1. Checkout do código
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-#       - uses: hashicorp/setup-terraform@v2
-#         with:
-#           terraform_version: 1.7.0
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.0
 
-#       - name: Terraform Init
-#         run: terraform -chdir=infra init
+      - name: Terraform Init
+        run: terraform -chdir=infra init
 
-#       - name: Terraform Apply Infra 
-#         run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_log_analytics_workspace.this -target=azurerm_monitor_diagnostic_setting.storage_diag -target=azurerm_dashboard_grafana.grafana
+      - name: Terraform Apply Infra 
+        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_log_analytics_workspace.this -target=azurerm_monitor_diagnostic_setting.storage_diag -target=azurerm_dashboard_grafana.grafana
         
-#         # -target=azurerm_linux_function_app.function_app
+
 
 # ###################################################################################
 # # CRIAÇÃO DAS FUNCTIONS  E INSTALAÇÃO DE PACOTES PYTHON
@@ -235,54 +235,54 @@ jobs:
 #           func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python
 
 
-# ###################################################################################
-# # CRIAÇÃO DAS DO EVENTGRID SISTEM TOPC SUBSCRIPTION DE ACIONAMENTO DA FUNCTION DATA QUALITY
-# ###################################################################################
+###################################################################################
+# CRIAÇÃO DAS DO EVENTGRID SISTEM TOPC SUBSCRIPTION DE ACIONAMENTO DA FUNCTION DATA QUALITY
+###################################################################################
 
-#   eventgrid:
-#     runs-on: ubuntu-latest
-#     environment: dev
-#     needs: function
-#     env:
-#       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-#       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-#       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-#       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  eventgrid:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: infra_Resources
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-#       TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
-#       TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
-#       TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
-#       TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+      TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+      TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
+      TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
 
-#     # steps: 
-#     # - name: Test Print
-#     #   run: echo "Este é um print no segundo job dev."
+    # steps: 
+    # - name: Test Print
+    #   run: echo "Este é um print no segundo job dev."
 
-#     steps:
-#       - uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
 
-#       - uses: hashicorp/setup-terraform@v2
-#         with:
-#           terraform_version: 1.7.0
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.0
 
-#       - name: Azure CLI Login
-#         uses: azure/login@v1
-#         with:
-#           creds: |
-#             {
-#               "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
-#               "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
-#               "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
-#               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
-#             }
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
 
-#       - name: Terraform Init
-#         run: terraform -chdir=infra init
+      - name: Terraform Init
+        run: terraform -chdir=infra init
 
-#       - name: Terraform Apply Event Grid
-#         run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars 
-        # -target=azurerm_eventgrid_event_subscription.sub_func 
+      - name: Terraform Apply Event Grid
+        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars 
+
 
 ###################################################################################
 # GRAFANA DEPLOY
@@ -292,7 +292,7 @@ jobs:
   deploy_grafana:
     runs-on: ubuntu-latest
     environment: dev
-    needs: setup-tf-backend
+    needs: eventgrid
 
     steps:
       - name: Checkout repository
