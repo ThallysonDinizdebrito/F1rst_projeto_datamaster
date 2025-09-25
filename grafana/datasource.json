@@ -1,0 +1,11 @@
+{
+  "name": "azure-log-analytics",
+  "type": "grafana-azure-monitor-datasource",
+  "access": "proxy",
+  "isDefault": true,
+  "jsonData": {
+    "azureLogAnalyticsSameAs": "managedIdentity",
+    "logAnalyticsWorkspace": "/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/rg-dev-projeto/providers/Microsoft.OperationalInsights/workspaces/law-rg-dev-projeto-dev",
+    "azureCloud": "azuremonitor"
+  }
+}
