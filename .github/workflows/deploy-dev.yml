@@ -289,7 +289,6 @@ jobs:
 ###################################################################################
 
 
-
   deploy_grafana:
     runs-on: ubuntu-latest
     environment: dev
@@ -310,10 +309,9 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-      - name: Generate workspace ID
+      - name: Set workspace ID
         run: |
-          WORKSPACE_ID="/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/rg-dev-projeto/providers/Microsoft.OperationalInsights/workspaces/law-rg-dev-projeto-dev"
-          echo "WORKSPACE_ID=$WORKSPACE_ID" >> $GITHUB_ENV
+          echo "WORKSPACE_ID=/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/rg-dev-projeto/providers/Microsoft.OperationalInsights/workspaces/law-rg-dev-projeto-dev" >> $GITHUB_ENV
 
       - name: Generate datasource JSON
         working-directory: './grafana'
@@ -332,7 +330,6 @@ jobs:
 
       - name: Deploy Grafana datasource
         run: |
-          # Verifica se já existe datasource com o mesmo nome
           EXISTING=$(curl -s -H "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}" "$GRAFANA_URL/api/datasources/name/AzureMonitor-Logs" | jq -r '.id // empty')
           if [ -n "$EXISTING" ]; then
             echo "Datasource já existe, atualizando..."
@@ -347,3 +344,14 @@ jobs:
               -H "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}" \
               --data-binary @grafana/datasource_deploy.json
           fi
+
+      - name: Deploy Dashboard
+        working-directory: './grafana'
+        run: |
+          curl -s -X POST "$GRAFANA_URL/api/dashboards/db" \
+            -H "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"dashboard\": $(cat dashboards/infra_azure.json), \"overwrite\": true}"
+
+
+              
