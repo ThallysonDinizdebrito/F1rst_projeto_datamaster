@@ -158,3 +158,11 @@ resource "azurerm_role_assignment" "grafana_monitor_reader" {
   principal_id         = azurerm_user_assigned_identity.grafana_mi.principal_id
 }
 
+# ========================================
+# Role Assignment: Grafana MI -> SP/MI já tenha permissão dentro do Grafana
+# ========================================
+resource "azurerm_dashboard_grafana_role_assignment" "grafana_mi_Admin" {
+  grafana_id   = azurerm_dashboard_grafana.grafana.id
+  principal_id = azurerm_user_assigned_identity.grafana_mi.principal_id
+  role_name    = "Admin"
+}
