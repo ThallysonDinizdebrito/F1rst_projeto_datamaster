@@ -76,6 +76,8 @@ coloque esse código no browser onde pede o código
 
 crie as secrets usando ojson do Service Principal 
 
+
+
 exemplo template
 gh secret set <NOME_SECRET> --body "<secret_key>" -- env <environments>
 exemplo pratico, fazer para todos
@@ -242,3 +244,23 @@ az provider show --namespace Microsoft.Dashboard --query "registrationState"
 
 so rodar a pipeline quando o status do registro estiver como 
 "Registered"
+
+# Habilite key do grafana
+entre no recurso criado do grafana grafana-rg-dev-projeto
+tela:
+Configuração>>
+  Contas de serviço "habilitar" flag
+
+
+# crie um token no ambiente do grafana 
+telas:
+Administration>>
+  Users and access>>
+      Service accounts 
+
+
+
+
+
+# salve o topen no github secrets
+gh secret set GRAFANA_API_KEY --body "************************" 

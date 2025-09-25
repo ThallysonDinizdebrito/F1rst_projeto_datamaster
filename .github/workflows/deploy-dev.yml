@@ -318,7 +318,12 @@ jobs:
       - name: Generate datasource JSON
         working-directory: './grafana'
         run: |
-          sed "s|__WORKSPACE_ID__|$WORKSPACE_ID|g" datasource.json > datasource_deploy.json
+          sed "s|__WORKSPACE_ID__|$WORKSPACE_ID|g; \
+              s|\${__SUBSCRIPTION_ID__}|${{ secrets.AZURE_SUBSCRIPTION_ID }}|g; \
+              s|\${__TENANT_ID__}|${{ secrets.AZURE_TENANT_ID }}|g" datasource.json > datasource_deploy.json
+
+      - name: Debug datasource (opcional)
+        run: cat grafana/datasource_deploy.json
 
       - name: Get Grafana endpoint
         run: |
@@ -327,6 +332,18 @@ jobs:
 
       - name: Deploy Grafana datasource
         run: |
-          curl -X POST "$GRAFANA_URL/api/datasources" \
-            -H "Content-Type: application/json" \
-            -d @grafana/datasource_deploy.json
+          # Verifica se já existe datasource com o mesmo nome
+          EXISTING=$(curl -s -H "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}" "$GRAFANA_URL/api/datasources/name/AzureMonitor-Logs" | jq -r '.id // empty')
+          if [ -n "$EXISTING" ]; then
+            echo "Datasource já existe, atualizando..."
+            curl -X PUT "$GRAFANA_URL/api/datasources/$EXISTING" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}" \
+              --data-binary @grafana/datasource_deploy.json
+          else
+            echo "Datasource não existe, criando..."
+            curl -X POST "$GRAFANA_URL/api/datasources" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}" \
+              --data-binary @grafana/datasource_deploy.json
+          fi
