@@ -18,16 +18,13 @@ resource "azurerm_storage_account" "conta_armazenamento" {
 
   #habilitar gen2
 
-  # Habilita ADLS Gen2 (Hierarchical Namespace)
-  #is_hns_enabled           = true
+  #Habilita ADLS Gen2 (Hierarchical Namespace)
+  is_hns_enabled           = true
 
   # Boas práticas para Data Lake
-  #account_kind             = "StorageV2"
-  #min_tls_version          = "TLS1_2"
+  account_kind             = "StorageV2"
+  min_tls_version          = "TLS1_2"
 
-  #tags = {
-  #  ambiente = var.ambiente
-  #}
 
 }
 

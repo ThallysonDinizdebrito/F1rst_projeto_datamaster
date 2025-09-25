@@ -44,7 +44,7 @@ def main(mytimer: func.TimerRequest) -> None:
         # =========================
         # Entregadores (drivers)
         entregadores = []
-        for _ in range(10):
+        for _ in range(1):
             entregadores.append({
                 "DriversID": gerar_id("D"),
                 "nome": fake.name(),
@@ -56,7 +56,7 @@ def main(mytimer: func.TimerRequest) -> None:
 
         # Restaurantes (merchants)
         restaurantes = []
-        for _ in range(5):
+        for _ in range(1):
             restaurantes.append({
                 "MerchantID": gerar_id("R"),
                 "nome": fake.company(),
@@ -69,7 +69,7 @@ def main(mytimer: func.TimerRequest) -> None:
 
         # Clientes
         clientes = []
-        for _ in range(15):
+        for _ in range(1):
             clientes.append({
                 "ClientID": gerar_id("C"),
                 "nome": fake.name(),
@@ -95,7 +95,7 @@ def main(mytimer: func.TimerRequest) -> None:
 
         # Pedidos
         pedidos = []
-        for _ in range(20):
+        for _ in range(1):
             cliente = random.choice(clientes)
             restaurante = random.choice(restaurantes)
             entregador = random.choice(entregadores)
