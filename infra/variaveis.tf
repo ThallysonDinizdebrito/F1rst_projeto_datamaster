@@ -67,7 +67,7 @@ variable "nome_pasta_json" {
 
 variable "nome_do_container_rejeitados" {
   type        = string
-  description = "Nome do container deadletter"
+  description = "Nome do container dead_letter"
 }
 
 variable "nome_do_container_validado" {
