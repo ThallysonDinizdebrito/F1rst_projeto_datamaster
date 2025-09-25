@@ -17,9 +17,9 @@ output "nome_storage_account" {
   value       = azurerm_storage_account.conta_armazenamento.name
 }
 
-output "nome_container_raw" {
-  description = "Nome do container RAW criado"
-  value       = azurerm_storage_container.container_raw.name
+output "container_source" {
+  description = "Nome do container source criado"
+  value       = azurerm_storage_container.container_source.name
 }
 
 # output "id_workspace_databricks" {
@@ -35,12 +35,12 @@ output "nome_container_raw" {
 
 output "nome_do_container_rejeitados" {
   description = "Nome do container rejeitados criado"
-  value       = azurerm_storage_container.container_raw.name
+  value       = azurerm_storage_container.container_source.name
 }
 
 output "nome_do_container_validado" {
   description = "Nome do container validado criado"
-  value       = azurerm_storage_container.container_raw.name
+  value       = azurerm_storage_container.container_source.name
 }
 
 

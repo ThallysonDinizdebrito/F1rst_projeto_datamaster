@@ -40,9 +40,9 @@ variable "nome_da_conta_de_armazenamento" {
   description = "Nome da Storage Account"
 }
 
-variable "nome_do_container_raw" {
+variable "nome_do_container_source" {
   type        = string
-  description = "Nome do container RAW"
+  description = "Nome do container source"
 }
 
 

@@ -117,7 +117,7 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
     # ================================================================
     # Envia o JSON completo para container "validado", mantendo subpastas
     # ================================================================
-    validado_container = "source"
+    validado_container = "raw"
     destino_path = f"{pasta}/{blob_filename}"  # ex: "orders/orders-2025-09-22-224600017234.json"
     mover_blob(blob_service, destino_path, json.dumps(data, indent=2, ensure_ascii=False), validado_container)
     logging.info(f"Arquivo processado e enviado para {destino_path} no container '{validado_container}'")

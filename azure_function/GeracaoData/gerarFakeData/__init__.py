@@ -155,7 +155,7 @@ def main(mytimer: func.TimerRequest) -> None:
         if not connect_str:
             raise ValueError("A variável de ambiente AzureWebJobsStorage não está definida!")
 
-        container_name = os.getenv("RAW_CONTAINER_NAME", "raw")
+        container_name = "source"
         blob_service_client = BlobServiceClient.from_connection_string(connect_str)
         container_client = blob_service_client.get_container_client(container_name)
 

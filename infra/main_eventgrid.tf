@@ -52,7 +52,7 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "sub_func_system_to
 
 
   subject_filter {
-    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.container_raw.name}/"
+    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.container_source.name}/"
     subject_ends_with   = ".json"
   }
 

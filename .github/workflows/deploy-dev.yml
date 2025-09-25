@@ -121,7 +121,7 @@ jobs:
         run: terraform -chdir=infra init
 
       - name: Terraform Apply Infra 
-        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_raw -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_log_analytics_workspace.this -target=azurerm_monitor_diagnostic_setting.storage_diag -target=azurerm_dashboard_grafana.grafana
+        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_source -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_log_analytics_workspace.this -target=azurerm_monitor_diagnostic_setting.storage_diag -target=azurerm_dashboard_grafana.grafana
         
 
 

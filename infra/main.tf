@@ -31,8 +31,8 @@ resource "azurerm_storage_account" "conta_armazenamento" {
 # ===========================
 # Containers
 # ===========================
-resource "azurerm_storage_container" "container_raw" {
-  name                  = var.nome_do_container_raw
+resource "azurerm_storage_container" "container_source" {
+  name                  = var.nome_do_container_source
   storage_account_id    = azurerm_storage_account.conta_armazenamento.id
   container_access_type = "private"
 }
