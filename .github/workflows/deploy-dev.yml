@@ -235,9 +235,9 @@ jobs:
 #           func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python
 
 
-####################################################################################
+#############################################################################################
 # CRIAÇÃO DAS DO EVENTGRID SISTEM TOPC SUBSCRIPTION DE ACIONAMENTO DA FUNCTION DATA QUALITY
-####################################################################################
+#############################################################################################
 
   eventgrid:
     runs-on: ubuntu-latest
