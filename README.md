@@ -55,6 +55,9 @@ Salve o JSON resultante para usar como secret:
   "tenantId": "<ID_DO_TENANT>"
 }
 
+# no power shell de permissão ao Service Principal a adimistrador
+az role assignment create --assignee "<ID_DO_CLIENTE>" --role "User Access Administrator" --scope /subscriptions/"<ID_DA_SUBSCRIPTION>"
+
 # cadastro de SECRET NO GITHUB 
 
 INSTALAÇÃO 

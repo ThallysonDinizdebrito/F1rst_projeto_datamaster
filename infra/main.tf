@@ -148,6 +148,10 @@ resource "azurerm_role_assignment" "grafana_law_reader" {
 # ========================================
 data "azurerm_subscription" "current" {}
 
+# ========================================
+# Role Assignment: Grafana MI -> subscription -> Monitoring Reader
+# ========================================
+
 resource "azurerm_role_assignment" "grafana_monitor_reader" {
   scope                = data.azurerm_subscription.current.id
   role_definition_name = "Monitoring Reader"
