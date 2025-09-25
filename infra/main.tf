@@ -101,8 +101,21 @@ resource "azurerm_monitor_diagnostic_setting" "storage_diag" {
   }
 }
 
+
 # ========================================
-# Azure Managed Grafana
+# User Assigned Managed Identity
+# ========================================
+
+resource "azurerm_user_assigned_identity" "grafana_mi" {
+  name                = "grafana-mi"
+  resource_group_name = azurerm_resource_group.grupo_principal.name
+  location            = azurerm_resource_group.grupo_principal.location
+}
+
+
+
+# ========================================
+# Azure Managed Grafana com associa essa MI a um recurso
 # ========================================
 
 resource "azurerm_dashboard_grafana" "grafana" {
@@ -114,25 +127,24 @@ resource "azurerm_dashboard_grafana" "grafana" {
   grafana_major_version = "11"
 
   identity {
-    type = "SystemAssigned"
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.grafana_mi.id]
   }
 
   public_network_access_enabled = true
 }
 
-# Pega o objeto do usuário do Azure AD (criador)
-data "azurerm_client_config" "current" {}
-
-# Associa o papel de Grafana Admin ao usuário que aplica o Terraform
-resource "azurerm_role_assignment" "grafana_admin" {
-  scope                = azurerm_dashboard_grafana.grafana.id
-  role_definition_name = "Grafana Admin"
-  principal_id         = data.azurerm_client_config.current.object_id
-}
-
-# Atribui permissão Log Analytics Reader no LAW para o Grafana
+# ========================================
+# Role Assignment: Grafana MI -> Log Analytics
+# ========================================
 resource "azurerm_role_assignment" "grafana_law_reader" {
   scope                = azurerm_log_analytics_workspace.this.id
   role_definition_name = "Log Analytics Reader"
-  principal_id         = azurerm_dashboard_grafana.grafana.identity[0].principal_id
+  principal_id         = azurerm_user_assigned_identity.grafana_mi.principal_id
+}
+
+resource "azurerm_role_assignment" "grafana_monitor_reader" {
+  scope                = azurerm_subscription.primary.id
+  role_definition_name = "Monitoring Reader"
+  principal_id         = azurerm_user_assigned_identity.grafana_mi.principal_id
 }

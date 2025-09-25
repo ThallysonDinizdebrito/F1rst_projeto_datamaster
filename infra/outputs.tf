@@ -43,3 +43,8 @@ output "nome_do_container_validado" {
   value       = azurerm_storage_container.container_raw.name
 }
 
+
+output "mi_principal_id" {
+  value = azurerm_user_assigned_identity.grafana_mi.principal_id
+}
+
