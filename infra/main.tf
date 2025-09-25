@@ -83,7 +83,7 @@ resource "azurerm_log_analytics_workspace" "this" {
 }
 
 # ========================================
-# Azure Monitor Diagnostic Settings para Storage Account
+# # Azure Monitor Diagnostic Settings para Storage Account
 # ========================================
 
 resource "azurerm_monitor_diagnostic_setting" "storage_diag" {
