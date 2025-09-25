@@ -67,7 +67,7 @@ variable "nome_pasta_json" {
 
 variable "nome_do_container_rejeitados" {
   type        = string
-  description = "Nome do container dead_letter"
+  description = "Nome do container deadletter"
 }
 
 variable "nome_do_container_validado" {
@@ -80,5 +80,4 @@ variable "env" {
   description = "Ambiente (dev, hml, prod)"
   default     = "dev"
 }
-
 
