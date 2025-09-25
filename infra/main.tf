@@ -87,7 +87,7 @@ resource "azurerm_log_analytics_workspace" "this" {
 # ========================================
 
 resource "azurerm_monitor_diagnostic_setting" "storage_diag" {
-  name                       = "rg-dev-projeto-storage-diagnostics"
+  name                       = "rg-dev-projeto-storage-diagnostics-logs"
   target_resource_id         = azurerm_storage_account.conta_armazenamento.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.this.id
 
