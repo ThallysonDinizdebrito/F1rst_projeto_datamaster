@@ -115,7 +115,7 @@ def validate_fake_data(azeventgrid: func.EventGridEvent):
             item["MOTIVO"] = e.message
 
     # ================================================================
-    # Envia o JSON completo para container "validado", mantendo subpastas
+    # Envia o JSON completo para container "raw", mantendo subpastas
     # ================================================================
     validado_container = "raw"
     destino_path = f"{pasta}/{blob_filename}"  # ex: "orders/orders-2025-09-22-224600017234.json"

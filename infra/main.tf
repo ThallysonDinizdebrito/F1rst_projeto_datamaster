@@ -122,7 +122,7 @@ resource "azurerm_dashboard_grafana" "grafana" {
   name                = "grafana-rg-dev-projeto"
   resource_group_name = azurerm_resource_group.grupo_principal.name
   location            = azurerm_resource_group.grupo_principal.location
-  sku                 = "Standard"
+  sku                 = "Basic"
 
   grafana_major_version = "11"
 

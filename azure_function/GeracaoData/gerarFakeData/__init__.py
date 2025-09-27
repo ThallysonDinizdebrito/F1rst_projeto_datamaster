@@ -95,7 +95,7 @@ def main(mytimer: func.TimerRequest) -> None:
 
         # Pedidos
         pedidos = []
-        for _ in range(1):
+        for _ in range(8):
             cliente = random.choice(clientes)
             restaurante = random.choice(restaurantes)
             entregador = random.choice(entregadores)
