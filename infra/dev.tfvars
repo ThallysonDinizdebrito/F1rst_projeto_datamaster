@@ -1,7 +1,7 @@
 ###############################
 # Arquivo: dev.tfvars
 # Objetivo: Variáveis específicas do ambiente de desenvolvimento
-###############################
+###############################j
 
 # Resource Group
 nome_do_grupo_de_recursos   = "rg-dev-projeto"
