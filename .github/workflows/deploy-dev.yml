@@ -204,6 +204,16 @@ jobs:
             --functions-version 4 \
             --os-type Linux || echo "Function App init já existe, seguindo deploy"
 
+      - name: Verificar se a Function init App existe
+        run: |
+          echo "Procurando Function App: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}"
+          az functionapp show \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "{Name:name, State:state, Location:location}" \
+            -o table || echo "Function App não encontrada"
+
+
       # 7. Deploy da Function App init via func CLI (build remoto)
       - name: Deploy Azure Function init via func CLI
         working-directory: ./azure_function/functionvalidacao
@@ -244,11 +254,21 @@ jobs:
             --functions-version 4 \
             --os-type Linux || echo "Function App já existe, seguindo deploy"
 
+      - name: Verificar se a Function App existe
+        run: |
+          echo "Procurando Function App: ${{ env.AZURE_FUNCTIONAPP_NAME }}"
+          az functionapp show \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "{Name:name, State:state, Location:location}" \
+            -o table || echo "Function App não encontrada"
+
       # 7. Deploy da Function App via func CLI (build remoto)
       - name: Deploy Azure Function via func CLI
         working-directory: ./azure_function/GeracaoData
         run: |
           func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote --python
+
 
       # 8. Reinicia Function App (opcional, mas seguro)
       - name: Restart Function App
