@@ -1,4 +1,4 @@
-name: Deploy to Databricks (New CLI/SDK)
+name: Deploy to Databricks 
 
 on:
   push:
