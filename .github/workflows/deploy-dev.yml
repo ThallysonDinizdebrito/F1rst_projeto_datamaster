@@ -147,13 +147,13 @@ jobs:
       STORAGE_ACCOUNT: devprojetoarmazen
       SERVICE_PLAN: rg-dev-projeto-func-plan
 
-
     steps:
 
-      # 1. Checkout do código
+      # Checkout
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Azure login
       - name: Azure CLI Login
         uses: azure/login@v1
         with:
@@ -165,13 +165,13 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-      # 2. Configura Node.js (pré-requisito para func CLI)
+      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
 
-      # 3. Cache do npm global para acelerar instalação da func CLI
+      # Cache npm
       - name: Cache npm
         uses: actions/cache@v3
         with:
@@ -180,106 +180,54 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      # 4. Instalar Azure Functions Core Tools (com cache do npm)
+      # Instala Azure Functions Core Tools
       - name: Install Azure Functions Core Tools
         run: |
           npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
-        # 5. Instala dependências Python (requirements.txt)
+      # Setup Python
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      # 6. Cria Function App init (Linux Consumption)
-      - name: Create Function App init
+      # Function App init
+      - name: Check Function App init
         run: |
-          az functionapp create \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
-            --storage-account ${{ env.STORAGE_ACCOUNT }} \
-            --consumption-plan-location westeurope \
-            --runtime python \
-            --runtime-version 3.11 \
-            --functions-version 4 \
-            --os-type Linux || echo "Function App init já existe, seguindo deploy"
-
-      - name: Verificar se a Function init App existe
-        run: |
-          echo "Procurando Function App: ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }}"
           az functionapp show \
             --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --query "{Name:name, State:state, Location:location}" \
-            -o table || echo "Function App não encontrada"
+            -o table || echo "Function App init não encontrada"
 
-
-      # 7. Deploy da Function App init via func CLI (build remoto)
-      - name: Deploy Azure Function init via func CLI
+      - name: Deploy Function App init via func CLI
         working-directory: ./azure_function/functionvalidacao
         run: |
           func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python
 
-      # 8. Reinicia Function App init (opcional, mas recomendado)
       - name: Restart Function App init
         run: |
           az functionapp restart \
             --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
-      # 8. Reinicia Function App init (opcional, mas recomendado)
-      - name: start Function App init
+      # Function App principal
+      - name: Check Function App
         run: |
-          az functionapp start \
-            --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
-
-          
-      # 5. Instala dependências Python (requirements.txt)
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      # 6. Cria Function App (Linux Consumption)
-      - name: Create Function App
-        run: |
-          az functionapp create \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
-            --storage-account ${{ env.STORAGE_ACCOUNT }} \
-            --consumption-plan-location westeurope \
-            --runtime python \
-            --runtime-version 3.11 \
-            --functions-version 4 \
-            --os-type Linux || echo "Function App já existe, seguindo deploy"
-
-      - name: Verificar se a Function App existe
-        run: |
-          echo "Procurando Function App: ${{ env.AZURE_FUNCTIONAPP_NAME }}"
           az functionapp show \
             --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --query "{Name:name, State:state, Location:location}" \
             -o table || echo "Function App não encontrada"
 
-      # 7. Deploy da Function App via func CLI (build remoto)
-      - name: Deploy Azure Function via func CLI
+      - name: Deploy Function App via func CLI
         working-directory: ./azure_function/GeracaoData
         run: |
           func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote --python
 
-
-      # 8. Reinicia Function App (opcional, mas seguro)
       - name: Restart Function App
         run: |
           az functionapp restart \
-            --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
-
-      - name: start Function App inc
-        run: |
-          az functionapp start \
             --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
