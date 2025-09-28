@@ -185,35 +185,37 @@ jobs:
         run: |
           npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
-      # 5. Instala dependências Python (requirements.txt)
+        # 5. Instala dependências Python (requirements.txt)
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
+      # 6. Cria Function App init (Linux Consumption)
       - name: Create Function App init
         run: |
-          # Cria a Function App Linux
-          az functionapp create  --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --storage-account ${{ env.STORAGE_ACCOUNT }} --consumption-plan-location westeurope --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
+          az functionapp create \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
+            --storage-account ${{ env.STORAGE_ACCOUNT }} \
+            --consumption-plan-location westeurope \
+            --runtime python \
+            --runtime-version 3.11 \
+            --functions-version 4 \
+            --os-type Linux || echo "Function App init já existe, seguindo deploy"
 
-
-      - name: Deploy Azure Function via func init CLI
-        working-directory: './azure_function/functionvalidacao'
+      # 7. Deploy da Function App init via func CLI (build remoto)
+      - name: Deploy Azure Function init via func CLI
+        working-directory: ./azure_function/functionvalidacao
         run: |
           func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python
 
-
-      - name: reinstart func init
+      # 8. Reinicia Function App init (opcional, mas recomendado)
+      - name: Restart Function App init
         run: |
-          # Reinstart da func init
-          az functionapp restart --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}  
-
-
-      - name: Reinstal libs func init
-        working-directory: './azure_function/functionvalidacao'
-        run: |
-          # Clear Reinstalar Libs
-          func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python
+          az functionapp restart \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
           
       # 5. Instala dependências Python (requirements.txt)
