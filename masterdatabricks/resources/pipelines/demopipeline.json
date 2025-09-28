@@ -1,20 +1,18 @@
-
 {
-  "pipeline_type": "WORKSPACE",
-  "name": "pipeline-ci-cd",
-  "libraries": [
-    {
-      "glob": {
-        "include": "/Workspace/Users/thallysongreif@gmail.com/F1rst_projeto_datamaster/masterdatabricks/src/pipelines/demopipeline/transformations/**"
-      }
-    }
-  ],
-  "schema": "bronze",
-  "continuous": false,
-  "development": false,
-  "photon": true,
-  "channel": "CURRENT",
-  "catalog": "losdata_prod",
-  "serverless": true,
-  "root_path": "/Workspace/Users/thallysongreif@gmail.com/F1rst_projeto_datamaster/masterdatabricks/src/pipelines/demopipeline"
+    "pipeline_type": "WORKSPACE",
+    "development": true,
+    "continuous": false,
+    "channel": "PREVIEW",
+    "photon": true,
+    "libraries": [
+        {
+            "notebook": {
+                "path": "/Users/thallysongreif@gmail.com/notebook/Clientes/Clientes DLT"
+            }
+        }
+    ],
+    "name": "Clientes_DLT_teste",
+    "serverless": true,
+    "catalog": "losdata",
+    "schema": "dlt_clientes"
 }

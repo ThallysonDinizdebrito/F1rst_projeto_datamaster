@@ -1,0 +1,94 @@
+name: Deploy to Databricks (New CLI/SDK)
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    defaults:
+      run:
+        working-directory: masterdatabricks
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      # 1️⃣ Checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Instalar Python
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+
+      # - name: Download Databricks CLI v2
+      #   run: |
+      #     curl -L -o databricks https://github.com/databricks/databricks-cli/releases/latest/download/databricks-linux-amd64
+      #     chmod +x databricks
+      #     sudo mv databricks /usr/local/bin/
+
+      # 3️⃣ Instalar Databricks CLI 
+      # - name: Install Databricks CLI (new)
+      #   run: pip install databricks-cli
+
+      # # 3️⃣ Instalar Databricks 
+      # - name: Install Databricks CLI (new)
+      #   run: pip install databricks
+
+
+              # 3️⃣ Instalar Databricks 
+      - name: Install Databricks CLI (new)
+        run: pip install --upgrade databricks-cli
+
+      # # 3️⃣ Instalar Databricks CLI 
+      # - name: Install search databricks
+      #   run: winget search databricks
+
+      # # 3️⃣ Instalar Databricks CLI 
+      # - name: Install DatabricksCLI
+      #   run: winget install Databricks.DatabricksCLI
+
+      # - name: Bundle
+      #   # working-directory: masterdatabricks
+      #   run: databricks bundle validate --target dev
+
+             
+      # # 5️⃣ Criar/atualizar Job
+      # - name: Criar/Atualizar Job exemplo
+      #   run: databricks jobs create --json-file resources/jobs/jobexemplo.json
+
+             
+      # 5️⃣ Criar/atualizar Job
+      # - name: Criar/Atualizar Job
+      #   run: databricks jobs create --json-file resources/jobs/job.json
+          # databricks jobs create -h
+          # databricks jobs create resources/jobs/job.json 
+
+      # - name: Verificar versão do CLI
+      #   run: databricks --version
+
+      # - name: Criar/Atualizar Pipeline
+      #   run: databricks pipelines create -h
+
+      - name: Criar/Atualizar Pipeline nova versao
+        run: databricks pipelines create resources/pipelines/demopipeline.json --allow-duplicate-names
+
+        
+
+      # # # 7️⃣ Executar Job
+      # # - name: Executar Job
+      # #   run: |
+      # #     databricks jobs run-now --job-id $(databricks jobs list --output JSON | jq -r '.jobs[] | select(.settings.name=="ingestao_Job") | .job_id')
+
+      # # 8️⃣ Executar Pipeline
+      # - name: Executar Pipeline
+      #   run: |
+      #     databricks pipelines start --pipeline-id $(databricks pipelines list --output JSON | jq -r '.pipelines[] | select(.name=="pipeline_demopipeline") | .pipeline_id')
