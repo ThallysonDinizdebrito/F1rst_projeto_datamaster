@@ -280,6 +280,42 @@ jobs:
       - name: Terraform Apply Event Grid
         run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars 
 
+###################################################################################
+# Databricks DLT Jobs unity Catalog testes
+###################################################################################
+
+  deploy_databricks:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: eventgrid
+    defaults:
+      run:
+        working-directory: masterdatabricks
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      # 1️⃣ Checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Instalar Python
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+              # 3️⃣ Instalar Databricks 
+      - name: Install Databricks CLI (new)
+        run: pip install --upgrade databricks-cli
+
+
+      - name: Criar/Atualizar Pipeline nova versao
+        run: databricks pipelines create resources/pipelines/demopipeline.json --allow-duplicate-names
+
+
 
 ###################################################################################
 # GRAFANA DEPLOY
@@ -289,7 +325,7 @@ jobs:
   deploy_grafana:
     runs-on: ubuntu-latest
     environment: dev
-    needs: eventgrid
+    needs: deploy_databricks
 
     steps:
       - name: Checkout repository
