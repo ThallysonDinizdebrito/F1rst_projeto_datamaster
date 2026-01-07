@@ -192,6 +192,19 @@ jobs:
           python-version: '3.11'
 
       # Function App principal
+      - name: Create Function App (if not exists)
+        run: |
+          az functionapp create \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --consumption-plan-location westeurope \
+            --runtime python \
+            --runtime-version 3.11 \
+            --functions-version 4 \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
+            --storage-account devprojetoarmazen \
+            --os-type Linux
+
+      # Function App principal
       - name: Check Function App
         run: |
           az functionapp show \
