@@ -127,7 +127,7 @@ jobs:
 
 # ###################################################################################
 # # CRIAÇÃO DAS FUNCTIONS  E INSTALAÇÃO DE PACOTES PYTHON
-# ###################################################################################
+# ##################################################################################
 
 
   function:
@@ -200,7 +200,7 @@ jobs:
             --query "{Name:name, State:state, Location:location}" \
             -o table || echo "Function App não encontrada"
 
-      - name: Deploy Function App via func CLI
+      - name: Deploy Function App via func CLI teste
         working-directory: ./azure_function/GeracaoData
         run: |
           func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote --python
