@@ -191,25 +191,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      # Function App init
-      - name: Check Function App init
-        run: |
-          az functionapp show \
-            --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "{Name:name, State:state, Location:location}" \
-            -o table || echo "Function App init não encontrada"
 
-      - name: Deploy Function App init via func CLI
-        working-directory: ./azure_function/functionvalidacao
-        run: |
-          func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} --build remote --python
 
-      - name: Restart Function App init
-        run: |
-          az functionapp restart \
-            --name ${{ env.AZURE_FUNCTIONAPP_NAME_VALIDATE }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
       # Function App principal
       - name: Check Function App
