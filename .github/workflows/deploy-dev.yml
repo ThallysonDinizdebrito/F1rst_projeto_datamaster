@@ -191,9 +191,6 @@ jobs:
         with:
           python-version: '3.11'
 
-
-
-
       # Function App principal
       - name: Check Function App
         run: |
@@ -219,7 +216,7 @@ jobs:
 # CRIAÇÃO DAS DO EVENTGRID SISTEM TOPC SUBSCRIPTION DE ACIONAMENTO DA FUNCTION DATA QUALITY
 #############################################################################################
 
-  eventgrid:
+  eventhub:
     runs-on: ubuntu-latest
     environment: dev
     needs: function
@@ -270,7 +267,7 @@ jobs:
   deploy_databricks:
     runs-on: ubuntu-latest
     environment: dev
-    needs: eventgrid
+    needs: eventhub
     defaults:
       run:
         working-directory: masterdatabricks
