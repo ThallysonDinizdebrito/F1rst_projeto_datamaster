@@ -11,55 +11,55 @@
 # ================================================================
 # Data source para Function App existente
 # ================================================================
-data "azurerm_linux_function_app" "function_validate" {
-  name                = "rg-dev-projeto-func-init"
-  resource_group_name = "rg-dev-projeto"
-}
+#data "azurerm_linux_function_app" "function_validate" {
+#  name                = "rg-dev-projeto-func-init"
+#  resource_group_name = "rg-dev-projeto"
+#}
 
 # ================================================================
 # Event Grid Subscription - System Topic -> Function App
 # ================================================================
 # System Topic ligado à Storage Account
-resource "azurerm_eventgrid_system_topic" "raw_topic" {
-  name                   = "${var.nome_do_grupo_de_recursos}-raw-topic"
-  location               = azurerm_resource_group.grupo_principal.location
-  resource_group_name    = azurerm_resource_group.grupo_principal.name
-  source_arm_resource_id = azurerm_storage_account.conta_armazenamento.id
-  topic_type             = "Microsoft.Storage.StorageAccounts"
-}
+#resource "azurerm_eventgrid_system_topic" "raw_topic" {
+#  name                   = "${var.nome_do_grupo_de_recursos}-raw-topic"
+#  location               = azurerm_resource_group.grupo_principal.location
+#  resource_group_name    = azurerm_resource_group.grupo_principal.name
+#  source_arm_resource_id = azurerm_storage_account.conta_armazenamento.id
+#  topic_type             = "Microsoft.Storage.StorageAccounts"
+#}
 
 
 # ================================================================
 # Subscription para System Topic apontando para Function
 # ================================================================
 
-resource "azurerm_eventgrid_system_topic_event_subscription" "sub_func_system_topic" {
-  name                = "${var.nome_do_grupo_de_recursos}-sub-func-system"
-  resource_group_name = azurerm_resource_group.grupo_principal.name
-  system_topic        = azurerm_eventgrid_system_topic.raw_topic.name
+#resource "azurerm_eventgrid_system_topic_event_subscription" "sub_func_system_topic" {
+#  name                = "${var.nome_do_grupo_de_recursos}-sub-func-system"
+#  resource_group_name = azurerm_resource_group.grupo_principal.name
+#  system_topic        = azurerm_eventgrid_system_topic.raw_topic.name
 
-  included_event_types  = ["Microsoft.Storage.BlobCreated"]
-  event_delivery_schema = "CloudEventSchemaV1_0"
+#  included_event_types  = ["Microsoft.Storage.BlobCreated"]
+#  event_delivery_schema = "CloudEventSchemaV1_0"
 
-  azure_function_endpoint {
-    function_id = "${data.azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
-  }
+#  azure_function_endpoint {
+#    function_id = "${data.azurerm_linux_function_app.function_validate.id}/functions/validate_fake_data"
+#  }
 
-  storage_blob_dead_letter_destination {
-    storage_account_id          = azurerm_storage_account.conta_armazenamento.id
-    storage_blob_container_name = azurerm_storage_container.container_rejeitados.name
-  }
+#  storage_blob_dead_letter_destination {
+#    storage_account_id          = azurerm_storage_account.conta_armazenamento.id
+#    storage_blob_container_name = azurerm_storage_container.container_rejeitados.name
+#  }
 
 
-  subject_filter {
-    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.container_source.name}/"
-    subject_ends_with   = ".json"
-  }
+#  subject_filter {
+#    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.container_source.name}/"
+#    subject_ends_with   = ".json"
+#  }
 
-  depends_on = [
-    azurerm_eventgrid_system_topic.raw_topic
-  ]
-}
+#  depends_on = [
+#    azurerm_eventgrid_system_topic.raw_topic
+#  ]
+#}
 
 
 # ================================================================
