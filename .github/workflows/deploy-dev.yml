@@ -191,7 +191,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      # Function App principal
+      # Criando Function
       - name: Create Function App (if not exists)
         run: |
           az functionapp create \
@@ -204,7 +204,7 @@ jobs:
             --storage-account devprojetoarmazen \
             --os-type Linux
 
-      # Function App principal
+      # Function App principal 
       - name: Check Function App
         run: |
           az functionapp show \
@@ -213,7 +213,7 @@ jobs:
             --query "{Name:name, State:state, Location:location}" \
             -o table || echo "Function App não encontrada"
 
-      - name: Deploy Function App via func CLI teste
+      - name: Deploy Function App via func CLI
         working-directory: ./azure_function/GeracaoData
         run: |
           func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote --python
