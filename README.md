@@ -88,6 +88,15 @@ gh secret set AZURE_CLIENT_ID --body "***********" -- env dev
     AZURE_TENANT_ID
     AZURE_SUBSCRIPTION_ID
 
+deletar uma secret
+gh secret delete DATABRICKS_TOKEN --env dev
+
+atualizar uma secret
+
+gh secret set DATABRICKS_TOKEN  --body "***********"  --repo ThallysonDinizdebrito/F1rst_projeto_datamaster --env dev 
+
+lista as secrets
+gh secret list --repo ThallysonDinizdebrito/F1rst_projeto_datamaster --env dev
 
 ## Backend Remoto do Terraform
 
