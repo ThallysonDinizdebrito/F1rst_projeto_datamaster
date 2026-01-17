@@ -282,6 +282,5 @@ Administration>>
       Service accounts 
 
 
-
 # salve o token no github secrets
 gh secret set GRAFANA_API_KEY --body "************************" 
