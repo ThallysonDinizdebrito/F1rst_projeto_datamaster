@@ -379,5 +379,14 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"dashboard\": $(cat dashboards/infra_azure.json), \"overwrite\": true}"
 
+            
+      - name: Deploy Dashboard
+        working-directory: './grafana'
+        run: |
+          curl -s -X POST "$GRAFANA_URL/api/dashboard/db" \
+            -H "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"dashboard\": $(cat dashboard/infra_azure.json), \"overwrite\": true}"
+
 
               

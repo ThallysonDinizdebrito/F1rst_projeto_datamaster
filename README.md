@@ -245,6 +245,19 @@ az keyvault create  --name kv-devprojeto --resource-group rg-dev-projeto  --loca
 # CONSEDER PERMISÃO - atenção precisa colocar #@ext@
 az keyvault set-policy --name kv-devprojeto --upn "thallysoncamila2017_outlook.com#EXT#@thallysoncamila2017outlook.onmicrosoft.com"--secret-permissions get list set delete
 
+# Cadastre um token no grafana UI
+
+entre na azure grafana-rg-dev-projeto
+Ponto de extremidade: exemplo  https://grafana-rg-dev-projeto-cufga8caayhtd5f2.weu.grafana.azure.com 
+navegue até 
+Home
+Administration>>
+Users and access>>
+Service accounts>>
+Create service account>>
+gerar Token no portal do grafana 
+
+
 # registrar um provider no grafana
 az provider register --namespace Microsoft.Dashboard
 
