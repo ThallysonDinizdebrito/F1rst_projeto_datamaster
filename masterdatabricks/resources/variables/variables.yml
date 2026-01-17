@@ -1,0 +1,4 @@
+variables:
+  catalog_name:
+    description: "variavel de ambiente"
+    default: losdata

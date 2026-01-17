@@ -43,14 +43,10 @@ Este projeto cria uma infraestrutura de engenharia de dados usando **Azure** e *
 
 Criar Service Principal no Azure:
 
-
-az ad sp create-for-rbac --name "terraform-prod" --role="Contributor" --scopes="/subscriptions/<SUBSCRIPTION_ID>"
-
+az ad sp create-for-rbac --name "terraform-dev" --role="Contributor" --scopes="/subscriptions/<SUBSCRIPTION_ID>"
 
 
-
-
-Copie o JSON resultante para usar como secret:
+Salve o JSON resultante para usar como secret:
 
 {
   "clientId": "<ID_DO_CLIENTE>",
@@ -59,16 +55,57 @@ Copie o JSON resultante para usar como secret:
   "tenantId": "<ID_DO_TENANT>"
 }
 
+# no power shell de permissão ao Service Principal a adimistrador
+az role assignment create --assignee "<ID_DO_CLIENTE>" --role "User Access Administrator" --scope /subscriptions/"<ID_DA_SUBSCRIPTION>"
 
----
+# cadastro de SECRET NO GITHUB 
+
+INSTALAÇÃO 
+winget install github.cli
+VERIFICAR SE INSTALOUI
+gh --version
+
+LOGIN
+gh auth login
+Where do you use GitHub? GitHub.com
+? What is your preferred protocol for Git operations on this host? HTTPS
+? Authenticate Git with your GitHub credentials? Yes
+? How would you like to authenticate GitHub CLI? Login with a web browser
+! First copy your one-time code: exemplo 4355-1C03
+coloque esse código no browser onde pede o código
+
+crie as secrets usando ojson do Service Principal 
 
 
+
+exemplo template
+gh secret set <NOME_SECRET> --body "<secret_key>" -- env <environments>
+exemplo pratico, fazer para todos
+gh secret set AZURE_CLIENT_ID --body "***********" -- env dev
+  nomes:
+    AZURE_CLIENT_ID
+    AZURE_CLIENT_SECRET
+    AZURE_TENANT_ID
+    AZURE_SUBSCRIPTION_ID
+
+deletar uma secret
+gh secret delete DATABRICKS_TOKEN --env dev
+
+atualizar uma secret
+
+gh secret set DATABRICKS_TOKEN  --body "*************"  --repo ThallysonDinizdebrito/F1rst_projeto_datamaster --env dev 
+
+lista as secrets
+gh secret list --repo ThallysonDinizdebrito/F1rst_projeto_datamaster --env dev
 
 ## Backend Remoto do Terraform
 
-> ⚠️ O backend remoto **não pode ser criado automaticamente** pelo Terraform principal do projeto.
+> ⚠️ O backend remoto **é  criado automaticamente no ci/cd** pelo CLI no projeto.
 
 O backend é usado para armazenar o **estado do Terraform** de forma segura e compartilhada. Antes de rodar qualquer `terraform init` ou `terraform apply`, ele precisa existir.
+porém ja esta setado para ser criado no ci/cd só olhar na configuração do YML
+
+#Apartir daqui é necessario somente se quizer criar o state do terraform localmente via power Shell
 
 
 ## dentro do power shell Import-Module Az
@@ -94,10 +131,10 @@ Connect-AzAccount -TenantId "<ID_DO_TENANT>" -UseDeviceAuthentication
 New-AzResourceGroup -Name "rg-backend-dev" -Location "brazilsouth"
 
 
-### Como criar o backend remoto (PowerShell)
+# Como criar o backend remoto (PowerShell)
 
-```powershell
-# Variáveis
+'```powershell
+#Variáveis
 $rg="rg-backend-dev"; $loc="brazilsouth"; $sa="estadotfdev"; $cont="tfstate";
 
 # Criar Resource Group, Storage Account e container tfstate
@@ -107,4 +144,143 @@ $key=(Get-AzStorageAccountKey -ResourceGroupName $rg -Name $sa)[0].Value;
 $ctx=New-AzStorageContext -StorageAccountName $sa -StorageAccountKey $key;
 New-AzStorageContainer -Name $cont -Context $ctx
 
+# remover os recursos caso precise
 
+Remove-AzResourceGroup -Name "rg-backend-dev" -Force
+
+
+# criar o plano de hospedagem da function - (NÃO NECESSITA NO PROJETO PORQUE VAMOS USAR O PADRÃO)
+ az functionapp plan create --name rg-dev-projeto-func-plan --resource-group rg-dev-projeto --location westeurope --sku EP1 --is-linux
+
+
+# JA ESTA PROVISIONADA A SER CRIADA NO CLI NO DEPLOY  (APENAS PARA CRIAÇÃO E TESTES)
+ # criar a function 
+
+ az functionapp create --name rg-dev-projeto-func --resource-group rg-dev-projeto --storage-account devprojetoarmazen --plan rg-dev-projeto-func-plan --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
+
+
+MODELO DE CRIAÇÃO DE FUNCTION
+# az functionapp create `
+# >>   --resource-group rg-dev-projeto `
+# >>   --name rg-dev-projeto-func-init `
+# >>   --storage-account devprojetoarmazen `
+# >>   --consumption-plan-location westeurope `
+# >>   --runtime python `
+# >>   --runtime-version 3.11 `
+# >>   --functions-version 4 `
+# >>   --os-type Linux
+
+
+# desscobrir o Azure Key Vault da conta de armazenamento 
+
+az storage account keys list --resource-group rg-dev-projeto --account-name devprojetoarmazen  --query "[0].value" --output tsv
+
+# delete function
+az functionapp delete --name rg-dev-projeto-func --resource-group rg-dev-projeto
+
+# ver suas variaveis de ambiente dentro da azure
+az functionapp config appsettings list --name rg-dev-projeto-func --resource-group rg-dev-projeto
+
+# function start função local
+func start
+
+
+# para testes
+# cria um arquivo json teste na pasta aberta
+echo "{'teste':'ok'}" > teste.json
+# envia o arquivo para o blobstorage
+az storage blob upload --account-name devprojetoarmazen --container-name raw --name teste.json --file teste.json --account-key  <key>
+
+#back commite  (caso tenha subido um comite com secret)
+escolher o comite com a ser excluido ou editado
+git log --oneline
+
+numeros de commites 
+git rebase -i HEAD~5
+
+D para dropar os commites
+:wq
+para salvar e fechar
+
+continuar ou abortar o rebase
+git rebase --continue
+git rebase --abort
+
+# trazer o json do recurso subscrition (para analisar o json e usar como exemplo na criação de um recurso existente)
+az eventgrid event-subscription show --name testefakedatafunctioninit --source-resource-id $(az eventgrid topic show -g rg-dev-projeto -n rg-dev-projeto-topic --query id -o tsv) -o json
+
+# caso precise criar o zip dos pacotes das function (função pra criar um zip para function empacotar e envia para function app criada)
+Compress-Archive -Path * -DestinationPath functionvalidacao.zip
+
+# Reinstalar Libs ja deploada das function (muito utio para quando a function não esta funcionando)
+cd site/wwwroot
+python -m pip install --force-reinstall -r requirements.txt
+
+#reiniciar a function 
+# Via Azure CLI
+az functionapp restart --name rg-dev-projeto-func --resource-group rg-dev-projeto
+
+
+# remover ID Lock em Deploy mal sucedido ou cancelado (quando o processo de plan para ou não é completado)
+ cd C:\Users\Thall\infra\F1rstDatamaster\infra
+terraform force-unlock 1a55c1d2-cf51-561c-2934-74b79b4bcbc5
+
+
+# listar os serviços na azure
+az appservice plan list --resource-group rg-dev-projeto -o table
+
+# garante a reinstalação das libs das function principalmente para a function que gera dados
+C:\Users\Thall\infra\F1rstDatamaster\azure_function\GeracaoData> func azure functionapp publish rg-dev-projeto-func --build remote --python
+
+C:\Users\Thall\infra\F1rstDatamaster\azure_function\functionvalidacao> func azure functionapp publish rg-dev-projeto-func-init --build remote --python
+
+# APAGAR O PACKAGE DA FUNCTION
+ az functionapp config appsettings delete --name rg-dev-projeto-func --resource-group rg-dev-projeto --setting-names WEBSITE_RUN_FROM_PACKAGE
+
+# CRIAR KEYVALUE 
+az keyvault create --name kv-devprojeto --resource-group rg-dev-projeto --location brazilsouth
+# CRIAR SEM RBAC
+az keyvault create  --name kv-devprojeto --resource-group rg-dev-projeto  --location brazilsouth --enable-rbac-authorization false 
+
+# CONSEDER PERMISÃO - atenção precisa colocar #@ext@
+az keyvault set-policy --name kv-devprojeto --upn "thallysoncamila2017_outlook.com#EXT#@thallysoncamila2017outlook.onmicrosoft.com"--secret-permissions get list set delete
+
+# Cadastre um token no grafana UI
+
+entre na azure grafana-rg-dev-projeto
+Ponto de extremidade: exemplo  https://grafana-rg-dev-projeto-cufga8caayhtd5f2.weu.grafana.azure.com 
+navegue até 
+Home
+Administration>>
+Users and access>>
+Service accounts>>
+Create service account>>
+gerar Token no portal do grafana 
+
+
+# registrar um provider no grafana
+az provider register --namespace Microsoft.Dashboard
+
+# verificar se ja esta confirmado o registro
+az provider show --namespace Microsoft.Dashboard --query "registrationState"
+
+so rodar a pipeline quando o status do registro estiver como 
+"Registered"
+
+# Habilite key do grafana
+entre no recurso criado do grafana grafana-rg-dev-projeto
+tela:
+Configuração>>
+  Configurações Gerais
+  Contas de serviço "habilitar" flag
+
+
+# crie um token no ambiente do grafana 
+telas:
+Administration>>
+  Users and access>>
+      Service accounts 
+
+
+# salve o token no github secrets
+gh secret set GRAFANA_API_KEY --body "************************" 

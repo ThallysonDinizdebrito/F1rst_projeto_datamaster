@@ -1,0 +1,15 @@
+{
+  "name": "azure-log-analytics",
+  "type": "grafana-azure-monitor-datasource",
+  "access": "proxy",
+  "isDefault": true,
+  "jsonData": {
+    "azureAuthType": "msi",
+    "azureCloud": "azuremonitor",
+    "subscriptionId": "${__SUBSCRIPTION_ID__}",
+    "tenantId": "${__TENANT_ID__}"
+  },
+  "secureJsonData": {
+    "azureLogAnalyticsDefaultWorkspace": "__WORKSPACE_ID__"
+  }
+}

@@ -6,9 +6,9 @@
 
 terraform {
   backend "azurerm" {
-    resource_group_name  = "rg-backend-dev"
-    storage_account_name = "estadotfdev"
-    container_name       = "tfstate"
+    resource_group_name  = "rg-backend-dev"        # seu RG recém-criado
+    storage_account_name = "estadotfdev"          # sua Storage Account nova
+    container_name       = "tfstate"              # container novo
     key                  = "terraform.tfstate"
   }
 }

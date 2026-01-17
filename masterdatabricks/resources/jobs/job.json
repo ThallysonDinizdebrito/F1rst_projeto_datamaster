@@ -1,0 +1,25 @@
+{
+  "name": "job-ci-cd",
+  "email_notifications": {},
+  "webhook_notifications": {},
+  "timeout_seconds": 3600,
+  "max_concurrent_runs": 1,
+  "tasks": [
+    {
+      "task_key": "ingestao",
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/thallysongreif@gmail.com/F1rst_projeto_datamaster/masterdatabricks/src/notebooks/Ingestao",
+        "base_parameters": {
+          "catalog_name": "losdata_prod"
+        },
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {}
+    }
+  ],
+  "run_as": {
+    "user_name": "thallysongreif@gmail.com"
+  }
+}

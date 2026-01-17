@@ -1,0 +1,18 @@
+{
+    "pipeline_type": "WORKSPACE",
+    "development": true,
+    "continuous": false,
+    "channel": "PREVIEW",
+    "photon": true,
+    "libraries": [
+        {
+            "notebook": {
+                "path": "/Users/thallysongreif@gmail.com/notebook/Clientes/Clientes DLT"
+            }
+        }
+    ],
+    "name": "Clientes_DLT_teste",
+    "serverless": true,
+    "catalog": "losdata",
+    "schema": "dlt_clientes"
+}

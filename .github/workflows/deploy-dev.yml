@@ -1,41 +1,385 @@
-name: Deploy Dev
+##################################################################################
+# CRIAÇÃO DO STATE DO TERRAFORM..
+##################################################################################
+name: Deploy-resources-dev
 
 on:
   push:
     branches:
       - dev
-
 jobs:
-  terraform:
-    name: Terraform Dev
+  setup-tf-backend:
     runs-on: ubuntu-latest
+    environment: dev
+
+    env:
+      # Autenticação para Terraform
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Variáveis Terraform (se você usa TF_VAR_* no código)
+      TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+      TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+      TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
+      TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Variáveis fixas para backend
+      AZURE_RESOURCE_GROUP: rg-backend-dev
+      AZURE_LOCATION: brazilsouth
+      STORAGE_ACCOUNT: estadotfdev
+      AZURE_BLOB: tfstate
+
 
     steps:
-      - name: Checar repositório
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
+
+      - name: Create Resource Group (if not exists)
+        run: |
+          if ! az group show --name ${{ env.AZURE_RESOURCE_GROUP }} &>/dev/null; then
+            echo "Resource Group não existe. Criando..."
+            az group create \
+              --name ${{ env.AZURE_RESOURCE_GROUP }} \
+              --location ${{ env.AZURE_LOCATION }}
+          else
+            echo "Resource Group já existe. Pulando criação."
+          fi
+
+      - name: Create Storage Account (if not exists)
+        run: |
+          if ! az storage account show --name ${{ env.STORAGE_ACCOUNT }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &>/dev/null; then
+            echo "Storage Account não existe. Criando..."
+            az storage account create \
+              --name ${{ env.STORAGE_ACCOUNT }} \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --location ${{ env.AZURE_LOCATION }} \
+              --sku Standard_LRS
+          else
+            echo "Storage Account já existe. Pulando criação."
+          fi
+
+      - name: Create Blob Container for TF State (if not exists)
+        run: |
+          if ! az storage container show --name  ${{ env.AZURE_BLOB }} --account-name ${{ env.STORAGE_ACCOUNT }} &>/dev/null; then
+            echo "Blob Container não existe. Criando..."
+            az storage container create \
+              --name ${{ env.AZURE_BLOB }} \
+              --account-name ${{ env.STORAGE_ACCOUNT }}
+          else
+            echo "Blob Container já existe. Pulando criação."
+          fi
+
+# ###################################################################################
+# # CRIAÇÃO DE GRUPO DE RECURSOS BLOBS, ADLS, CONTA DE ARMAZENAMENTO ETC..
+# ###################################################################################
+
+  infra_Resources:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: setup-tf-backend
+
+    # steps: 
+    # - name: Test Print
+    #   run: echo "Este é um print no primeiro job dev..."
+
+    concurrency:
+      group: terraform-dev
+      cancel-in-progress: true
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+      TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+      TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
+      TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+
+    steps:
+      # 1. Checkout do código
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Configurar Terraform
-        uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.0
 
-      - name: Autenticar no Azure
+      - name: Terraform Init
+        run: terraform -chdir=infra init
+
+      - name: Terraform Apply Infra 
+        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars -target=azurerm_resource_group.grupo_principal -target=azurerm_storage_account.conta_armazenamento -target=azurerm_storage_container.container_source -target=azurerm_storage_container.container_validado -target=azurerm_storage_container.container_rejeitados -target=azurerm_log_analytics_workspace.this -target=azurerm_monitor_diagnostic_setting.storage_diag -target=azurerm_dashboard_grafana.grafana
+        
+
+
+# ###################################################################################
+# # CRIAÇÃO DAS FUNCTIONS  E INSTALAÇÃO DE PACOTES PYTHON
+# ##################################################################################
+
+
+  function:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: infra_Resources
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      AZURE_FUNCTIONAPP_NAME_VALIDATE: rg-dev-projeto-func-init
+      AZURE_FUNCTIONAPP_NAME: rg-dev-projeto-func
+      AZURE_RESOURCE_GROUP: rg-dev-projeto
+      LOCATION: westeurope
+      STORAGE_ACCOUNT: devprojetoarmazen
+      SERVICE_PLAN: rg-dev-projeto-func-plan
+
+    steps:
+
+      # Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Azure login
+      - name: Azure CLI Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
 
-      - name: Inicializar Terraform
-        run: terraform init -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_DEV }}" \
-                                -backend-config="container_name=tfstate" \
-                                -backend-config="key=terraform.tfstate" \
-                                -backend-config="resource_group_name=rg-backend-dev" \
-                                -reconfigure
-        working-directory: infra
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
 
-      - name: Executar Terraform Plan
-        run: terraform plan -var-file=dev.tfvars
-        working-directory: infra
+      # Cache npm
+      - name: Cache npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
 
-      - name: Executar Terraform Apply
-        run: terraform apply -auto-approve -var-file=dev.tfvars
-        working-directory: infra
+      # Instala Azure Functions Core Tools
+      - name: Install Azure Functions Core Tools
+        run: |
+          npm install -g azure-functions-core-tools@4 --unsafe-perm true
+
+      # Setup Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # Criando Function
+      - name: Create Function App (if not exists)
+        run: |
+          az functionapp create \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --consumption-plan-location westeurope \
+            --runtime python \
+            --runtime-version 3.11 \
+            --functions-version 4 \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
+            --storage-account devprojetoarmazen \
+            --os-type Linux
+
+      # Function App principal 
+      - name: Check Function App
+        run: |
+          az functionapp show \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "{Name:name, State:state, Location:location}" \
+            -o table || echo "Function App não encontrada"
+
+      - name: Deploy Function App via func CLI
+        working-directory: ./azure_function/GeracaoData
+        run: |
+          func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote --python
+
+      - name: Restart Function App
+        run: |
+          az functionapp restart \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
+
+
+############################################################################################
+# CRIAÇÃO DAS DO EVENTGRID SISTEM TOPC SUBSCRIPTION DE ACIONAMENTO DA FUNCTION DATA QUALITY
+#############################################################################################
+
+  eventhub:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: function
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      TF_VAR_secreto_do_cliente: ${{ secrets.AZURE_CLIENT_SECRET }}
+      TF_VAR_id_do_cliente: ${{ secrets.AZURE_CLIENT_ID }}
+      TF_VAR_id_do_tenant: ${{ secrets.AZURE_TENANT_ID }}
+      TF_VAR_id_da_subscricao: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+
+    # steps: 
+    # - name: Test Print
+    #   run: echo "Este é um print no segundo job dev."
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.0
+
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
+
+      - name: Terraform Init
+        run: terraform -chdir=infra init
+
+      - name: Terraform Apply Event Grid
+        run: terraform -chdir=infra apply -auto-approve -var-file=dev.tfvars 
+
+###################################################################################
+# Databricks DLT Jobs unity Catalog testes
+###################################################################################
+
+  deploy_databricks:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: eventhub
+    defaults:
+      run:
+        working-directory: masterdatabricks
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      # 1️⃣ Checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Instalar Python
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+              # 3️⃣ Instalar Databricks 
+      - name: Install Databricks CLI (new)
+        run: pip install --upgrade databricks-cli
+
+
+      - name: Criar/Atualizar Pipeline nova versao
+        run: databricks pipelines create resources/pipelines/demopipeline.json --allow-duplicate-names
+
+
+
+#################################################################################
+# GRAFANA DEPLOY
+#################################################################################
+
+
+  deploy_grafana:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: deploy_databricks
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
+
+      - name: Set workspace ID
+        run: |
+          echo "WORKSPACE_ID=/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/rg-dev-projeto/providers/Microsoft.OperationalInsights/workspaces/law-rg-dev-projeto-dev" >> $GITHUB_ENV
+
+      - name: Generate datasource JSON
+        working-directory: './grafana'
+        run: |
+          sed "s|__WORKSPACE_ID__|$WORKSPACE_ID|g; \
+              s|\${__SUBSCRIPTION_ID__}|${{ secrets.AZURE_SUBSCRIPTION_ID }}|g; \
+              s|\${__TENANT_ID__}|${{ secrets.AZURE_TENANT_ID }}|g" datasource.json > datasource_deploy.json
+
+      - name: Debug datasource (opcional)
+        run: cat grafana/datasource_deploy.json
+
+      - name: Get Grafana endpoint
+        run: |
+          GRAFANA_URL=$(az grafana show --name grafana-rg-dev-projeto --resource-group rg-dev-projeto --query "properties.endpoint" -o tsv)
+          echo "GRAFANA_URL=$GRAFANA_URL" >> $GITHUB_ENV
+
+      - name: Deploy Grafana datasource
+        run: |
+          EXISTING=$(curl -s -H "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}" "$GRAFANA_URL/api/datasources/name/AzureMonitor-Logs" | jq -r '.id // empty')
+          if [ -n "$EXISTING" ]; then
+            echo "Datasource já existe, atualizando..."
+            curl -X PUT "$GRAFANA_URL/api/datasources/$EXISTING" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}" \
+              --data-binary @grafana/datasource_deploy.json
+          else
+            echo "Datasource não existe, criando..."
+            curl -X POST "$GRAFANA_URL/api/datasources" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}" \
+              --data-binary @grafana/datasource_deploy.json
+          fi
+
+            
+      - name: Deploy Dashboard
+        working-directory: './grafana'
+        run: |
+          curl -s -X POST "$GRAFANA_URL/api/dashboards/db" \
+            -H "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"dashboard\": $(cat dashboard/infra_azure.json), \"overwrite\": true}"
+
+
+
+              

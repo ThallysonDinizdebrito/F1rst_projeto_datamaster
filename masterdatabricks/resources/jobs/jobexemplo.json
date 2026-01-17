@@ -1,0 +1,16 @@
+
+{
+  "name": "testes_notebook",
+  "tasks": [
+    {
+      "task_key": "task_notebook",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/thallysongreif@gmail.com/notebook/testes_notebook",
+        "source": "WORKSPACE"
+      }
+    }
+  ],
+  "run_as": {
+    "user_name": "thallysongreif@gmail.com"
+  }
+}
