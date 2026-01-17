@@ -93,7 +93,7 @@ gh secret delete DATABRICKS_TOKEN --env dev
 
 atualizar uma secret
 
-gh secret set DATABRICKS_TOKEN  --body "***********"  --repo ThallysonDinizdebrito/F1rst_projeto_datamaster --env dev 
+gh secret set DATABRICKS_TOKEN  --body "*************"  --repo ThallysonDinizdebrito/F1rst_projeto_datamaster --env dev 
 
 lista as secrets
 gh secret list --repo ThallysonDinizdebrito/F1rst_projeto_datamaster --env dev
