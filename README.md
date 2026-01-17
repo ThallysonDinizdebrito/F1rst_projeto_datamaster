@@ -258,6 +258,7 @@ so rodar a pipeline quando o status do registro estiver como
 entre no recurso criado do grafana grafana-rg-dev-projeto
 tela:
 Configuração>>
+  Configurações Gerais
   Contas de serviço "habilitar" flag
 
 
@@ -269,7 +270,5 @@ Administration>>
 
 
 
-
-
-# salve o topen no github secrets
+# salve o token no github secrets
 gh secret set GRAFANA_API_KEY --body "************************" 
